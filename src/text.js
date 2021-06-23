@@ -25,15 +25,15 @@ class MapContent extends Component {
     this.onScriptLoad = this.onScriptLoad.bind(this)
     this.createZoom = this.createZoom.bind(this)
     this.createMarker = this.createMarker.bind(this)
+    this.clearOldInfo = this.clearOldInfo.bind(this)
+    this.clearOldMarker = this.clearOldMarker.bind(this)
   }
 
-  handleChange(event){
-
-  }
-  createZoom(){
+   createZoom(){
     map.data.addListener("click", e => {
       
       let name = e.feature.getProperty("ADM1_TH")
+      this.clearOldInfo()
       if (this.state.focusProvince.province == name) return
       window.google.maps.event.trigger(map, 'resize');
       map.setCenter(new window.google.maps.LatLng(data.state.centerMap[name]['lat'],data.state.centerMap[name]['lng']))
@@ -46,6 +46,18 @@ class MapContent extends Component {
                         feature : e.feature}
       })
     })
+    map.addListener("zoom_changed", () => {
+      if (map.getZoom() < 7.5){
+        this.state.usedMarker && this.state.usedMarker.map(p=>{
+          p.setMap(null)
+        })
+      }
+      else {
+        this.state.usedMarker && this.state.usedMarker.map(p=>{
+          p.setMap(map)
+        })
+      }
+    });
   }
 
   onScriptLoad() {
@@ -61,17 +73,16 @@ class MapContent extends Component {
         .then(data => geoJson = data)
         .then(data=> dataLayer = map.data.addGeoJson(data))
     }
-    console.log(geoJson)
+    
     dataLayer = map.data.addGeoJson(geoJson)
     map.data.setStyle({
       fillColor: 'blue',
       strokeWeight: 0.8,
       fillOpacity: 0.3
   });
-
+    var showProvinceName = new window.google.maps.InfoWindow()
     map.data.addListener('mouseover', (event) => {
         //map.data.revertStyle();
-        console.log(event.feature)
         map.data.overrideStyle(event.feature, {fillOpacity: 0.1 });
     });
     map.data.addListener('mouseout', (event) => {
@@ -82,9 +93,8 @@ class MapContent extends Component {
 }
 
   clearOldInfo(){
-    this.setState( prev => {
-      prev.usedInfo && prev.usedInfo.close()
-    })
+    console.log(this.state.usedInfo)
+    this.state.usedInfo && this.state.usedInfo.close() 
   }
   clearOldMarker(){
     this.setState( prev => {
@@ -103,6 +113,7 @@ class MapContent extends Component {
     //clear old Info
     this.clearOldMarker()
     //find new
+    //this.state.place = fetchOverview(province)
     var places = this.state.place.get(province)
     places && places.map(p =>{
         var tmp = new window.google.maps.Marker({
@@ -128,12 +139,16 @@ class MapContent extends Component {
             tmpInfo.open({
               anchor : tmp,
               map,
-              shouldFocus: false
+              shouldFocus: true
+            })
+            this.setState({
+              usedInfo : tmpInfo
             })
         })
 
         this.state.usedMarker.push(tmp)
-        this.state.usedInfo = tmpInfo
+        
+       
     })
 
   }
@@ -151,7 +166,7 @@ class MapContent extends Component {
       s.addEventListener('load', e => {
         this.onScriptLoad()
         this.dataHandler()
-        this.createZoom("")
+        this.createZoom()
         
       })
     } else {
