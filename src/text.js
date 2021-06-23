@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, Component } from 'react';
 import Data from "./Data";
 //import MarkerPin from "./src/MarkerPin"
 import { render } from 'react-dom';
@@ -15,8 +15,8 @@ class MapContent extends Component {
         infoContent : "....." ,
         place : new Map() ,
         usedMarker : [],
-        usedInfo : [],
-        focusProvince : null
+        usedInfo : null,
+        focusProvince : {province : null , feature : null}
     }
     this.state.place.set("กรุงเทพมหานคร" , [])
     this.state.place.get("กรุงเทพมหานคร").push({name : "One" , type : "Market" , position : {lng : 100.633214325 , lat : 13.724293875}})
@@ -27,21 +27,28 @@ class MapContent extends Component {
     this.createMarker = this.createMarker.bind(this)
   }
 
+  handleChange(event){
+
+  }
   createZoom(){
     map.data.addListener("click", e => {
-      window.google.maps.event.trigger(map, 'resize');
+      
       let name = e.feature.getProperty("ADM1_TH")
+      if (this.state.focusProvince.province == name) return
+      window.google.maps.event.trigger(map, 'resize');
       map.setCenter(new window.google.maps.LatLng(data.state.centerMap[name]['lat'],data.state.centerMap[name]['lng']))
       map.setZoom(9.5)
       this.createMarker(e.feature.getProperty("ADM1_TH"))
+
+      map.data.overrideStyle(this.state.focusProvince.feature, { fillOpacity: 0.3 });
       this.setState({
-        focusProvince : name
+        focusProvince : {province : name ,
+                        feature : e.feature}
       })
     })
   }
 
   onScriptLoad() {
-    
     map = new window.google.maps.Map(
       document.getElementById(this.props.id),
       this.props.options);
@@ -56,43 +63,45 @@ class MapContent extends Component {
     }
     console.log(geoJson)
     dataLayer = map.data.addGeoJson(geoJson)
-    /*fetch(getJson)
-        .then(src => {dataLayer = map.data.loadGeoJson(src)})
-        .then(featureCollection => {
-            console.log(featureCollection)
-            dataLayer = map.data.loadGeoJson(featureCollection)
-            // ADD SOME NEW STYLE IF YOU WANT TO
-            map.data.setStyle({strokeWeight: 0.5, fillOpacity: 0 });
-        }
-        );*/
+    map.data.setStyle({
+      fillColor: 'blue',
+      strokeWeight: 0.8,
+      fillOpacity: 0.3
+  });
+
     map.data.addListener('mouseover', (event) => {
-        map.data.revertStyle();
-        map.data.overrideStyle(event.feature, {strokeWeight: 1, fillOpacity: 0.1 });
+        //map.data.revertStyle();
+        console.log(event.feature)
+        map.data.overrideStyle(event.feature, {fillOpacity: 0.1 });
     });
     map.data.addListener('mouseout', (event) => {
-        if (event.feature.getProperty("ADM1_TH") != this.state.focusProvince){
-          console.log(event.feature.getProperty("ADM1_TH") + " / " + this.state.focusProvince)
-          map.data.revertStyle();
-    }
+      if (this.state.focusProvince.province == event.feature.getProperty("ADM1_TH")) return
+      map.data.overrideStyle(event.feature, { fillOpacity: 0.3 });
+
     });
 }
 
-  createMarker(province){
-    //clear old markers
+  clearOldInfo(){
+    this.setState( prev => {
+      prev.usedInfo && prev.usedInfo.close()
+    })
+  }
+  clearOldMarker(){
     this.setState( prev => {
       prev.usedMarker && prev.usedMarker.map(p=>{
         p.setMap(null)
       })
-      prev.usedInfo && prev.usedInfo.map(i=>{
-        i.close()
-      })
       return {
           usedMarker : [],
-          usedInfo : []
       } 
     })
-    //clear old Info
+  }
 
+  createMarker(province){
+    //clear old markers
+    this.clearOldInfo()
+    //clear old Info
+    this.clearOldMarker()
     //find new
     var places = this.state.place.get(province)
     places && places.map(p =>{
@@ -115,6 +124,7 @@ class MapContent extends Component {
           content : contentInfo
         })
         tmp.addListener("click",e=>{
+            this.clearOldInfo()
             tmpInfo.open({
               anchor : tmp,
               map,
@@ -123,7 +133,7 @@ class MapContent extends Component {
         })
 
         this.state.usedMarker.push(tmp)
-        this.state.usedInfo.push(tmpInfo)
+        this.state.usedInfo = tmpInfo
     })
 
   }

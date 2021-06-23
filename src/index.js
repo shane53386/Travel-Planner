@@ -49,7 +49,7 @@ const MapWithAMakredInfoWindow = compose(
 */
 
 ReactDOM.render(
-  <div style= {{width: '100%', height: 800}} >
+  <div style= {{width: '100%', height: 800,}} >
     <MapContent id="myMap"  
     options={{center: { lng : 100.633214325 , lat : 13.724293875 },
     zoom: 6} }
