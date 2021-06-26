@@ -1,3 +1,32 @@
 #tableExpense{
     width : 50%
 }
+
+#headerTable{
+    text-align: center;
+}
+th,
+td {
+  border: 1px solid black;
+  min-width: 125px;
+  overflow: hidden;
+}
+
+#rowType{
+    padding-left: 0%;
+    padding-right: 0%;
+
+}
+#rowInType{
+    text-align: center;
+}
+
+#minRow{
+    min-width: 80px;
+}
+#mediumRow{
+    min-width: 125px;
+}
+#maxRow{
+    min-width: 200px;
+}

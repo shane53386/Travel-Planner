@@ -1,8 +1,8 @@
 
 import React, { Component } from 'react';
 import { InputGroup , FormControl, Table , Button,DropdownButton,Dropdown} from 'react-bootstrap';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
-
+import InputNewType from './modal.js'
+import "./expense.css";
 class TableComponent extends Component {
 
     constructor(props){
@@ -28,13 +28,14 @@ class TableComponent extends Component {
         this.toggleShow = this.toggleShow.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.addRow = this.addRow.bind(this)
+        this.addNewType = this.addNewType.bind(this)
     }
     renderHeader(){
-        return (<tr>
-                    <th>ประเภท</th>
-                    <th>No.</th>
-                    <th>รายการ</th>
-                    <th>ราคาต่อหน่วย</th>
+        return (<tr id="headerTable">
+                    <th id="mediumRow">ประเภท</th>
+                    <th id="minRow">No.</th>
+                    <th id="maxRow">รายการ</th>
+                    <th >ราคาต่อหน่วย</th>
                     <th>จำนวน</th>
                     <th>รวม</th>
                 </tr>)
@@ -57,8 +58,8 @@ class TableComponent extends Component {
         })
     }
 
-    addRow(){
-        let name = "อื่นๆ"
+    addRow(event){
+        const {name} = event.target
         var typeDb = this.state.allType.get(name)
 
         typeDb.row.push({id : typeDb.numRow,
@@ -70,8 +71,9 @@ class TableComponent extends Component {
         typeDb.numRow += 1
         this.upDate()
     }
-    toggleShow(){
-        let name = "อื่นๆ"
+
+    toggleShow(event){
+        const {name} = event.target
         var typeDb = this.state.allType.get(name)
         if (typeDb.showRow.length == 0)
             typeDb.showRow = typeDb.row
@@ -82,16 +84,15 @@ class TableComponent extends Component {
     }
     
     renderRow (idx,key) {
-        //console.log("ss")
         var typeDb = this.state.allType.get(key)
         console.log(typeDb)
         return (
-                <tr>
-                    <td>{key}</td>
-                    <td>
+                <tr id="rowInType">
+                    <td id="mediumRow">{key}</td>
+                    <td id="minRow">
                         {idx+1}
-                    </td>`
-                    <td>
+                    </td>
+                    <td id="maxRow">
                         <InputGroup className="mb-1" >
                             <FormControl name= {`list ${idx.toString()} ${key}`} value = { typeDb.row[idx].list} onChange={this.handleChange}
                                 placeholder="Ex: ค่าเข้าสวนสัตว์" autocomplete="off"/> 
@@ -113,7 +114,23 @@ class TableComponent extends Component {
         )
     }
 
+    addNewType(type){
+        console.log(this.state.nameType)
+       this.state.nameType.push(type)
+       this.state.allType.set(type,{
+        row : [ {id : 0,
+                list : "",
+                cost : null,
+                amount : null,
+                totalCost : null} ]  ,
+        showRow : [] ,
+        numRow : 1 ,
+        overAllCost : 0
+    })
+    this.upDate()
+    }
     render(){
+        console.log(this.state)
         return (
             <div id="tableExpense">
                <Table striped bordered hover>
@@ -121,14 +138,12 @@ class TableComponent extends Component {
                         {this.renderHeader()}
                     </thead>
                     <tbody>
-                        
-                    
                         {this.state.nameType.map((name) =>(
-                            <tr>
-                                <td colSpan = "6">
+                            <tr >
+                                <td colSpan = "6" id='rowType'>
                                     <div>
-                                        <Button onClick={this.toggleShow}>Show</Button>
-                                        <Button onClick={this.addRow}>Add Row</Button>
+                                        <Button name={name} onClick={this.toggleShow}>Show</Button>
+                                        <Button name={name} onClick={this.addRow}>Add Row</Button>
                                         {this.state.allType.get(name).overAllCost}
                                     </div>
                                     {this.state.allType.get(name).showRow.map((data) => (
@@ -137,10 +152,11 @@ class TableComponent extends Component {
                                     ))}
                                 </td>
                             </tr>
-                        
                         ))} 
                     </tbody>
                 </Table>
+
+                <InputNewType sendCallback={this.addNewType}/>
                 
             </div>
         )
