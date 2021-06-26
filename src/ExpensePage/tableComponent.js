@@ -20,7 +20,8 @@ class TableComponent extends Component {
                                             totalCost : null} ]  ,
                                     showRow : [] ,
                                     numRow : 1 ,
-                                    overAllCost : 0
+                                    overAllCost : 0,
+                                    readOnly : false
                                 } )
 
         this.handleChange = this.handleChange.bind(this)
@@ -29,6 +30,8 @@ class TableComponent extends Component {
         this.handleChange = this.handleChange.bind(this)
         this.addRow = this.addRow.bind(this)
         this.addNewType = this.addNewType.bind(this)
+        this.disableForm = this.disableForm.bind(this)
+        this.deleteRow = this.deleteRow.bind(this)
     }
     renderHeader(){
         return (<tr id="headerTable">
@@ -38,6 +41,7 @@ class TableComponent extends Component {
                     <th >ราคาต่อหน่วย</th>
                     <th>จำนวน</th>
                     <th>รวม</th>
+                    <th id="mediumRow"></th>
                 </tr>)
     }
     handleChange(event){
@@ -95,23 +99,42 @@ class TableComponent extends Component {
                     <td id="maxRow">
                         <InputGroup className="mb-1" >
                             <FormControl name= {`list ${idx.toString()} ${key}`} value = { typeDb.row[idx].list} onChange={this.handleChange}
-                                placeholder="Ex: ค่าเข้าสวนสัตว์" autocomplete="off"/> 
+                                placeholder="Ex: ค่าเข้าสวนสัตว์" autocomplete="off" readOnly={typeDb.readOnly}/> 
                         </InputGroup>
                     </td>
                     <td> <InputGroup className="mb-1" >
-                            <FormControl type="number" min="0" id = {idx} name= {`cost ${idx.toString()} ${key}`} value = {typeDb.row[idx].cost} onChange={this.handleChange} autocomplete="off"/> 
+                            <FormControl type="number" min="0" id = {idx} name= {`cost ${idx.toString()} ${key}`} value = {typeDb.row[idx].cost} 
+                            onChange={this.handleChange} autocomplete="off" readOnly={typeDb.readOnly}/> 
                         </InputGroup>
                     </td>
                     <td><InputGroup className="mb-1" >
                             <InputGroup.Prepend>
                                 <InputGroup.Text id="basic-addon1">X</InputGroup.Text>
                             </InputGroup.Prepend>
-                            <FormControl type="number" min="0" id = {idx} name= {`amount ${idx.toString()} ${key}`} value = {typeDb.row[idx].amount} onChange={this.handleChange} autocomplete="off"/> 
+                            <FormControl type="number" min="0" id = {idx} name= {`amount ${idx.toString()} ${key}`} value = {typeDb.row[idx].amount} 
+                            onChange={this.handleChange} autocomplete="off" readOnly={typeDb.readOnly}/> 
                         </InputGroup>
                     </td>
                     <td>{typeDb.row[idx].amount * typeDb.row[idx].cost }</td>
+                    <td>
+                        <Button disabled={typeDb.readOnly} name={`${key} ${idx}`} onClick={this.deleteRow}>Delete</Button>
+                    </td>
                 </tr>
         )
+    }
+
+    deleteRow(event){
+        let {name} = event.target
+        let tmp = name.split(" ")
+        var key = tmp[0] ; var idx = tmp[1]
+        var typeDb = this.state.allType.get(key)
+        typeDb.row.splice(idx,1)
+        typeDb.numRow -= 1
+        for (let i = idx;i<typeDb.numRow;i++){
+            typeDb.row[i].id -= 1
+
+        }
+        this.upDate()
     }
 
     addNewType(type){
@@ -129,6 +152,13 @@ class TableComponent extends Component {
     })
     this.upDate()
     }
+    disableForm(event){
+        const {name} = event.target
+        var typeDb = this.state.allType.get(name)
+        typeDb.readOnly = !typeDb.readOnly
+        //chech form valid
+        this.upDate()
+    }
     render(){
         console.log(this.state)
         return (
@@ -140,10 +170,16 @@ class TableComponent extends Component {
                     <tbody>
                         {this.state.nameType.map((name) =>(
                             <tr >
-                                <td colSpan = "6" id='rowType'>
+                                <td colSpan = "7" id='rowType'>
                                     <div>
+                                        {name}
                                         <Button name={name} onClick={this.toggleShow}>Show</Button>
                                         <Button name={name} onClick={this.addRow}>Add Row</Button>
+                                        { this.state.allType.get(name).showRow.length != 0?
+                                            <Button visibility={false} name={name} onClick={this.disableForm}>{this.state.allType.get(name).readOnly? "Edit":"Save"}</Button>
+                                            : null
+                                        }
+                                        {`${this.state.allType.get(name).numRow} รายการ  `}
                                         {this.state.allType.get(name).overAllCost}
                                     </div>
                                     {this.state.allType.get(name).showRow.map((data) => (
