@@ -32,6 +32,7 @@ class TableComponent extends Component {
         this.addNewType = this.addNewType.bind(this)
         this.disableForm = this.disableForm.bind(this)
         this.deleteRow = this.deleteRow.bind(this)
+        this.deleteType = this.deleteType.bind(this)
     }
     renderHeader(){
         return (<tr id="headerTable">
@@ -92,13 +93,13 @@ class TableComponent extends Component {
         console.log(typeDb)
         return (
                 <tr id="rowInType">
-                    <td id="mediumRow">{key}</td>
+                    <td id="mediumRow"></td>
                     <td id="minRow">
                         {idx+1}
                     </td>
                     <td id="maxRow">
                         <InputGroup className="mb-1" >
-                            <FormControl name= {`list ${idx.toString()} ${key}`} value = { typeDb.row[idx].list} onChange={this.handleChange}
+                            <FormControl required name= {`list ${idx.toString()} ${key}`} value = { typeDb.row[idx].list} onChange={this.handleChange}
                                 placeholder="Ex: ค่าเข้าสวนสัตว์" autocomplete="off" readOnly={typeDb.readOnly}/> 
                         </InputGroup>
                     </td>
@@ -159,6 +160,55 @@ class TableComponent extends Component {
         //chech form valid
         this.upDate()
     }
+    deleteType(event){
+        let {name} = event.target
+        this.state.allType.delete(name)
+        var index = this.state.nameType.indexOf(name);
+        if (index >= 0) {
+            this.state.nameType.splice( index, 1 );
+        }
+        this.upDate()
+    }
+    renderButton(name){
+        return (
+           <div>
+               <div class="left main" >
+                    <td id="rowHeaderType">
+                        {name}
+                    </td>
+                    <td id="rowHeaderType" colSpan="3">
+                        <Button name={name} onClick={this.toggleShow}>{this.state.allType.get(name).showRow.length != 0? "Hide":"Show"}</Button>
+                        { this.state.allType.get(name).showRow.length != 0?
+                            <Button name={name} onClick={this.addRow}>Add Row</Button> 
+                            : null
+                        }
+                        { this.state.allType.get(name).showRow.length != 0?
+                        
+                            <Button name={name} onClick={this.disableForm}>{this.state.allType.get(name).readOnly? "Edit":"Save"}</Button>
+                            : null
+                        }
+                        <Button name={name} onClick={this.deleteType}>Delete</Button>
+                    </td>
+                </div>
+                
+
+
+                
+                <div class="right main" >
+                    <td id="rowHeaderType">
+                        {`${this.state.allType.get(name).numRow} รายการ`}
+                    </td>
+                    <td id="rowHeaderType">
+                        {this.state.allType.get(name).overAllCost}
+                    </td>
+                     <td id="rowHeaderType">
+
+                     </td>
+                </div>
+
+            </div>
+        )
+            }
     render(){
         console.log(this.state)
         return (
@@ -169,19 +219,10 @@ class TableComponent extends Component {
                     </thead>
                     <tbody>
                         {this.state.nameType.map((name) =>(
-                            <tr >
+                            <tr>
                                 <td colSpan = "7" id='rowType'>
-                                    <div>
-                                        {name}
-                                        <Button name={name} onClick={this.toggleShow}>Show</Button>
-                                        <Button name={name} onClick={this.addRow}>Add Row</Button>
-                                        { this.state.allType.get(name).showRow.length != 0?
-                                            <Button visibility={false} name={name} onClick={this.disableForm}>{this.state.allType.get(name).readOnly? "Edit":"Save"}</Button>
-                                            : null
-                                        }
-                                        {`${this.state.allType.get(name).numRow} รายการ  `}
-                                        {this.state.allType.get(name).overAllCost}
-                                    </div>
+                                    {this.renderButton(name)}
+                                    
                                     {this.state.allType.get(name).showRow.map((data) => (
                                         console.log(data.id),
                                         this.renderRow(data.id,name)
