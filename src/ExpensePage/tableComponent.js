@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { InputGroup , FormControl, Table , Button,DropdownButton,Dropdown} from 'react-bootstrap';
+import { InputGroup , FormControl,Form, Table , Button,DropdownButton,Dropdown} from 'react-bootstrap';
 import InputNewType from './modal.js'
 import "./expense.css";
 class TableComponent extends Component {
@@ -21,7 +21,8 @@ class TableComponent extends Component {
                                     showRow : [] ,
                                     numRow : 1 ,
                                     overAllCost : 0,
-                                    readOnly : false
+                                    readOnly : false,
+                                    inValid : []
                                 } )
 
         this.handleChange = this.handleChange.bind(this)
@@ -33,6 +34,7 @@ class TableComponent extends Component {
         this.disableForm = this.disableForm.bind(this)
         this.deleteRow = this.deleteRow.bind(this)
         this.deleteType = this.deleteType.bind(this)
+        this.checkValid = this.checkValid.bind(this)
     }
     renderHeader(){
         return (<tr id="headerTable">
@@ -99,8 +101,11 @@ class TableComponent extends Component {
                     </td>
                     <td id="maxRow">
                         <InputGroup className="mb-1" >
-                            <FormControl required name= {`list ${idx.toString()} ${key}`} value = { typeDb.row[idx].list} onChange={this.handleChange}
-                                placeholder="Ex: ค่าเข้าสวนสัตว์" autocomplete="off" readOnly={typeDb.readOnly}/> 
+                            <Form.Control class="invalid-feedback" required name= {`list ${idx.toString()} ${key}`} value = { typeDb.row[idx].list} onChange={this.handleChange}
+                                placeholder="Ex: ค่าเข้าสวนสัตว์" autocomplete="off" readOnly={typeDb.readOnly} isInvalid={typeDb.inValid[idx]}/> 
+                             <Form.Control.Feedback type='invalid'>
+                                Cannot be blank
+                            </Form.Control.Feedback>
                         </InputGroup>
                     </td>
                     <td> <InputGroup className="mb-1" >
@@ -137,7 +142,23 @@ class TableComponent extends Component {
         }
         this.upDate()
     }
-
+    checkValid(name){
+        let tmp = false
+        
+        var typeDb = this.state.allType.get(name)
+        typeDb.inValid = []
+        for (let i=0;i<typeDb.row.length;i++){
+            if (typeDb.row[i].list == ""){
+                typeDb.inValid.push(true)
+                tmp = true
+            }
+            else
+                typeDb.inValid.push(null)
+        }
+        if (tmp)
+            return false
+        return true
+    }
     addNewType(type){
         console.log(this.state.nameType)
        this.state.nameType.push(type)
@@ -154,10 +175,18 @@ class TableComponent extends Component {
     this.upDate()
     }
     disableForm(event){
-        const {name} = event.target
-        var typeDb = this.state.allType.get(name)
-        typeDb.readOnly = !typeDb.readOnly
         //chech form valid
+        const {name} = event.target
+        if (this.checkValid(name)==true){
+            
+            var typeDb = this.state.allType.get(name)
+            typeDb.readOnly = !typeDb.readOnly
+            
+           
+        }
+        else{
+
+        }
         this.upDate()
     }
     deleteType(event){
