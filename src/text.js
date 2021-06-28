@@ -120,8 +120,7 @@ class MapContent extends Component {
           position: p.position,
           map,
           animation : window.google.maps.Animation.DROP,
-          icon : data.state.markerIcon["Market"],
-          title: p.name 
+          icon : data.state.markerIcon["Market"]
         })
 
         //val content = fetchInfo(province,p.name)
@@ -134,6 +133,11 @@ class MapContent extends Component {
         var tmpInfo = new window.google.maps.InfoWindow({
           content : contentInfo
         })
+        var nameInfo = 
+        '<div>name</div>'
+        var tmp2Info = new window.google.maps.InfoWindow({
+          content : nameInfo
+        })
         tmp.addListener("click",e=>{
             this.clearOldInfo()
             tmpInfo.open({
@@ -145,7 +149,16 @@ class MapContent extends Component {
               usedInfo : tmpInfo
             })
         })
-
+        tmp.addListener("mouseover",e=>{
+          tmp2Info.open({
+            anchor : tmp,
+            map,
+            shouldFocus: true
+          })
+        })
+        tmp.addListener("mouseout",e=>{
+          tmp2Info.close()
+        })
         this.state.usedMarker.push(tmp)
         
        
