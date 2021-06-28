@@ -197,6 +197,7 @@ class TableComponent extends Component {
             this.state.nameType.splice( index, 1 );
         }
         this.upDate()
+        //var tmp = <InputNewType sendCallback={this.addNewType} province={}/>
     }
     renderButton(name){
         return (

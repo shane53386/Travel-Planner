@@ -21,6 +21,7 @@ function InputNewType(props) {
         setType(value)
     }
 
+
     return (
       <> 
         <Button variant="primary" onClick={handleShow}>
