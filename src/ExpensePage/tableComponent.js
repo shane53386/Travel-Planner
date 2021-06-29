@@ -160,7 +160,7 @@ class TableComponent extends Component {
         return true
     }
     addNewType(type){
-        console.log(this.state.nameType)
+    
        this.state.nameType.push(type)
        this.state.allType.set(type,{
         row : [ {id : 0,
@@ -170,7 +170,8 @@ class TableComponent extends Component {
                 totalCost : null} ]  ,
         showRow : [] ,
         numRow : 1 ,
-        overAllCost : 0
+        overAllCost : 0,
+        inValid : []
     })
     this.upDate()
     }
@@ -208,11 +209,11 @@ class TableComponent extends Component {
                     </td>
                     <td id="rowHeaderType" colSpan="3">
                         <Button name={name} onClick={this.toggleShow}>{this.state.allType.get(name).showRow.length != 0? "Hide":"Show"}</Button>
-                        { this.state.allType.get(name).showRow.length != 0?
+                        { (this.state.allType.get(name).showRow.length != 0) || (this.state.allType.get(name).row.length == 0)?
                             <Button name={name} onClick={this.addRow}>Add Row</Button> 
                             : null
                         }
-                        { this.state.allType.get(name).showRow.length != 0?
+                        { (this.state.allType.get(name).showRow.length != 0)?
                         
                             <Button name={name} onClick={this.disableForm}>{this.state.allType.get(name).readOnly? "Edit":"Save"}</Button>
                             : null

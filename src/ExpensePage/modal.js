@@ -1,19 +1,30 @@
 import React, { useEffect, useState} from 'react';
-import {Modal , InputGroup ,FormControl,Button} from 'react-bootstrap';
+import {Modal , InputGroup ,FormControl,Button,Form} from 'react-bootstrap';
 function InputNewType(props) {
     const [show, setShow] = useState(false);
     const [newType,setType] = useState(null)
+    const [check,setCheck] = useState(null)
 
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleShow = () => {
+      setCheck(null)
+      setType(null)
+      setShow(true)
+    }
     const sendData = (event) =>{
         let {name} = event.target
-        if (name=="close")
-            props.sendCallback(null)
-        else if (name=="save")
+        if (name=="save"){
+          if (newType != null){
             props.sendCallback(newType)
-        handleClose()
-        setType(null)
+            handleClose()
+          }
+          else{
+            setCheck(true)
+          }
+        }
+        else{
+          handleClose()
+        }        
         
     }
     const handleChange = (event) =>{
@@ -24,6 +35,7 @@ function InputNewType(props) {
 
     return (
       <> 
+        
         <Button variant="primary" onClick={handleShow}>
             Add New Type
         </Button>
@@ -33,9 +45,13 @@ function InputNewType(props) {
             <Modal.Title>Modal heading</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            
               <InputGroup className="mb-1" >
-                    <FormControl name="newType" value = { newType} onChange={handleChange}
-                        autocomplete="off"/> 
+                    <Form.Control name="newType" value = { newType} onChange={handleChange}
+                        autocomplete="off" isInvalid={check}/> 
+                    <Form.Control.Feedback type='invalid'>
+                        Cannot be blank
+                    </Form.Control.Feedback>
                     </InputGroup>
             </Modal.Body>
           <Modal.Footer>
