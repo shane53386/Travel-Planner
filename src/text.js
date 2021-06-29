@@ -8,187 +8,7 @@ import { isElementOfType } from 'react-dom/cjs/react-dom-test-utils.production.m
 var map;var dataLayer;var info 
 var geoJson = null
 const data = new Data()
-/*
-function MapContent(props){
-  
-  const [place,setPlace] = useState(new Map());
-	const [usedMarker, setUsedMarker] = useState([]);
-  const [usedInfo , setUsedInfo] = useState(null);
-  const [focusProvince ,setFocusProvince] = useState({province : null , feature : null});
-
-  const setupPlace = ()=>{
-    place.set("กรุงเทพมหานคร" , [])
-    place.get("กรุงเทพมหานคร").push({name : "One" , type : "Market" , position : {lng : 100.633214325 , lat : 13.724293875}})
-    place.get("กรุงเทพมหานคร").push({name : "Two" , type : "Nature" , position : {lng : 100.634114325 , lat : 13.730293875}})
-  }
-
-  const createZoom = ()=>{
-
-    map.data.addListener("click", e => {
-      
-      let name = e.feature.getProperty("ADM1_TH")
-      clearOldInfo()
-
-      if (focusProvince.province == name) return
-
-      window.google.maps.event.trigger(map, 'resize');
-      map.setCenter(new window.google.maps.LatLng(data.state.centerMap[name]['lat'],data.state.centerMap[name]['lng']))
-      map.setZoom(9.5)
-      createMarker(e.feature.getProperty("ADM1_TH"))
-
-      map.data.overrideStyle(focusProvince.feature, { fillOpacity: 0.3 });
-      console.log(name)
-      focusProvince.province = name
-      focusProvince.feature = e.feature
-     
-      console.log(focusProvince)
-    })
-
-    map.addListener("zoom_changed", () => {
-      if (map.getZoom() < 7.5){
-        usedMarker && usedMarker.map(p=>{
-          p.setMap(null)
-        })
-      }
-      else {
-        usedMarker && usedMarker.map(p=>{
-          p.setMap(map)
-        })
-      }
-    });
-  }
-
-  const onScriptLoad = () => {
-    map = new window.google.maps.Map(
-      document.getElementById(props.id),props.options);
-  }
-
-  const dataHandler = () => {
-    if (geoJson==null){
-      fetch(props.src)
-        .then(response => response.json())
-        .then(data => geoJson = data)
-        .then(data=> dataLayer = map.data.addGeoJson(data))
-    }
-    
-    dataLayer = map.data.addGeoJson(geoJson)
-    map.data.setStyle({
-      fillColor: 'blue',
-      strokeWeight: 0.8,
-      fillOpacity: 0.3
-  });
-    var showProvinceName = new window.google.maps.InfoWindow()
-    map.data.addListener('mouseover', (event) => {
-        map.data.overrideStyle(event.feature, {fillOpacity: 0.1 });
-    });
-
-    map.data.addListener('mouseout', (event) => {
-      console.log(focusProvince)
-      if (focusProvince.province == event.feature.getProperty("ADM1_TH")) return
-      map.data.overrideStyle(event.feature, { fillOpacity: 0.3 });
-    });
-  }
-
-  const clearOldInfo = () => {
-    console.log(usedInfo)
-    usedInfo && usedInfo.close() 
-  }
-
-  const clearOldMarker = () => {
-    usedMarker && usedMarker.map(p=>{
-      p.setMap(null)
-    })
-    setUsedMarker([])
-  }
-
-  const createMarker = (province) => {
-    //clear old markers
-    clearOldInfo()
-    //clear old Info
-    clearOldMarker()
-    //find new
-    //this.state.place = fetchOverview(province)
-    var places = place.get(province)
-    places && places.map(p =>{
-        var tmp = new window.google.maps.Marker({
-          position: p.position,
-          map,
-          animation : window.google.maps.Animation.DROP,
-          icon : data.state.markerIcon["Market"]
-        })
-
-        //val content = fetchInfo(province,p.name)
-        var contentInfo = 
-        '<div id = "content">' +
-        '<div id = "siteNotice"'+
-          '<h2>Hello WOrld</h2>'+
-        '</div>'+
-        '</div>'
-        var tmpInfo = new window.google.maps.InfoWindow({
-          content : contentInfo
-        })
-        var nameInfo = 
-        '<div>name</div>'
-        var tmp2Info = new window.google.maps.InfoWindow({
-          content : nameInfo
-        })
-        tmp.addListener("click",e=>{
-            clearOldInfo()
-            tmpInfo.open({
-              anchor : tmp,
-              map,
-              shouldFocus: true
-            })
-            setUsedInfo(tmpInfo)
-        })
-
-        tmp.addListener("mouseover",e=>{
-          tmp2Info.open({
-            anchor : tmp,
-            map,
-            shouldFocus: true
-          })
-        })
-
-        tmp.addListener("mouseout",e=>{
-          tmp2Info.close()
-        })
-
-        usedMarker.push(tmp)
-    })
-  }
-
-  useEffect(() => {
-    if (!window.google) {
-      var s = document.createElement('script');
-      s.type = 'text/javascript';
-      s.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAAxJFxw0jQWyJIyB7K48-PKniPK8JUhuk`;
-      var x = document.getElementsByTagName('script')[0];
-      x.parentNode.insertBefore(s, x);
-      // Below is important. 
-      //We cannot access google.maps until it's finished loading
-      
-      s.addEventListener('load', e => {
-        onScriptLoad()
-        dataHandler()
-        setupPlace()
-        createZoom()
-        setUsedInfo("sss")
-      })
-      } else {
-        onScriptLoad()
-      }
-	  }, []);
-  
- 
-  return (
-        <div style={{ width: '100%', height: '100%' }} id={props.id}>
-            
-        </div>  
-  )
-}
-export default MapContent*/
-
+const weatherKey = "22f30fcf6dd5b269bf5cbe441f735a39";
 
 class MapContent extends Component {
 
@@ -306,6 +126,7 @@ class MapContent extends Component {
         })
 
         //val content = fetchInfo(province,p.name)
+        //this.genPopup(p.name)
         var contentInfo = 
         '<div id = "content">' +
         '<div id = "siteNotice"'+
@@ -347,7 +168,27 @@ class MapContent extends Component {
     })
 
   }
-
+  async genPopup(name){
+    //fecth weather api
+    let place = this.state.place.get(name)
+    let lat = place.position.lat
+    let lon = place.position.lng
+    fetch(
+			`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly,daily,minutely&appid=${weatherKey}`
+		)
+			.then((res) => res.json())
+			.then((data) => {
+          let returnText = 
+          `<div className="pop-up">` +
+            `<h2>${name}</h2>`
+            `<p>${place.Description}</p>`
+            `<div>Type : ${place.Type}</div>`
+            `<div>Temp : ${data.current.temp}</div>`
+            `<img src=${"http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png"}/>`
+          `</div>`
+          return returnText
+      });	
+  }
   componentDidMount() {
     if (!window.google) {
       var s = document.createElement('script');
