@@ -46,7 +46,8 @@ ReactDOM.render(
             <MapDirection id="myMap"  
             options={
               {center: { lng : 100.633214325 , lat : 13.724293875 },
-              zoom: 6}}/>
+              zoom: 6,
+              mapId: "6ef51b53d122d80d" }}/>
           </div> 
         }/>      
       </Switch>
