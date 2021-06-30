@@ -1,27 +1,56 @@
 import { thisExpression } from '@babel/types';
-import React, { useEffect, useState} from 'react';
+import React, { Component, useEffect, useState} from 'react';
 import {Dropdown,DropdownButton , InputGroup ,FormControl,Button,Form} from 'react-bootstrap';
 
-function FilterDay(props){
+class FilterDay extends Component{
 
-    const [show,setShow] = useState(false)
-
-    const btn = ()=>{
-        setShow(!show)
+    constructor(props){
+        super(props)
+        this.state = {
+            show : false,
+            check : new Map()
+        }
+        this.btn = this.btn.bind(this)
+        this.updateFilter = this.updateFilter.bind(this)
     }
-    const updateFilter = (event)=>{
+   
+
+    btn(event) {
+        this.setState((prev)=>{
+            return {
+                show : !prev.show
+            }
+        })
+    }
+
+    updateFilter(event){
         let {name,checked} = event.target
-        console.log([name,checked])
+        console.log(this.state.check)
+        console.log(checked)
+        this.state.check.set(name,checked)
+        this.props.parentCallback(this.state.check)
+        this.setState((prev)=>{
+            return prev     
+        })
     }
+    componentDidMount(){
+        this.props.days.map((p)=>{
+            this.state.check.set(p,true)
+        })
+    }
+   
+    render(){
     return(
         <div>
-        <Button onClick={btn}/>
-        {show==true?
+        <Button onClick={this.btn}/>
+        {this.state.show==true?
             <div>
                 <table>
-                    {props.days.map((p)=>(
+                    {this.props.days.map((p)=>(
                         <div>
-                            <input class="form-check-input" type="checkbox" name={p} onClick={updateFilter} value="" id="flexCheckDefault"/> {p}
+                        
+                        
+                            <input class="form-check-input" checked={this.state.check.get(p)} type="checkbox" name={p} onClick={this.updateFilter} value="" id="flexCheckDefault"/> {p}
                             </div>
                     ))}
                 </table>
@@ -30,7 +59,7 @@ function FilterDay(props){
         }
         </div>
     )
-
+    }
     
 }
 

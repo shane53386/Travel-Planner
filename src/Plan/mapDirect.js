@@ -26,7 +26,7 @@ class MapDirection extends Component {
       markersTime : [],
       route : [],
       show : true,
-      polyline : null
+      polyline : []
       })
       this.state.days.set("2",{place : [],
         path : [],
@@ -34,7 +34,7 @@ class MapDirection extends Component {
         markersTime : [],
         route : [],
         show : true,
-        polyline : null
+        polyline : []
         })
     allPlaces.set("Suankularb Wittayalai School",{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
     allPlaces.set( "Victory Monument",{ pos : {lng : 100.538009 , lat : 13.764603 } , province : "กรุงเทพมหานคร"})
@@ -45,17 +45,50 @@ class MapDirection extends Component {
     this.onScriptLoad = this.onScriptLoad.bind(this)
     this.calRoute = this.calRoute.bind(this)
     this.creatMarker = this.creatMarker.bind(this)
+    this.handleFilterDay = this.handleFilterDay.bind(this)
   }
 
-  handleInput(){
+  handleFilterDay(check){
+    for (let [key, value] of check) {
+      if (value == false){
+        if(this.state.days.get(key).show == true)
+          for (let i =0;i<this.state.days.get(key).markers.length;i++){
+            
+            this.state.days.get(key).markers[i][0].setMap(null)
+          }
+          for (let i =0;i<this.state.days.get(key).markersTime.length;i++){
+            this.state.days.get(key).markersTime[i].setMap(null)
+          }
+          for (let i =0;i<this.state.days.get(key).polyline.length;i++){
+            this.state.days.get(key).polyline[i].setMap(null)
+          }
+          this.state.days.get(key).show = false
+      }
+
+      else{
+        if(this.state.days.get(key).show == false){
+          for (let i =0;i<this.state.days.get(key).markers.length;i++){
+            this.state.days.get(key).markers[i][0].setMap(map)
+          }
+          for (let i =0;i<this.state.days.get(key).markersTime.length;i++){
+            this.state.days.get(key).markersTime[i].setMap(map)
+          }
+          for (let i =0;i<this.state.days.get(key).polyline.length;i++){
+            this.state.days.get(key).polyline[i].setMap(map)
+          }
+          this.state.days.get(key).show = true
+        }
+      }
+    }
+  }
+  /*handleInput(){
     if (plan.route != this.state.days.get(plan.day).route){
       this.state.days.get(plan.day).route = plan.route
       this.calRoute(plan.day,plan.route)
     }
-  }
+  }*/
   calRoute(day){
     let route = plan.get(day).route
-    console.log(route)
     const directionsService = new window.google.maps.DirectionsService();
     const directionsRenderer = new window.google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map);
@@ -74,7 +107,11 @@ class MapDirection extends Component {
       }
       let tmpPath = []
       var time
-      var timeMarker
+      let timeMarker = new window.google.maps.Marker({
+                      position: null,
+                      map,
+                      icon : "../res/empty.png"           
+      })
       let polyline =  new window.google.maps.Polyline({
                   path: [],
                   geodesic: true,
@@ -96,24 +133,21 @@ class MapDirection extends Component {
               tmpPath.push(nextSegment[j])
             }
           }
-        }
+        
         console.log(request)
         var center = tmpPath[Math.floor(tmpPath.length/2)]
-        timeMarker = new window.google.maps.Marker({
-          position: center,
-          map,
-          icon : "../res/empty.png",
-          label: {
-            text: time,
-            color: "#000000",
-            fontWeight: "bold"
-          }
+        timeMarker.setPosition(center)
+        timeMarker.setLabel({
+          text: time,
+          color: "#000000",
+          fontWeight: "bold"
         })
+      }
       })
       this.state.days.get(day).markersTime.push(timeMarker)
       this.state.days.get(day).path = tmpPath
-      this.state.days.get(day).polyline = polyline
-      }
+      this.state.days.get(day).polyline.push(polyline)
+    }
   }
 
   creatMarker(one,two,day){
@@ -193,7 +227,7 @@ class MapDirection extends Component {
       
       s.addEventListener('load', e => {
         this.onScriptLoad("1")
-        //this.calRoute("1")
+        this.calRoute("1")
         this.calRoute("2")
       })
 
@@ -208,7 +242,7 @@ class MapDirection extends Component {
       <div style={{ width: '100%', height: '100%' }}>
         <div style={{ width: '80%', height: '80%' ,float:"left"}} id={this.props.id}>
           </div>
-        <FilterDay parentCallback={this.handleInput} days={["1","2"]}/>
+        <FilterDay parentCallback={this.handleFilterDay} days={["1","2"]}/>
         </div>
 
 
