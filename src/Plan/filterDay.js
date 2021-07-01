@@ -8,7 +8,8 @@ class FilterDay extends Component{
         super(props)
         this.state = {
             show : false,
-            check : new Map()
+            check : new Map(),
+            checkAll : true
         }
         this.btn = this.btn.bind(this)
         this.updateFilter = this.updateFilter.bind(this)
@@ -25,10 +26,35 @@ class FilterDay extends Component{
 
     updateFilter(event){
         let {name,checked} = event.target
-        console.log(this.state.check)
-        console.log(checked)
-        this.state.check.set(name,checked)
-        this.props.parentCallback(this.state.check)
+        if (name=="all_day"){
+            this.setState({
+                checkAll : checked   
+            })
+            for (let [key,value] of this.state.check ){
+                this.state.check.set(key,checked)
+            }
+        }
+        else {
+            this.state.check.set(name,checked)
+            if (checked == false){
+                this.setState({
+                    checkAll : false  
+                })
+            }
+            else{
+                let t = true
+                console.log(this.state.check)
+                for (let [key,value] of this.state.check ){
+                    if (value==false) t = false
+                }
+                this.setState({
+                    checkAll : t
+                })
+            }
+            
+        }
+            this.props.parentCallback(this.state.check)
+        
         this.setState((prev)=>{
             return prev     
         })
@@ -46,6 +72,7 @@ class FilterDay extends Component{
         {this.state.show==true?
             <div>
                 <table>
+                <input class="form-check-input" checked={this.state.checkAll} type="checkbox" name="all_day" onClick={this.updateFilter} value="" id="flexCheckDefault"/> All day
                     {this.props.days.map((p)=>(
                         <div>
                         

@@ -7,10 +7,9 @@ var map;var dataLayer;var info
 var geoJson = null
 var polyline
 const data = new Data()
-const colors = ["FF0000","0000FF","00FF00"]
+const colors = ["#FF0000","#0000FF","#00FF00"]
 var allPlaces = new Map()
 const plan = new Map() 
-
 
 class MapDirection extends Component {
 
@@ -18,7 +17,8 @@ class MapDirection extends Component {
     super(props);
     this.state = {
       days : new Map(),
-      travelMode: 'DRIVING'
+      travelMode: 'DRIVING',
+      daysList : ["1","2"]
     }
     this.state.days.set("1",{place : [],
       path : [],
@@ -115,14 +115,14 @@ class MapDirection extends Component {
       let polyline =  new window.google.maps.Polyline({
                   path: [],
                   geodesic: true,
-                  strokeColor: "#FF0000",
+                  strokeColor: colors[this.state.daysList.indexOf(day)] ,
                   strokeOpacity: 0.5,
                   strokeWeight: 8,
                   map
                 })
       directionsService.route(request, function(response, status) {
         if (status == window.google.maps.DirectionsStatus.OK) {
-          //directionsRenderer.setDirections(response);
+
           console.log(response)
           time = response.routes[0].legs[0].duration_in_traffic.text
           var steps = response.routes[0].legs[0].steps
@@ -216,12 +216,10 @@ class MapDirection extends Component {
       var s = document.createElement('script');
       s.type = 'text/javascript';
       s.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAAxJFxw0jQWyJIyB7K48-PKniPK8JUhuk`;
-
      
       var x = document.getElementsByTagName('script')[0];
       x.parentNode.insertBefore(s, x);
 
-      
       // Below is important. 
       //We cannot access google.maps until it's finished loading
       
