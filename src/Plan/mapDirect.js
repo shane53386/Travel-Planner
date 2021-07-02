@@ -116,7 +116,7 @@ class MapDirection extends Component {
         travelMode: window.google.maps.TravelMode.DRIVING,
       }
       let tmpPath = []
-      var time = 0
+      let time = 0
       let timeMarker = new window.google.maps.Marker({
                       position: null,
                       map,
@@ -133,7 +133,7 @@ class MapDirection extends Component {
                   strokeWeight: 7,
                   map
                 })
-      directionsService.route(request, function(response, status) {
+      directionsService.route(request, async (response, status) => {
         if (status == window.google.maps.DirectionsStatus.OK) {
 
           console.log(response)
@@ -151,18 +151,20 @@ class MapDirection extends Component {
         var center = tmpPath[Math.floor(tmpPath.length/2)]
         timeMarker.setPosition(center)
         timeMarker.setLabel({
-          text: time,
+          text: map.getZoom()<12? null:time,
           color: "#000000",
           fontWeight: "bold"
         })
       }
-      })
+
+      }).then( e =>
+        this.state.days.get(day).markersTime.push([timeMarker,time]),
+        this.state.days.get(day).path = tmpPath,
+        this.state.days.get(day).polyline.push(polyline))
       
      
-      console.log(timeMarker)
-      this.state.days.get(day).markersTime.push(timeMarker)
-      this.state.days.get(day).path = tmpPath
-      this.state.days.get(day).polyline.push(polyline)
+      
+     
     }
   }
 
@@ -244,14 +246,14 @@ class MapDirection extends Component {
             fontWeight: "bold"
           })
         })
-        /*this.state.days.get(day).markersTime.map(p=>{
+        this.state.days.get(day).markersTime.map(p=>{
           console.log(p[1])
           p[0].setLabel( {
-            text: p[1].getLabel().text,
+            text: p[1],
             color: "#000000",
             fontWeight: "bold"
           })
-        })*/
+        })
       }
 
       })
