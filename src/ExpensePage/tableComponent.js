@@ -9,7 +9,8 @@ class TableComponent extends Component {
         super(props)
         this.state = {
             allType : new Map(),
-            nameType : ["อื่นๆ"]
+            nameType : ["อื่นๆ"],
+            totalCost : 0
             }      
         
         this.state.allType.set("อื่นๆ" , {
@@ -53,11 +54,23 @@ class TableComponent extends Component {
         
         let _name = tmp[0] ; let id = tmp[1] ; let type = tmp[2]
         var typeDb = this.state.allType.get(type)
+        
         typeDb.row[id][_name] = value
         typeDb.overAllCost -= typeDb.row[id].totalCost
+       
         typeDb.row[id].totalCost = typeDb.row[id].amount * typeDb.row[id].cost
         typeDb.overAllCost += typeDb.row[id].totalCost
-       this.upDate()
+        let total = 0
+        this.state.nameType.map((e)=>{
+            total += this.state.allType.get(e).overAllCost
+        })
+        this.setState({
+
+                totalCost : total
+
+            }
+        )
+        this.upDate()
     }
     upDate(){
         this.setState((prev)=>{
@@ -222,9 +235,6 @@ class TableComponent extends Component {
                     </td>
                 </div>
                 
-
-
-                
                 <div class="right main" >
                     <td id="rowHeaderType">
                         {`${this.state.allType.get(name).numRow} รายการ`}
@@ -261,6 +271,14 @@ class TableComponent extends Component {
                                 </td>
                             </tr>
                         ))} 
+                        <tr>
+                            <div class="right main" >
+                                <td id="rowHeaderType">
+                                    {this.state.totalCost}
+                                </td>
+                                
+                            </div>
+                        </tr>
                     </tbody>
                 </Table>
 
