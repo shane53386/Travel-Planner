@@ -97,13 +97,19 @@ class TableShow extends Component {
     }
 
     exportPng(){
-        
+        var data = document.getElementById('table')
+        html2canvas(data).then((canvas)=>{
+            var link = document.getElementById('link');
+            link.setAttribute('download', 'MintyPaper.png');
+            link.setAttribute('href', canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+            link.click();
+          })
     }
 
     render() {
         return (
             <div>
-                <Table striped bordered hover>
+                <Table id="table" striped bordered hover>
                     <thead>
                         {this.genHeader()}
                     </thead>
@@ -112,6 +118,8 @@ class TableShow extends Component {
                     </tbody>
 
                 </Table>
+                <Button onClick={this.exportPng}/>
+                <a id="link"></a>
             </div>
         )
 
