@@ -4,7 +4,7 @@ import MapContent from "./text"
 import MapDirection from './Plan/mapDirect';
 import Expense from './ExpensePage/expense';
 import ReactDOM from 'react-dom';
-
+import TableShow  from './Plan/tableShow';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const THAI_BOUNDS = {
@@ -21,6 +21,7 @@ ReactDOM.render(
       <Link to="/map">Map</Link>
       <Link to="/table">Table</Link>
       <Link to="/mapDirect">MapDirect</Link>
+      <Link to="/result">TableResult</Link>
       <Switch>
 
         <Route path="/table" render={() => 
@@ -50,6 +51,10 @@ ReactDOM.render(
               mapId: "6ef51b53d122d80d" }}/>
           </div> 
         }/>      
+        <Route path="/result" render={() => 
+            <div style= {{width: '100%', height: 800,}} >
+              <TableShow/>      
+            </div>} />
       </Switch>
     
     </BrowserRouter>

@@ -20,7 +20,7 @@ class MapDirection extends Component {
     this.state = {
       days : new Map(),
       travelMode: 'DRIVING',
-      daysList : ["1"]
+      daysList : ["1","2"]
     }
     this.state.days.set("1",{place : [],
       path : [],
@@ -33,7 +33,7 @@ class MapDirection extends Component {
       this.state.days.set("2",{place : [],
         path : [],
         markers : [],
-        markersTime : [],
+        markersTime : [],  // [ marker , timeLabel ]
         route : [],
         show : true,
         polyline : []
@@ -59,7 +59,7 @@ class MapDirection extends Component {
             this.state.days.get(key).markers[i][0].setMap(null)
           }
           for (let i =0;i<this.state.days.get(key).markersTime.length;i++){
-            this.state.days.get(key).markersTime[i].setMap(null)
+            this.state.days.get(key).markersTime[i][0].setMap(null)
           }
           for (let i =0;i<this.state.days.get(key).polyline.length;i++){
             this.state.days.get(key).polyline[i].setMap(null)
@@ -73,7 +73,7 @@ class MapDirection extends Component {
             this.state.days.get(key).markers[i][0].setMap(map)
           }
           for (let i =0;i<this.state.days.get(key).markersTime.length;i++){
-            this.state.days.get(key).markersTime[i].setMap(map)
+            this.state.days.get(key).markersTime[i][0].setMap(map)
           }
           for (let i =0;i<this.state.days.get(key).polyline.length;i++){
             this.state.days.get(key).polyline[i].setMap(map)
@@ -83,6 +83,7 @@ class MapDirection extends Component {
       }
     }
   }
+
   handleInput(inputPlan){
     var tmp = new Map()
     if (inputPlan.route != plan.route){
@@ -96,6 +97,16 @@ class MapDirection extends Component {
       });
       
     }
+  }
+
+  ruturnTime(){
+    var re = []
+    for (let day in this.state.daysList){
+      for (let {mark,time} of this.state.days.get(day).markersTime){
+          re.push(time)
+      }
+    }
+    return re
   }
   calRoute(day){
     let route = plan.get(day).route
@@ -161,10 +172,7 @@ class MapDirection extends Component {
         this.state.days.get(day).markersTime.push([timeMarker,time]),
         this.state.days.get(day).path = tmpPath,
         this.state.days.get(day).polyline.push(polyline))
-      
-     
-      
-     
+
     }
   }
 
@@ -209,11 +217,10 @@ class MapDirection extends Component {
   onScriptLoad(d) {
     plan.set("1",{ route :[ { place : "Suankularb Wittayalai School", departureTime : new Date(Date.now())} ,
     { place : "Victory Monument" , departureTime : new Date(Date.now()) },
-    { place : "Central 3" , departureTime : new Date(Date.now())},
-    { place : "Bangkok Hospitel", departureTime : new Date(Date.now())}] } )
+    { place : "Central 3" , departureTime : new Date(Date.now())}] } )
 
-    /*plan.set("2",{ route :[  { place : "Central 3" , departureTime : new Date(Date.now())},
-        { place : "Bangkok Hospitel", departureTime : new Date(Date.now())}] } )*/
+    plan.set("2",{ route :[  { place : "Central 3" , departureTime : new Date(Date.now())},
+        { place : "Bangkok Hospitel", departureTime : new Date(Date.now())}] } )
 
 
     map = new window.google.maps.Map(
