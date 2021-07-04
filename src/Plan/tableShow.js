@@ -15,10 +15,10 @@ class TableShow extends Component {
 
     constructor(props){
         super(props)
-        data.set("1",[ { place : "Central World" , time : "9.00"},
-                        { place : "Siam Paragon" , time : "10.00"}])
-        data.set("2",[ { place : "Central World" , time : "9.00"},
-                            { place : "Siam Paragon" , time : "10.00"}])
+        data.set("1",[ { place : "Central World" , inTime : "9.00" , outTime : "9.45" , note:"..........\n............"},
+                        { place : "Siam Paragonnnnnnnn" , inTime : "10.00" , outTime : "10.50" ,  note:"..............................................."} ])
+        data.set("2",[ { place : "Central" , inTime : "9.00" , outTime : "9.30" ,  note:"......................"},
+                            { place : "Siam" , inTime : "10.00" , outTime : "10.45" ,  note:"......................"}])
         
     }
     
@@ -29,58 +29,59 @@ class TableShow extends Component {
     
     genHeader(){
         return(
-            <tr>
-                <th>วันที่</th>
-                <th>เวลา</th>
-                <th>สถานที่</th>
-                <th>หมายเหตุ</th>
+            <tr class="allCenter" id="header">
+                <th id="placeTime">วันที่</th>
+                <th id="placeTime">เวลา</th>
+                <th id="placeTime">สถานที่</th>
+                <th id="note">หมายเหตุ</th>
             </tr>
         )
     }
 
     genOneDay(day){
         return(
-            <tr>
-                <td>
+            <table padding="0px" border="0">
+                <td class="allCenter">
                     {day}
                 </td>
-                <td id = "oneDay" colSpan="2">
-                <table padding="0px" border="0" width="100%">
-                    <tbody>
-                        {data.get(day).map(e =>{
-                            return (
-                                <tr>
-                                    <td>{e.time}</td>
-                                </tr>
-                            )
-                        })}     
-                    </tbody>
-                    </table>
+                <td id = "oneDay">
+                    {data.get(day).map((e)=>{
+                        return (
+                            <tr>
+                                <table padding="0px" border="0" width="100%">
+                                    <tbody>
+                                        <tr>
+                                            <td class="allCenter" id="placeTime">
+                                                {e.inTime} <br/>
+                                                - <br/>
+                                                {e.outTime}
+                                            </td>
+                                            <td class="allCenter" id="placeTime" rowSpan="2">
+                                                {e.place}
+                                            </td>
+                                            <td class="allCenter"id="note" rowSpan="2">
+                                                {e.note}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </tr>
+                        )
+                    })}
+                    
+                    
                 </td>
-                <td id = "oneDay" colSpan="2">
-                <table >
-                    <tbody>
-                        {data.get(day).map(e =>{
-                            return (
-                                <tr>
-                                    <td>{e.place}</td>
-                                </tr>
-                            )
-                        })}     
-                    </tbody>
-                    </table>
-                </td>
-            </tr>
+            </table>
         )
     }
 
     genBody(){
-        
-       
 
-        console.log(data.get("1"))
         return (
             <div>
+                <thead>
+                    {this.genHeader()}
+                </thead>
                     {console.log(data.keys())}
                     { Array.from(data.keys()).map(e =>{
                         return( 
@@ -110,15 +111,12 @@ class TableShow extends Component {
         return (
             <div>
                 <Table id="table" striped bordered hover>
-                    <thead>
-                        {this.genHeader()}
-                    </thead>
-                    <tbody>
+
                         {this.genBody()}
-                    </tbody>
+
 
                 </Table>
-                <Button onClick={this.exportPng}/>
+                <Button onClick={this.exportPng}>Export</Button>
                 <a id="link"></a>
             </div>
         )

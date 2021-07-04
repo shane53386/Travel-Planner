@@ -2,3 +2,22 @@
     padding: 0%;
     border: 0px;
 }
+#tableOneday{
+    height: 100%;
+}
+
+td { white-space:pre }
+
+.allCenter{
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+#placeTime{
+    max-width: 125px;
+}
+#note{
+    width: 250px;
+}
+#table{
+    width: 300px;
+}
