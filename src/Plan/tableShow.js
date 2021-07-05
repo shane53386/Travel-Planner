@@ -16,7 +16,7 @@ class TableShow extends Component {
     constructor(props){
         super(props)
         data.set("1",[ { place : "Central World" , inTime : "9.00" , outTime : "9.45" , note:"..........\n............"},
-                        { place : "Siam Paragonnnnnnnn" , inTime : "10.00" , outTime : "10.50" ,  note:"..............................................."} ])
+                        { place : "Siam Paragonnnnnnnnnnnnnnnnnnnnnn  nnnnnnnnnn" , inTime : "10.00" , outTime : "10.50" ,  note:"1234567 8901234789"} ])
         data.set("2",[ { place : "Central" , inTime : "9.00" , outTime : "9.30" ,  note:"......................"},
                             { place : "Siam" , inTime : "10.00" , outTime : "10.45" ,  note:"......................"}])
         
@@ -27,6 +27,57 @@ class TableShow extends Component {
 
     }
     
+    cutNewLine(type,string){
+        var offset 
+        switch(type){
+            case "normal":
+                offset = 12
+                break
+            case "large":
+                offset = 26
+                break   
+        }
+        if (string.length <= offset)
+            return string
+        var list = string.split(" ")
+        var count = 0
+        var re = ""
+        var x = [] , buff = null
+        var i =0 , next=null
+        while (true){
+            
+            if (i==list.length && buff==null)
+                break
+            console.log(buff)
+            if (buff == null){
+                next = list[i]
+                i++
+            }
+            else
+                next = buff
+
+            if (next.length == 0) {
+                continue
+            }
+            if(next.length >= offset){
+                re += next.slice(0,offset-count)
+                re += "\n"
+                count = 0
+                buff = next.slice(offset-count,next.length)
+                continue
+            }
+            if (count + next.length > offset){
+                re += "\n"
+                count = 0
+                buff = null
+            }
+            re += next + " "
+            count += next.length
+            buff = null
+        }
+        return re
+    }
+
     genHeader(){
         return(
             <tr class="allCenter" id="header">
@@ -57,10 +108,10 @@ class TableShow extends Component {
                                                 {e.outTime}
                                             </td>
                                             <td class="allCenter" id="placeTime" rowSpan="2">
-                                                {e.place}
+                                            {this.cutNewLine("normal",e.place)}
                                             </td>
                                             <td class="allCenter"id="note" rowSpan="2">
-                                                {e.note}
+                                                {this.cutNewLine("large",e.note)}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -68,8 +119,6 @@ class TableShow extends Component {
                             </tr>
                         )
                     })}
-                    
-                    
                 </td>
             </table>
         )
