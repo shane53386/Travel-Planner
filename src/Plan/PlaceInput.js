@@ -4,7 +4,9 @@ function PlaceInput(props) {
 	const [inputList, setInputList] = useState([{ place: "", time: "" }]);
 
 	const sendData = () => {
-		props.parentCallback(inputList);
+		var tmp = inputList
+		var day = tmp[0].time.split("T")[0]
+		props.parentCallback(tmp,day);
 		console.log(`send inputList`, inputList);
 		console.log("data sent");
 	};
@@ -12,7 +14,7 @@ function PlaceInput(props) {
 	const addInputArea = () => {
 		console.log(`add inputList`, inputList);
 		setInputList([...inputList, { place: "", time: "" }]);
-		console.log(`add inputList`, inputList);
+		
 		// const data = await fetchPlace("Bangkok");
 		// return data;
 	};
@@ -25,11 +27,13 @@ function PlaceInput(props) {
 		const { name, value } = e.target;
 		const list = [...inputList];
 		list[index][name] = value;
+		console.log(list)
 		setInputList(list);
 	};
 	useEffect(() => {
 		sendData();
-	}, []);
+		console.log(`add inputList`, inputList);
+	}, [inputList]);
 	return (
 		<div>
 			{inputList.map((item, index) => {

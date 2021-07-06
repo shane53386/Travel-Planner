@@ -2,7 +2,7 @@ import React, { useState, useEffect ,Component } from 'react';
 import Data from "../Data";
 import FilterDay from "./filterDay"
 import { InputGroup , FormControl,Form, Table , Button,DropdownButton,Dropdown} from 'react-bootstrap';
-
+import PlanPage from './PlanPage';
 
 var map;var dataLayer;var info 
 var geoJson = null
@@ -12,15 +12,16 @@ const alphabet = ["B","C","D","E","F"]
 const colors = ["#FF0000","#0000FF","#00FF00","FFFF00","FF00FF","00FFFF"]
 var allPlaces = new Map()
 const plan = new Map() 
-
+var daysList = []
 class MapDirection extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      plan : this.props.plan,
       days : new Map(),
       travelMode: 'DRIVING',
-      daysList : ["1","2"]
+      daysList :[]
     }
     this.state.days.set("1",{place : [],
       path : [],
@@ -38,19 +39,20 @@ class MapDirection extends Component {
         show : true,
         polyline : []
         })
-    allPlaces.set("Suankularb Wittayalai School",{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
-    allPlaces.set( "Victory Monument",{ pos : {lng : 100.538009 , lat : 13.764603 } , province : "กรุงเทพมหานคร"})
-    allPlaces.set("Central 3",{ pos : {lng : 100.537761 , lat :13.697441 } , province : "กรุงเทพมหานคร"})
-    allPlaces.set("Bangkok Hospitel",{ pos : {lng :  100.583172 , lat :13.748389 } , province : "กรุงเทพมหานคร"})
+    allPlaces.set("a",{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
+    allPlaces.set( "b",{ pos : {lng : 100.538009 , lat : 13.764603 } , province : "กรุงเทพมหานคร"})
+    allPlaces.set("c",{ pos : {lng : 100.537761 , lat :13.697441 } , province : "กรุงเทพมหานคร"})
+    allPlaces.set("d",{ pos : {lng :  100.583172 , lat :13.748389 } , province : "กรุงเทพมหานคร"})
 
    
     this.onScriptLoad = this.onScriptLoad.bind(this)
     this.calRoute = this.calRoute.bind(this)
     this.creatMarker = this.creatMarker.bind(this)
     this.handleFilterDay = this.handleFilterDay.bind(this)
+    this.sendCallback = this.sendCallback.bind(this)
   }
 
-  handleFilterDay(check){
+ handleFilterDay(check){
     for (let [key, value] of check) {
       if (value == false){
         if(this.state.days.get(key).show == true)
@@ -86,13 +88,13 @@ class MapDirection extends Component {
 
   handleInput(inputPlan){
     var tmp = new Map()
-    if (inputPlan.route != plan.route){
-      this.state.daysList.forEach(day => {
+    if (inputPlan!= this.state.plan){
+      daysList.forEach(day => {
         tmp.set(day,false)
       });
       this.handleFilterDay(tmp)
-      plan.route = inputPlan
-      this.state.daysList.forEach(day => {
+      this.state.plan= inputPlan
+      daysList.forEach(day => {
         this.calRoute(day)
       });
       
@@ -109,11 +111,15 @@ class MapDirection extends Component {
     return re
   }
   calRoute(day){
-    let route = plan.get(day).route
+    console.log(this.state.plan,Object.keys(this.state.plan).length)
+    console.log(daysList)
+    if (daysList==null) return
+    //if (Object.keys(this.state.plan).length==0) return
+    let route = this.state.plan.get(day)
     const directionsService = new window.google.maps.DirectionsService();
     const directionsRenderer = new window.google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map);
-
+    console.log(route.length)
     for (let i =0;i<route.length-1;i++){
       this.creatMarker(route[i].place,route[i+1].place,day)
       
@@ -134,7 +140,7 @@ class MapDirection extends Component {
                       label : null,
                       icon : "../res/empty.png"           
       })
-      let value= this.fadeColor(colors[this.state.daysList.indexOf(day)] , this.state.days.get(day).polyline.length)
+      let value= this.fadeColor(colors[daysList.indexOf(day)] , this.state.days.get(day).polyline.length)
       console.log(value)
       let polyline =  new window.google.maps.Polyline({
                   path: [],
@@ -215,12 +221,12 @@ class MapDirection extends Component {
   }
 
   onScriptLoad(d) {
-    plan.set("1",{ route :[ { place : "Suankularb Wittayalai School", departureTime : new Date(Date.now())} ,
+    /*plan.set("1",{ route :[ { place : "Suankularb Wittayalai School", departureTime : new Date(Date.now())} ,
     { place : "Victory Monument" , departureTime : new Date(Date.now()) },
     { place : "Central 3" , departureTime : new Date(Date.now())}] } )
 
     plan.set("2",{ route :[  { place : "Central 3" , departureTime : new Date(Date.now())},
-        { place : "Bangkok Hospitel", departureTime : new Date(Date.now())}] } )
+        { place : "Bangkok Hospitel", departureTime : new Date(Date.now())}] } )*/
 
 
     map = new window.google.maps.Map(
@@ -228,15 +234,16 @@ class MapDirection extends Component {
       this.props.options);
     window.google.maps.event.trigger(map, 'resize');
 
-    console.log(d)
-    let name = allPlaces.get(plan.get(d).route[0].place).province
-    this.createZoom(d,name)
+    
     
   }
   createZoom(day,name){
+    
     map.setCenter(new window.google.maps.LatLng(data.state.centerMap[name]['lat'],data.state.centerMap[name]['lng']))
     map.setZoom(10)
     map.addListener("zoom_changed", () => {
+      console.log(this.props.input)
+      console.log(this.props.days)
       if (map.getZoom() < 12){
         this.state.days.get(day).markers.map(p=>{
           p[0].setLabel(null)
@@ -266,7 +273,7 @@ class MapDirection extends Component {
       })
     }
      
-        
+
   
 
   componentDidMount() {
@@ -280,26 +287,64 @@ class MapDirection extends Component {
 
       // Below is important. 
       //We cannot access google.maps until it's finished loading
-      
+      console.log(daysList)
       s.addEventListener('load', e => {
-        this.onScriptLoad("1")
-        this.state.daysList.forEach(day => {
-          this.calRoute(day)
-        });
+        console.log(daysList)
+        
+          this.onScriptLoad()
+          if (daysList!=null && daysList.length != 0){
+            //let name = allPlaces.get(this.props.plan.get(this.props.daysList[0])[0].place).province
+            //this.createZoom(this.props.daysList[0],name)
+            daysList && daysList.forEach(day => {
+              this.calRoute(day)
+            });
+        //}
+      }
+          
+        
       })
 
         } else {
-        this.onScriptLoad("1")
+            this.onScriptLoad()
         }
   }
+  sendCallback(input){
+    console.log(input)
+    var d = []
+    if (input == null || input.length==0 )
+        return
+    input.forEach((values,keys)=>{
+      d.push(keys)
+      })
+      this.setState({
+        plan : input
+      })
+      daysList = d
+      d && d.forEach(day => {
+        this.state.days.set(day,{place : [],
+          path : [],
+          markers : [],
+          markersTime : [],
+          route : [],
+          show : true,
+          polyline : []
+          })
+        this.calRoute(day)
+      });
 
+    
+  }
   render() {
     return (
 
       <div style={{ width: '100%', height: '100%' }}>
-        <div style={{ width: '80%', height: '80%' ,float:"left"}} id={this.props.id}>
+        <div style={{ width: '50%', height: '80%' ,float:"left"}} id={this.props.id}>
+          
           </div>
-        <FilterDay parentCallback={this.handleFilterDay} days={this.state.daysList}/>
+        <FilterDay parentCallback={this.handleFilterDay} days={daysList}/>
+        <div style= {{width: '50%', height: 800,float:'right'}} >
+              <PlanPage sendCallback={this.sendCallback}/>      
+            </div>
         </div>
 
 

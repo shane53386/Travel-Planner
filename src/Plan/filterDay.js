@@ -60,7 +60,7 @@ class FilterDay extends Component{
         })
     }
     componentDidMount(){
-        this.props.days.map((p)=>{
+        this.props.daysList && this.props.days.map((p)=>{
             this.state.check.set(p,true)
         })
     }

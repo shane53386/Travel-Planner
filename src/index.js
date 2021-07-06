@@ -7,6 +7,8 @@ import ReactDOM from 'react-dom';
 import TableShow  from './Plan/tableShow';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import MainPlan from './Plan/mainPlan';
+
 const THAI_BOUNDS = {
   north: 21,
   south: 4,
@@ -22,6 +24,7 @@ ReactDOM.render(
       <Link to="/table">Table</Link>
       <Link to="/mapDirect">MapDirect</Link>
       <Link to="/result">TableResult</Link>
+      <Link to="/planPage">PlanPage</Link>
       <Switch>
 
         <Route path="/table" render={() => 
@@ -55,6 +58,13 @@ ReactDOM.render(
             <div style= {{width: '100%', height: 800,}} >
               <TableShow/>      
             </div>} />
+        <Route path="/planPage" render={() => 
+          <div>
+            <MainPlan>
+
+            </MainPlan>
+            
+            </div> }/>
       </Switch>
     
     </BrowserRouter>
