@@ -33,9 +33,6 @@ function MainPlan (){
           
             <div style= {{width: '100%', height: 800,float:'right'}}>
             <MapDirection id="myMap"  
-                plan={inputList}
-                daysList={["2021-07-06"]}
-                test={new Date()}
                 options={
                 {center: { lng : 100.633214325 , lat : 13.724293875 },
                 zoom: 6,
