@@ -13,10 +13,11 @@ function MainPlan (){
         if (input == null || input.length==0 )
             return
         setInputList(input)
+        var tmpDays = []
         input.forEach((values,keys)=>{
-          days.push(keys)
+          tmpDays.push(keys)
           })
-        setDays(days)
+        setDays(tmpDays)
         console.log(days)
         
     }

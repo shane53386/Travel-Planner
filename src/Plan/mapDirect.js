@@ -13,6 +13,7 @@ const colors = ["#FF0000","#0000FF","#00FF00","FFFF00","FF00FF","00FFFF"]
 var allPlaces = new Map()
 const plan = new Map() 
 var daysList = []
+var province = null
 class MapDirection extends Component {
 
   constructor(props) {
@@ -164,7 +165,7 @@ class MapDirection extends Component {
             }
           }
         
-          
+          console.log(time)
         var center = tmpPath[Math.floor(tmpPath.length/2)]
         timeMarker.setPosition(center)
         timeMarker.setLabel({
@@ -175,6 +176,7 @@ class MapDirection extends Component {
       }
 
       }).then( e =>
+        
         this.state.days.get(day).markersTime.push([timeMarker,time]),
         this.state.days.get(day).path = tmpPath,
         this.state.days.get(day).polyline.push(polyline))
@@ -221,14 +223,7 @@ class MapDirection extends Component {
   }
 
   onScriptLoad(d) {
-    /*plan.set("1",{ route :[ { place : "Suankularb Wittayalai School", departureTime : new Date(Date.now())} ,
-    { place : "Victory Monument" , departureTime : new Date(Date.now()) },
-    { place : "Central 3" , departureTime : new Date(Date.now())}] } )
-
-    plan.set("2",{ route :[  { place : "Central 3" , departureTime : new Date(Date.now())},
-        { place : "Bangkok Hospitel", departureTime : new Date(Date.now())}] } )*/
-
-
+    
     map = new window.google.maps.Map(
       document.getElementById(this.props.id),
       this.props.options);
@@ -237,39 +232,40 @@ class MapDirection extends Component {
     
     
   }
-  createZoom(day,name){
-    
+  createZoom(name){
+    console.log(name)
     map.setCenter(new window.google.maps.LatLng(data.state.centerMap[name]['lat'],data.state.centerMap[name]['lng']))
     map.setZoom(10)
     map.addListener("zoom_changed", () => {
       console.log(this.props.input)
       console.log(this.props.days)
-      if (map.getZoom() < 12){
-        this.state.days.get(day).markers.map(p=>{
-          p[0].setLabel(null)
-        })
-        this.state.days.get(day).markersTime.map(p=>{
-          p[0].setLabel(null)
-        })
-      }
-      else{
-        this.state.days.get(day).markers.map(p=>{
-          p[0].setLabel( {
-            text: p[1],
-            color: "#000000",
-            fontWeight: "bold"
+      daysList.map((day)=>{
+        if (map.getZoom() < 12){
+          this.state.days.get(day).markers.map(p=>{
+            p[0].setLabel(null)
           })
-        })
-        this.state.days.get(day).markersTime.map(p=>{
-          console.log(p[1])
-          p[0].setLabel( {
-            text: p[1],
-            color: "#000000",
-            fontWeight: "bold"
+          this.state.days.get(day).markersTime.map(p=>{
+            p[0].setLabel(null)
           })
-        })
-      }
-
+        }
+        else{
+          this.state.days.get(day).markers.map(p=>{
+            p[0].setLabel( {
+              text: p[1],
+              color: "#000000",
+              fontWeight: "bold"
+            })
+          })
+          this.state.days.get(day).markersTime.map(p=>{
+            console.log(p[1])
+            p[0].setLabel( {
+              text: p[1],
+              color: "#000000",
+              fontWeight: "bold"
+            })
+          })
+        }
+      })
       })
     }
      
@@ -306,8 +302,27 @@ class MapDirection extends Component {
 
         } else {
             this.onScriptLoad()
+           
         }
   }
+
+  clearOldData(day){
+    if (this.state.days.get(day) == null)
+      return 
+    this.state.days.get(day).markers.map(p=>{
+      p[0].setMap(null)
+    })
+    this.state.days.get(day).markers = []
+    this.state.days.get(day).markersTime.map(p=>{
+      p[0].setMap(null)
+    })
+    this.state.days.get(day).markersTime = []
+    this.state.days.get(day).polyline.map(p=>{
+      p.setMap(null)
+    })
+    this.state.days.get(day).polyline = []
+  }
+
   sendCallback(input){
     console.log(input)
     var d = []
@@ -320,7 +335,15 @@ class MapDirection extends Component {
         plan : input
       })
       daysList = d
+      if (d.length==0) return
+      if (province != allPlaces.get(input.get(d[0])[0].place).province){
+        province = allPlaces.get(input.get(d[0])[0].place).province
+        this.createZoom(province)
+      }
+      
       d && d.forEach(day => {
+        
+        this.clearOldData(day)
         this.state.days.set(day,{place : [],
           path : [],
           markers : [],
@@ -330,6 +353,7 @@ class MapDirection extends Component {
           polyline : []
           })
         this.calRoute(day)
+        
       });
 
     
