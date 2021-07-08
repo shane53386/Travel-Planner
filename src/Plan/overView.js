@@ -3,16 +3,19 @@ import {Tab,Tabs} from 'react-bootstrap';
 import MapDirection from './mapDirect';
 import TableShow from './tableShow';
 import './table.css'
+import {Provider} from './provider';
 function OverView(props){
     const [key, setKey] = useState('home');
 
   return (
+    <Provider>
     <Tabs
       id="controlled-tab-example"
       activeKey={key}
       onSelect={(k) => setKey(k)}
 
     >
+      
       <Tab eventKey="home" title="Plan Page">
       <div style= {{width: '100%', height: 800,float:'right'}}>
             <MapDirection id="myMap"  
@@ -28,7 +31,9 @@ function OverView(props){
               <TableShow/>      
             </div>
       </Tab>
+      
     </Tabs>
+    </Provider>
   );
 
 }

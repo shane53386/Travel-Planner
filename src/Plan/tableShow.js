@@ -1,9 +1,9 @@
 
-import React, { Component } from 'react';
+import React, { Component,useContext } from 'react';
 import html2canvas from "html2canvas";
 import { InputGroup , FormControl,Form, Table , Button,DropdownButton,Dropdown} from 'react-bootstrap';
 import "./table.css"
-
+import {MContext} from './provider';
 
 /*{ 1 : Central World , 9.00
         Siam Paragon  , 10.00
@@ -11,23 +11,19 @@ import "./table.css"
 
 var data = new Map()
 var dataList = ["1","2"]
-class TableShow extends Component {
+function TableShow(props) {
 
-    constructor(props){
-        super(props)
-        data.set("1",[ { place : "Central World" , inTime : "9.00" , outTime : "9.45" , note:"..........\n............"},
+    const update = useContext(MContext);
+    
+        /*data.set("1",[ { place : "Central World" , inTime : "9.00" , outTime : "9.45" , note:"..........\n............"},
                         { place : "Siam Paragonnnnnnnnnnnnnnnnnnnnnn  nnnnnnnnnn" , inTime : "10.00" , outTime : "10.50" ,  note:"1234567 8901234789"} ])
         data.set("2",[ { place : "Central" , inTime : "9.00" , outTime : "9.30" ,  note:"......................"},
-                            { place : "Siam" , inTime : "10.00" , outTime : "10.45" ,  note:"......................"}])
-        
-    }
-    
-    componentDidMount(){
-        
+                            { place : "Siam" , inTime : "10.00" , outTime : "10.45" ,  note:"......................"}])*/
 
-    }
     
-    cutNewLine(type,string){
+    
+    const cutNewLine = (type,string)=>{
+        if (string==null) return ""
         var offset 
         switch(type){
             case "normal":
@@ -78,7 +74,7 @@ class TableShow extends Component {
         return re
     }
 
-    genHeader(){
+    const genHeader = () =>{
         return(
             <tr class="allCenter" id="header">
                 <th id="placeTime">วันที่</th>
@@ -88,30 +84,44 @@ class TableShow extends Component {
             </tr>
         )
     }
-
-    genOneDay(day){
+    const convertTime=(e)=>{
+        var min = ""
+        if (e.getMinutes() ==0){
+            min = '00'
+        }
+        else if (e.getMinutes() < 10){
+            min = '0' + String(e.getMinutes())
+        }
+        else{
+            min = String(e.getMinutes())
+        }
+        return `${e.getHours()}:${min}`
+    }
+    const genOneDay=(day)=>{
         return(
             <table padding="0px" border="0">
                 <td class="allCenter">
                     {day}
                 </td>
                 <td id = "oneDay">
-                    {data.get(day).map((e)=>{
+                    {update.data.get(day).map((e)=>{
+                        console.log(e.departureTime)
                         return (
                             <tr>
                                 <table padding="0px" border="0" width="100%">
                                     <tbody>
                                         <tr>
                                             <td class="allCenter" id="placeTime">
-                                                {e.inTime} <br/>
+                                                {e.departureTime && convertTime(e.departureTime)}
+                                                <br/>
                                                 - <br/>
                                                 {e.outTime}
                                             </td>
                                             <td class="allCenter" id="placeTime" rowSpan="2">
-                                            {this.cutNewLine("normal",e.place)}
+                                            {cutNewLine("normal",e.place)}
                                             </td>
                                             <td class="allCenter"id="note" rowSpan="2">
-                                                {this.cutNewLine("large",e.note)}
+                                                {cutNewLine("large",e.note)}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -124,18 +134,19 @@ class TableShow extends Component {
         )
     }
 
-    genBody(){
+    const genBody=()=>{
 
         return (
             <div>
                 <thead>
-                    {this.genHeader()}
+                    {genHeader()}
                 </thead>
-                    {console.log(data.keys())}
-                    { Array.from(data.keys()).map(e =>{
+                {console.log(update.data)}
+                    { update.data && Array.from(update.data.keys()).map(e =>{
+                        
                         return( 
                             <div>
-                            {this.genOneDay(e)} 
+                            {genOneDay(e)} 
                             </div>
                             )
                     })}
@@ -146,7 +157,7 @@ class TableShow extends Component {
         )
     }
 
-    exportPng(){
+    const exportPng=()=>{
         var data = document.getElementById('table')
         html2canvas(data).then((canvas)=>{
             var link = document.getElementById('link');
@@ -156,21 +167,25 @@ class TableShow extends Component {
           })
     }
 
-    render() {
+    const tmp=()=>{
+        console.log("sss")
+        console.log(update.data)
+    }
         return (
             <div>
                 <Table id="table" striped bordered hover>
 
-                        {this.genBody()}
+                        {genBody()}
 
 
                 </Table>
-                <Button onClick={this.exportPng}>Export</Button>
+                <Button onClick={exportPng}>Export</Button>
+                <Button onClick={tmp}>xxx</Button>
                 <a id="link"></a>
             </div>
         )
 
-    }
+    
 }
 
 export default TableShow
