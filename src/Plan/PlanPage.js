@@ -8,7 +8,6 @@ function PlanPage(props) {
 	
 	const callbackFunction = (d,date) => {
 		var tmp = []
-		console.log("d",d)
 		for (let i=0;i<d.length;i++){
 			if (d[i].time == "" || d[i].place == "")
 				continue

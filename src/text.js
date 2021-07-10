@@ -3,7 +3,8 @@ import Data from "./Data";
 //import MarkerPin from "./src/MarkerPin"
 import { render } from 'react-dom';
 import { isElementOfType } from 'react-dom/cjs/react-dom-test-utils.production.min';
-
+import fetchPlace from './fetchData';
+import {Button,DropdownButton,Dropdown} from 'react-bootstrap';
 
 var map;var dataLayer;var info 
 var geoJson = null
@@ -16,13 +17,14 @@ class MapContent extends Component {
     super(props);
     this.state = {
         place : new Map() ,
+        inProvince : [],
         usedMarker : [],
         usedInfo : null,
         focusProvince : {province : null , feature : null}
     }
-    this.state.place.set("กรุงเทพมหานคร" , [])
-    this.state.place.get("กรุงเทพมหานคร").push({name : "One" , type : "Market" , position : {lng : 100.633214325 , lat : 13.724293875}})
-    this.state.place.get("กรุงเทพมหานคร").push({name : "Two" , type : "Nature" , position : {lng : 100.634114325 , lat : 13.730293875}})
+    //this.state.place.set("กรุงเทพมหานคร" , [])
+    //this.state.place.get("กรุงเทพมหานคร").push({name : "One" , type : "Market" , position : {lng : 100.633214325 , lat : 13.724293875}})
+    //this.state.place.get("กรุงเทพมหานคร").push({name : "Two" , type : "Nature" , position : {lng : 100.634114325 , lat : 13.730293875}})
     
     this.onScriptLoad = this.onScriptLoad.bind(this)
     this.createZoom = this.createZoom.bind(this)
@@ -110,28 +112,40 @@ class MapContent extends Component {
   }
 
   createMarker(province){
+    if (province != "กรุงเทพมหานคร") return
     //clear old markers
     this.clearOldInfo()
     //clear old Info
     this.clearOldMarker()
     //find new
     //this.state.place = fetchOverview(province)
-    var places = this.state.place.get(province)
-    places && places.map(p =>{
+    var content = fetchPlace("Bangkok")
+    content
+    .then(e=>{
+      e.map(data=>{
+        this.state.place.set(data.Name,{      name : data.Name,
+                                              type : data.Type,
+                                              position : data.Position})
+      })
+  })
+  console.log(this.state.place)
+    this.state.place && this.state.place.forEach((p,keys)=>{
+       
+        console.log({lng : p.position.longitude , lat : p.position.latitude});
         var tmp = new window.google.maps.Marker({
-          position: p.position,
+          position: {lng : p.position.longitude , lat : p.position.latitude},
           map,
           animation : window.google.maps.Animation.DROP,
           icon : data.state.markerIcon["Market"]
         })
-
-        //val content = fetchInfo(province,p.name)
+        
+    
         //this.genPopup(p.name)
         var contentInfo = 
         '<div id = "content">' +
-        '<div id = "siteNotice"'+
-          '<h2>Hello WOrld</h2>'+
-        '</div>'+
+        '<div id = "siteNotice"/>'+
+          '<h1 id="firstHeading" class="firstHeading"><b>'+p.name+'</b></h1> <br>'+
+          '<div> <Button onClick={}>Read More</Button> </div>'+
         '</div>'
         var tmpInfo = new window.google.maps.InfoWindow({
           content : contentInfo

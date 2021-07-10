@@ -10,7 +10,6 @@ import {MContext} from './provider';
     2 : .....                   }*/
 
 var data = new Map()
-var dataList = ["1","2"]
 function TableShow(props) {
 
     const update = useContext(MContext);
@@ -97,6 +96,24 @@ function TableShow(props) {
         }
         return `${e.getHours()}:${min}`
     }
+
+    const genInTime=(day,e)=>{
+        
+        let idx = update.data.get(day).indexOf(e)
+
+        console.log(update.time.get(day))
+        console.log(update.time.get(day).length,update.time.get(day).size)
+
+
+        update.time.get(day).forEach(element => {
+            console.log(element)
+        });
+        if (idx==0) return null
+        /*var x = update.time.get(day)[idx-1]
+        var y = update.data.get(day)[idx-1].departureTime.getTime()
+        var d = new Date(y + x.split(" ")[0]*60*1000)
+        return  convertTime(d)*/
+    }
     const genOneDay=(day)=>{
         return(
             <table padding="0px" border="0">
@@ -112,10 +129,10 @@ function TableShow(props) {
                                     <tbody>
                                         <tr>
                                             <td class="allCenter" id="placeTime">
-                                                {e.departureTime && convertTime(e.departureTime)}
+                                                {e.departureTime && genInTime(day,e)}
                                                 <br/>
                                                 - <br/>
-                                                {e.outTime}
+                                                {e.departureTime && convertTime(e.departureTime)}
                                             </td>
                                             <td class="allCenter" id="placeTime" rowSpan="2">
                                             {cutNewLine("normal",e.place)}

@@ -24,8 +24,9 @@ function MapDirection(props) {
   const travelMode = 'DRIVING'
   //const [daysList,setDaysList] = useState([])
   const update = useContext(MContext)
-
   useEffect(()=>{
+    
+
     console.log(props.plan,plan)
     allPlaces.set("a",{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
     allPlaces.set( "b",{ pos : {lng : 100.538009 , lat : 13.764603 } , province : "กรุงเทพมหานคร"})
@@ -120,6 +121,7 @@ function MapDirection(props) {
     const directionsRenderer = new window.google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map);
     console.log(route.length)
+    var times = new Array()
     for (let i =0;i<route.length-1;i++){
       creatMarker(route[i].place,route[i+1].place,day)
       
@@ -164,7 +166,7 @@ function MapDirection(props) {
             }
           }
         
-          console.log(time)
+          times.push(time)
         var center = tmpPath[Math.floor(tmpPath.length/2)]
         timeMarker.setPosition(center)
         timeMarker.setLabel({
@@ -175,12 +177,20 @@ function MapDirection(props) {
       }
 
       }).then( e =>
-        
-        days.get(day).markersTime.push([timeMarker,time]),
-        days.get(day).path = tmpPath,
-        days.get(day).polyline.push(polyline))
+          console.log(days.get(day).markersTime),
+          days.get(day).markersTime.push([timeMarker,time]),
+          days.get(day).path = tmpPath,
+          days.get(day).polyline.push(polyline)
+       )
+      
+       
 
     }
+    days.get(day).markersTime.map((e)=>{
+      times.push(e)
+    })
+    console.log(times)
+    return times
   }
 
   const fadeColor = (baseColor , idx) =>{
@@ -288,6 +298,7 @@ function MapDirection(props) {
   const sendCallback=(input)=>{
     console.log(input)
     var d = []
+    var tmpTime = new Map()
     if (input == null || input.length==0 )
         return
     input.forEach((values,keys)=>{
@@ -311,11 +322,12 @@ function MapDirection(props) {
         show : true,
         polyline : []
         })
-      calRoute(day)
-      
+        tmpTime.set(day,calRoute(day))
     });
-
-
+   
+   
+    console.log(tmpTime)
+    update.setTime(tmpTime)
     update.setData(input)
   }
   
@@ -341,4 +353,3 @@ function MapDirection(props) {
 }
 
 export default  MapDirection
-
