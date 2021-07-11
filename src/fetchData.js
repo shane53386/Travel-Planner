@@ -1,5 +1,5 @@
 
-import db from "./firebase.js";
+import {db} from "./firebase.js";
 
 const fetchPlace = async (province) => {
 	let place = [];

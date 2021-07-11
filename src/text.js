@@ -125,7 +125,8 @@ class MapContent extends Component {
       e.map(data=>{
         this.state.place.set(data.Name,{      name : data.Name,
                                               type : data.Type,
-                                              position : data.Position})
+                                              position : data.Position,
+                                              description : data.Description})
       })
   })
   console.log(this.state.place)
@@ -141,17 +142,32 @@ class MapContent extends Component {
         
     
         //this.genPopup(p.name)
-        var contentInfo = 
-        '<div id = "content">' +
-        '<div id = "siteNotice"/>'+
-          '<h1 id="firstHeading" class="firstHeading"><b>'+p.name+'</b></h1> <br>'+
-          '<div> <Button onClick={}>Read More</Button> </div>'+
-        '</div>'
+        var contentInfo
         var tmpInfo = new window.google.maps.InfoWindow({
-          content : contentInfo
+          
         })
+        fetch(
+          `https://api.openweathermap.org/data/2.5/onecall?lat=${p.position.latitude}&lon=${p.position.longitude}&exclude=hourly,daily,minutely&appid=${weatherKey}`
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data)
+            contentInfo = 
+              '<div id = "content">' +
+              '<div id = "siteNotice"/>'+
+                    '<h1 id="firstHeading" class="firstHeading"><b>'+p.name+'</b></h1> <br>'+
+                    `<p>${p.description}</p>`+
+                    `<div>Type : ${p.type}</div>`+
+                    `<div>Temp : ${data.current==null? "Unknown":data.current.temp}</div>`+
+                    `<img src=${data.current==null? null:"http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png"}/>`+
+                '<div> <Button onClick={}>Read More</Button> </div>'+
+              '</div>'
+            tmpInfo.setContent(contentInfo)
+          })
+
+        
         var nameInfo = 
-        '<div>name</div>'
+        `<div>${p.name}</div>`
         var tmp2Info = new window.google.maps.InfoWindow({
           content : nameInfo
         })
