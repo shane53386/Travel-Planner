@@ -112,7 +112,7 @@ function MapDirection(props) {
     return re
   }
 
-  const calRoute = (day)=>{
+  const calRoute = async (day)=>{
     console.log(plan)
     if (daysList==null) return
     //if (Object.keys(plan).length==0) return
@@ -122,7 +122,8 @@ function MapDirection(props) {
     directionsRenderer.setMap(map);
     console.log(route.length)
     var times = new Array()
-    for (let i =0;i<route.length-1;i++){
+    var index = Array(route.length-1).fill().map((x,i)=>i)
+     const promises =index.map(i=>{
       creatMarker(route[i].place,route[i+1].place,day)
       
       let request = {
@@ -135,7 +136,7 @@ function MapDirection(props) {
         travelMode: window.google.maps.TravelMode.DRIVING,
       }
       let tmpPath = []
-      let time = 0
+      let time = null
       let timeMarker = new window.google.maps.Marker({
                       position: null,
                       map,
@@ -185,9 +186,10 @@ function MapDirection(props) {
       
        
 
-    }
+    })
+    await Promise.all(promises)
     days.get(day).markersTime.map((e)=>{
-      times.push(e)
+      times.push(e[1])
     })
     console.log(times)
     return times

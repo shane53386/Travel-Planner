@@ -7,9 +7,10 @@ import ReactDOM from 'react-dom';
 import TableShow  from './Plan/tableShow';
 import OverView from './Plan/overView';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import LogIn from './authenticate/LogIn';
+import SignUp from './authenticate/SignUp'
 import MainPlan from './Plan/mainPlan';
-
+import {AuthProvider} from './authenticate/Auth'
 const THAI_BOUNDS = {
   north: 21,
   south: 4,
@@ -20,12 +21,15 @@ const THAI_BOUNDS = {
 ReactDOM.render(
   
   <BrowserRouter>
+  <AuthProvider>
       <Link to="/">Home</Link>{' '}
       <Link to="/map">Map</Link>{' '}
       <Link to="/table">Table</Link>{' '}
       <Link to="/overView">OverView</Link>{' '}
       <Link to="/result">TableResult</Link>{' '}
-      <Link to="/planPage">PlanPage</Link>
+      <Link to="/planPage">PlanPage</Link>{' '}
+      <Link to="/login">Login</Link>{' '}
+      <Link to="/signup">Signup</Link>
       <Switch>
 
         <Route path="/table" render={() => 
@@ -62,10 +66,17 @@ ReactDOM.render(
                 {center: { lng : 100.633214325 , lat : 13.724293875 },
                 zoom: 6,
                 mapId: "6ef51b53d122d80d" }}/>
-            
             </div> }/>
+        <Route path="/login" render={() => 
+            <div style= {{width: '100%', height: 800,}} >
+              <LogIn show={true}/>      
+            </div>} />
+          <Route path="/signup" render={() => 
+            <div style= {{width: '100%', height: 800,}} >
+              <SignUp/>      
+            </div>} />
       </Switch>
-    
+      </AuthProvider>
     </BrowserRouter>
   /**/
   , document.getElementById("root"))

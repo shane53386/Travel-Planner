@@ -1,9 +1,10 @@
 
-import React, { Component,useContext } from 'react';
+import React, { Component,useContext, useEffect, useState } from 'react';
 import html2canvas from "html2canvas";
 import { InputGroup , FormControl,Form, Table , Button,DropdownButton,Dropdown} from 'react-bootstrap';
 import "./table.css"
 import {MContext} from './provider';
+
 
 /*{ 1 : Central World , 9.00
         Siam Paragon  , 10.00
@@ -13,7 +14,8 @@ var data = new Map()
 function TableShow(props) {
 
     const update = useContext(MContext);
-    
+    const [Time,setTime] = useState(new Map());
+    const [reRender,setRender] = useState([])
         /*data.set("1",[ { place : "Central World" , inTime : "9.00" , outTime : "9.45" , note:"..........\n............"},
                         { place : "Siam Paragonnnnnnnnnnnnnnnnnnnnnn  nnnnnnnnnn" , inTime : "10.00" , outTime : "10.50" ,  note:"1234567 8901234789"} ])
         data.set("2",[ { place : "Central" , inTime : "9.00" , outTime : "9.30" ,  note:"......................"},
@@ -98,22 +100,43 @@ function TableShow(props) {
     }
 
     const genInTime=(day,e)=>{
-        
+        //setTime(new Map())
+       
         let idx = update.data.get(day).indexOf(e)
 
         console.log(update.time.get(day))
         console.log(update.time.get(day).length,update.time.get(day).size)
+       
+        var times = []
+        update.time.get(day).then(async function(result) {
+            const promises = result.map(time=>{
+                console.log(time)
+                if (time!=null) times.push(time)
+            })
+            await Promise.all(promises)
+            console.log(times)
+            if (idx==0 || times.length == 0) return null
+            var x = times[idx-1]
+            var y = update.data.get(day)[idx-1].departureTime.getTime()
+            var d = new Date(y + x.split(" ")[0]*60*1000)
+            console.log(day,e.departureTime)
+            var oldTime = Time.keys()
+            var x = Time.get(day+e.departureTime+e.place)
+            Time.set(day+e.departureTime+e.place,convertTime(d))
+            if (x!=convertTime(d))
+                setRender([...reRender,d])
+   
+        });// rest of script
+        
 
-
-        update.time.get(day).forEach(element => {
+        /*update.time.get(day).forEach(element => {
             console.log(element)
-        });
-        if (idx==0) return null
-        /*var x = update.time.get(day)[idx-1]
-        var y = update.data.get(day)[idx-1].departureTime.getTime()
-        var d = new Date(y + x.split(" ")[0]*60*1000)
-        return  convertTime(d)*/
+        });*/
+       
     }
+    useEffect(()=>{
+        genBody()
+    },[Time])
     const genOneDay=(day)=>{
         return(
             <table padding="0px" border="0">
@@ -129,7 +152,8 @@ function TableShow(props) {
                                     <tbody>
                                         <tr>
                                             <td class="allCenter" id="placeTime">
-                                                {e.departureTime && genInTime(day,e)}
+                                                {genInTime(day,e)}
+                                                {e.departureTime && Time.get(day+e.departureTime+e.place)}
                                                 <br/>
                                                 - <br/>
                                                 {e.departureTime && convertTime(e.departureTime)}
