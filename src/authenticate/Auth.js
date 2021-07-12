@@ -9,12 +9,15 @@ export function useAuth() {
 
 export const AuthProvider = ({ children }) => {
 	const [loading, setLoading] = useState(true);
-	const [currentUser, setCurrentUser] = useState(null);
+	const [currentUser, setCurrentUser] = useState();
 
-	function signUp(email, password) {
+	function signUp(email, password, username) {
 		auth.createUserWithEmailAndPassword(email, password).then(
 			(userCredential) => {
 				userCredential.user.sendEmailVerification();
+				userCredential.user.updateProfile({
+					displayName: username,
+				});
 				auth.signOut();
 			}
 		);
