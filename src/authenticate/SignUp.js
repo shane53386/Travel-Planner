@@ -13,7 +13,8 @@ const SignUp = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const { email, password, confirmationpassword } = e.target.elements;
+		const { username, email, password, confirmationpassword } =
+			e.target.elements;
 		if (password.value !== confirmationpassword.value) {
 			document
 				.getElementById("inputConfirmationPassword5")
@@ -23,7 +24,7 @@ const SignUp = () => {
 		}
 		try {
 			setLoading(true);
-			await signUp(email.value, password.value);
+			await signUp(email.value, password.value, username.value);
 		} catch (error) {
 			alert(error);
 		}
@@ -34,6 +35,19 @@ const SignUp = () => {
 			<div className="container mt-5">
 				<h1>Sign Up</h1>
 				<form onSubmit={handleSubmit}>
+					<div className="mb-3">
+						<label for="username" class="form-label">
+							Username
+						</label>
+						<input
+							type="text"
+							class="form-control"
+							id="username"
+							name="username"
+							title="Invalid Username"
+							required
+						/>
+					</div>
 					<div className="mb-3">
 						<label for="exampleInputEmail1" class="form-label">
 							Email address

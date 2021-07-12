@@ -1,10 +1,10 @@
-import React, { useState,useContext, useEffect } from "react";
+import React, { useState } from "react";
 import { Redirect, Link } from "react-router-dom";
-import { useAuth,AuthContext } from "./Auth";
+import { useAuth } from "./Auth";
 import { Modal, Button } from "react-bootstrap";
 
 const LogIn = ({ show }) => {
-	const {currentUser,logIn} = useAuth();
+	const { currentUser, logIn } = useAuth();
 	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async (e) => {
@@ -14,15 +14,14 @@ const LogIn = ({ show }) => {
 			setLoading(true);
 			await logIn(email.value, password.value);
 		} catch (error) {
-			console.log(error);
+			setLoading(false);
 			alert(error);
 		}
 	};
-	useEffect(()=>{
-		if (currentUser) {
-			return <Redirect to="../PlanPage" />;
-		}
-	},[])
+
+	if (currentUser) {
+		return <Redirect to="../PlanPage" />;
+	}
 
 	return (
 		<>
