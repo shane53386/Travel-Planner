@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { propTypes } from "react-bootstrap/esm/Image";
 import PlaceInput from "./PlaceInput";
 
 var idx =0

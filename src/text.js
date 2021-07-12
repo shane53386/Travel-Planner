@@ -1,15 +1,17 @@
 import React, { useState, useEffect ,Component } from 'react';
 import Data from "./Data";
 //import MarkerPin from "./src/MarkerPin"
-import { render } from 'react-dom';
-import { isElementOfType } from 'react-dom/cjs/react-dom-test-utils.production.min';
 import fetchPlace from './fetchData';
+
 import {Button,DropdownButton,Dropdown} from 'react-bootstrap';
+import {BrowserRouter, Link , Route,Switch,withRouter } from 'react-router-dom';
+import OverView from './Plan/overView';
 
 var map;var dataLayer;var info 
 var geoJson = null
 const data = new Data()
 const weatherKey = "22f30fcf6dd5b269bf5cbe441f735a39";
+
 
 class MapContent extends Component {
 
@@ -31,8 +33,16 @@ class MapContent extends Component {
     this.createMarker = this.createMarker.bind(this)
     this.clearOldInfo = this.clearOldInfo.bind(this)
     this.clearOldMarker = this.clearOldMarker.bind(this)
+    this.genContent = this.genContent.bind(this);
+    this.xxxx1 = this.xxxx1.bind(this);
   }
-
+  xxxx1(){
+    console.log("Yes")
+    let path = `overView`;
+    this.props.history.push(path);
+    //document.getElementById("toDetail").innerHTML = "going";
+  }
+  
    createZoom(){
     map.data.addListener("click", e => {
       
@@ -111,16 +121,39 @@ class MapContent extends Component {
     })
   }
 
+  genContent(p,data){
+    var path = "xxx"
+    return ('<div id = "content">' +
+      '<div id = "siteNotice"/>'+
+            '<h1 id="firstHeading" class="firstHeading"><b>'+p.name+'</b></h1> <br>'+
+            `<p>${p.description}</p>`+
+            `<div>Type : ${p.type}</div>`+
+            `<div>Temp : ${data.current==null? "Unknown":data.current.temp}</div>`+
+            `<img src=${data.current==null? "":"http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png"}/>`+
+            '<div id=toDetail></div>'+
+            `<input type='button' id='butSubmit' value='Procurar' onclick={console.log("path",${path})}>`+
+            '<BrowserRouter>'+
+              `<Link to="/table">ReadMore</Link>`+
+              '<Route path="/table" render={() => <div style= {{width: "100%", height: 800,}} >   <OverView/>    </div>} />'+
+            '</BrowserRouter>'+
+      '</div>'+
+      '</div>')
+  }
+
+
+  renderBtn(){
+    return "<Button onClick={this.toDetail()}>Read More</Button>"
+    
+  }
   createMarker(province){
-    if (province != "กรุงเทพมหานคร") return
     //clear old markers
     this.clearOldInfo()
     //clear old Info
     this.clearOldMarker()
     //find new
     //this.state.place = fetchOverview(province)
-    var content = fetchPlace("Bangkok")
-    content
+    var content = fetchPlace(province)
+    content && content
     .then(e=>{
       e.map(data=>{
         this.state.place.set(data.Name,{      name : data.Name,
@@ -129,7 +162,7 @@ class MapContent extends Component {
                                               description : data.Description})
       })
   })
-  console.log(this.state.place)
+  .then(e=>{
     this.state.place && this.state.place.forEach((p,keys)=>{
        
         console.log({lng : p.position.longitude , lat : p.position.latitude});
@@ -143,8 +176,10 @@ class MapContent extends Component {
     
         //this.genPopup(p.name)
         var contentInfo
+        let path = `overView`;
+        var x = this.props.history
         var tmpInfo = new window.google.maps.InfoWindow({
-          
+       
         })
         fetch(
           `https://api.openweathermap.org/data/2.5/onecall?lat=${p.position.latitude}&lon=${p.position.longitude}&exclude=hourly,daily,minutely&appid=${weatherKey}`
@@ -152,16 +187,10 @@ class MapContent extends Component {
           .then((res) => res.json())
           .then((data) => {
             console.log(data)
-            contentInfo = 
-              '<div id = "content">' +
-              '<div id = "siteNotice"/>'+
-                    '<h1 id="firstHeading" class="firstHeading"><b>'+p.name+'</b></h1> <br>'+
-                    `<p>${p.description}</p>`+
-                    `<div>Type : ${p.type}</div>`+
-                    `<div>Temp : ${data.current==null? "Unknown":data.current.temp}</div>`+
-                    `<img src=${data.current==null? null:"http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png"}/>`+
-                '<div> <Button onClick={}>Read More</Button> </div>'+
-              '</div>'
+           
+            contentInfo = this.genContent(p,data)
+             
+              //infowindow.setContent('<input type="button" value="View" onclick="joinFunction()"><input type="button" value="Join" onclick="alert(\"infoWindow\")">');
             tmpInfo.setContent(contentInfo)
           })
 
@@ -196,7 +225,7 @@ class MapContent extends Component {
         
        
     })
-
+  })
   }
   async genPopup(name){
     //fecth weather api
@@ -242,12 +271,15 @@ class MapContent extends Component {
 
   render() {
     return (
+      <>
         <div style={{ width: '100%', height: '100%' }} id={this.props.id}>
             
         </div>
+        <Button onClick={this.xxxx1}>Read More</Button>
+        </>
     );
   }
 }
 
-export default MapContent
+export default withRouter(MapContent)
 
