@@ -6,7 +6,7 @@ import LogIn from "./authenticate/LogIn";
 import SignUp from "./authenticate/SignUp";
 import ResetPassword from "./authenticate/ResetPassword";
 import PlanPage from "./PlanPage";
-import Data from "./Data";
+import Overview from "./Overview";
 import Review from "./rating/Review";
 import { AuthProvider } from "./authenticate/Auth";
 
@@ -21,7 +21,7 @@ function App() {
 						<Route path="/planpage" component={PlanPage} />
 						<Route path="/login" component={LogIn} />
 						<Route path="/signup" component={SignUp} />
-						<Route path="/data" component={Data} />
+						<Route path="/overview" component={Overview} />
 						<Route
 							path="/resetpassword"
 							component={ResetPassword}
