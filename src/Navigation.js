@@ -1,48 +1,57 @@
 import React, { useContext } from "react";
 import { auth } from "./firebase";
+import { Button,Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown } from "react-bootstrap";
+
+const genPlan=()=>{
+	var planList = ["one","two","three"]
+	//fecth plan from context
+	let buffer = []
+	planList.map((l)=>{
+		buffer.push(<NavDropdown.Item href="./planPage">{l}</NavDropdown.Item>)
+
+	})
+	return buffer
+	
+}
 
 const Navigation = () => {
+	
 	return (
-		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-			<div class="">
-				<div
-					class="container-fluid collapse navbar-collapse"
-					id="navbarNavAltMarkup"
-				>
-					<div class="navbar-nav">
-						<a
-							class="navbar-brand mb-0 h1"
-							aria-current="page"
-							href="./Home"
-						>
-							Home
-						</a>
-						<>
-							<a class="nav-link" href="./LogIn">
-								Log In
-							</a>
-							<a class="nav-link" href="./SignUp">
-								Sign Up
-							</a>
-						</>
-						<a
-							class="nav-link"
-							href="./Home"
-							onClick={() => auth.signOut()}
-						>
-							Sign Out
-						</a>
 
-						<a class="nav-link" href="./PlanPage">
-							Plan
-						</a>
-						<a class="nav-link" href="./Overview">
-							Overview
-						</a>
-					</div>
-				</div>
-			</div>
-		</nav>
+		<Navbar bg="primary" variant="dark">
+			<Navbar.Brand href="#home">Navbar</Navbar.Brand>
+			<Nav className="mr-auto">
+			<Nav.Link href="./Home">Home</Nav.Link>
+			
+			<NavDropdown type="button" title="Plans" id="basic-nav-dropdown">
+				
+				{genPlan()}
+				
+				<NavDropdown.Divider />
+				<NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+			</NavDropdown>
+			</Nav>
+			<Form inline>
+			<FormControl type="text" placeholder="Search" className="mr-sm-2" />
+			<Button variant="outline-light">Search</Button>
+
+			
+	<Dropdown>
+  <Dropdown.Toggle variant="primary" id="dropdown-basic" >
+  <span class="navbar-toggler-icon"></span>
+  </Dropdown.Toggle>
+
+  <Dropdown.Menu align="right">
+    {false? null:<Dropdown.Item href="./LogIn">Login</Dropdown.Item>}
+    {false? null:<Dropdown.Item href="./Home">Logout</Dropdown.Item>}
+	
+  </Dropdown.Menu>
+</Dropdown>
+			
+			</Form>
+		</Navbar>
+		
+		
 	);
 };
 
