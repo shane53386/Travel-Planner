@@ -11,6 +11,7 @@ import LogIn from './authenticate/LogIn';
 import SignUp from './authenticate/SignUp'
 import MainPlan from './Plan/mainPlan';
 import {AuthProvider} from './authenticate/Auth'
+import App from './App';
 const THAI_BOUNDS = {
   north: 21,
   south: 4,
@@ -19,8 +20,8 @@ const THAI_BOUNDS = {
 };
 
 ReactDOM.render(
-  
-  <BrowserRouter>
+  <App></App>
+  /*<BrowserRouter>
   <AuthProvider>
       <Link to="/">Home</Link>{' '}
       <Link to="/map">Map</Link>{' '}
