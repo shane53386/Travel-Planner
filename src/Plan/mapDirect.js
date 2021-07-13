@@ -1,7 +1,7 @@
 import React, { useState, useEffect ,Component,useContext } from 'react';
 import Data from "../Data";
-import FilterDay from "./filterDay"
-import { InputGroup , FormControl,Form, Table , Button,DropdownButton,Dropdown} from 'react-bootstrap';
+import Filter from "./filterDay"
+import { InputGroup , FormControl,Form, Table , Button,DropdownButton,Dropdown, ThemeProvider} from 'react-bootstrap';
 import PlanPage from './PlanPage';
 import {MContext} from './provider';
 import Provider from './provider';
@@ -21,6 +21,8 @@ function MapDirection(props) {
  
   var plan
   const [days,setDays] = useState(new Map())
+  const [reRender,setReRender] = useState([])
+  const [allMarkerPlaces,setAllMarkerPlaces] = useState([])
   const travelMode = 'DRIVING'
   //const [daysList,setDaysList] = useState([])
   const update = useContext(MContext)
@@ -46,13 +48,34 @@ function MapDirection(props) {
       console.log(daysList)
       s.addEventListener('load', e => {     
           onScriptLoad()   
+          initAllMarkers() 
       })
         } else {
-            onScriptLoad()  
+            onScriptLoad() 
+            initAllMarkers() 
         }
-  },[])
+       
   
-
+      } ,[])
+  
+const initAllMarkers=()=>{
+  var tmp = []
+  allPlaces.forEach((value,key)=>{
+    var marker = new window.google.maps.Marker({
+      position: value.pos,
+      label:key,
+      icon : null       
+      })
+      marker.addListener("mouseover",e=>{
+       
+      })
+     
+    tmp.push([marker,key])
+     
+  })
+  setAllMarkerPlaces(tmp)
+  setReRender([...reRender])
+}
  const handleFilterDay = (check) =>{
     for (let [key, value] of check) {
       if (value == false){
@@ -166,7 +189,7 @@ function MapDirection(props) {
               tmpPath.push(nextSegment[j])
             }
           }
-        
+          console.log(time)
           times.push(time)
         var center = tmpPath[Math.floor(tmpPath.length/2)]
         timeMarker.setPosition(center)
@@ -175,16 +198,15 @@ function MapDirection(props) {
           color: "#000000",
           fontWeight: "bold"
         })
-      }
 
-      }).then( e =>
-          console.log(days.get(day).markersTime),
-          days.get(day).markersTime.push([timeMarker,time]),
-          days.get(day).path = tmpPath,
+          console.log(days.get(day).markersTime)
+          days.get(day).markersTime.push([timeMarker,time])
+          setReRender([...reRender,time])
+          days.get(day).path = tmpPath
           days.get(day).polyline.push(polyline)
-       )
-      
        
+        }
+      })
 
     })
     await Promise.all(promises)
@@ -256,6 +278,10 @@ function MapDirection(props) {
           days.get(day).markersTime.map(p=>{
             p[0].setLabel(null)
           })
+          allMarkerPlaces.map(p=>{
+            p[0].setLabel(null)
+          })
+
         }
         else{
           days.get(day).markers.map(p=>{
@@ -267,6 +293,15 @@ function MapDirection(props) {
           })
           days.get(day).markersTime.map(p=>{
             console.log(p[1])
+            p[0].setLabel( {
+              text: p[1],
+              color: "#000000",
+              fontWeight: "bold"
+            })
+          })
+          
+          allMarkerPlaces.map(p=>{
+
             p[0].setLabel( {
               text: p[1],
               color: "#000000",
@@ -332,9 +367,24 @@ function MapDirection(props) {
     update.setTime(tmpTime)
     update.setData(input)
   }
-  
 
-  
+
+  const handleSwitch=(show)=>{
+
+    console.log(allMarkerPlaces.length)
+    if (show){
+      allMarkerPlaces.map(e=>{
+        
+        e[0].setMap(map)
+      })
+    }
+    else{
+      allMarkerPlaces.map(e=>{
+        e[0].setMap(null)
+      })
+    }
+  }
+
   return (
 
 
@@ -342,7 +392,7 @@ function MapDirection(props) {
         <div style={{ width: '50%', height: '80%' ,float:"left"}} id={props.id}>
           
           </div>
-        <FilterDay parentCallback={handleFilterDay} days={daysList}/>
+        <Filter checkCallback={handleFilterDay} switchCallback={handleSwitch} days={daysList}/>
         <div style= {{width: '50%', height: 800,float:'right'}} >
               <PlanPage sendCallback={sendCallback}/>      
             </div>

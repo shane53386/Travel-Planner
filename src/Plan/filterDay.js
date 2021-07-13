@@ -1,8 +1,8 @@
 import { thisExpression } from '@babel/types';
 import React, { Component, useEffect, useState} from 'react';
 import {Dropdown,DropdownButton , InputGroup ,FormControl,Button,Form} from 'react-bootstrap';
-
-class FilterDay extends Component{
+import '../Plan/table.css'
+class Filter extends Component{
 
     constructor(props){
         super(props)
@@ -25,7 +25,13 @@ class FilterDay extends Component{
     }
 
     updateFilter(event){
+        
         let {name,checked} = event.target
+        if (name=="switch"){
+            this.props.switchCallback(checked)
+            return
+        }
+        
         if (name=="all_day"){
             this.setState({
                 checkAll : checked   
@@ -53,7 +59,8 @@ class FilterDay extends Component{
             }
             
         }
-            this.props.parentCallback(this.state.check)
+            this.props.checkCallback(this.state.check)
+           
         
         this.setState((prev)=>{
             return prev     
@@ -67,27 +74,34 @@ class FilterDay extends Component{
    
     render(){
     return(
-        <div>
-        <Button onClick={this.btn}/>
-        {this.state.show==true?
-            <div>
-                <table>
-                <input class="form-check-input" checked={this.state.checkAll} type="checkbox" name="all_day" onClick={this.updateFilter} value="" id="flexCheckDefault"/> All day
-                    {this.props.days.map((p)=>(
-                        <div>
-                        
-                        
-                            <input class="form-check-input" checked={this.state.check.get(p)} type="checkbox" name={p} onClick={this.updateFilter} value="" id="flexCheckDefault"/> {p}
-                            </div>
-                    ))}
-                </table>
-            </div>
-            : null
-        }
+        <div id="filter">
+            <Button onClick={this.btn}/>
+            {this.state.show==true?
+                <div>
+                    <table>
+                    <input class="form-check-input" checked={this.state.checkAll} type="checkbox" name="all_day" onClick={this.updateFilter} value="" id="flexCheckDefault"/> All day
+                        {this.props.days.map((p)=>(
+                            <div>
+                            
+                            
+                                <input class="form-check-input" checked={this.state.check.get(p)} type="checkbox" name={p} onClick={this.updateFilter} value="" id="flexCheckDefault"/> {p}
+                                </div>
+                        ))}
+                    </table>
+                </div>
+                : null
+            }
+            <Form.Check 
+                type="switch"
+                name="switch"
+                id="custom-switch"
+                label="Show all place in this plan"
+                onClick={this.updateFilter}
+            />
         </div>
     )
     }
     
 }
 
-export default FilterDay
+export default Filter
