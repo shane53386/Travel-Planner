@@ -20,3 +20,18 @@ code {
   perspective:1000;  
 }
 
+#planDropdown{
+  display: inline;
+}
+#planDelete{
+  white-space: nowrap;
+}
+#planTable{
+  padding: 0px;
+ margin-bottom:0px !important;
+ 
+ border-collapse:collapse;
+ table-layout:fixed;
+ border-collapse: collapse;
+
+}

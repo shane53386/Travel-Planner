@@ -254,7 +254,7 @@ class TableComponent extends Component {
         console.log(this.state)
         return (
             <div id="tableExpense">
-               <Table striped bordered hover>
+               <Table striped bordered hover class="center">
                     <thead>
                         {this.renderHeader()}
                     </thead>

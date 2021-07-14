@@ -1,21 +1,72 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { auth } from "./firebase";
-import { Button,Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown } from "react-bootstrap";
+import { Button,Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown,Table } from "react-bootstrap";
+import "./index.css";
+import CheckModal from "./checkModal";
 
-const genPlan=()=>{
-	var planList = ["one","two","three"]
-	//fecth plan from context
-	let buffer = []
-	planList.map((l)=>{
-		buffer.push(<NavDropdown.Item href="./planPage">{l}</NavDropdown.Item>)
 
-	})
-	return buffer
+
+
+function Navigation(){
+	const [newPlan,setNewPlan] = useState(null)
+	const [show,setShow] = useState(false)
+	const [willDeletePlan,setDeletePlan] = useState(null)
+	useEffect(()=>{
+		
+	},[])
+	const genPlan=()=>{
+		
+		var planList = ["one","two","three"]
+		//fecth plan from context
+		let buffer = []
+		planList.map((l)=>{
+			buffer.push(
+								<tr style={{padding:"0px",margin:"0px",border:"none"}}>
+										<td style={{padding:"0px",margin:"0px",border:"none"}}>
+										<a class="dropdown-item" href="./planPage">{l}</a>
+										</td>
+										<td id="planDelete" style={{border:"none",textAlign:"center",minWidth:"50px",padding:"0px",margin:"0px"}}>
+										<Button name={l} onClick={showModal}></Button>
+										</td>
+									</tr>
 	
-}
-
-const Navigation = () => {
+							
+					)
 	
+		})
+		return buffer
+		
+	}
+	
+	const showModal=(event)=>{
+		console.log(event.target.name)
+
+		setDeletePlan(event.target.name)
+		setShow(true)
+	}
+	const deletePlan=(confirm)=>{
+		setShow(false)
+		if (confirm=="Yes"){
+			console.log("yes",newPlan)
+			//delte newPlan plan
+		}
+		else{
+			console.log("No",newPlan)
+		}
+	}
+
+	const handlenewPlan=(event)=>{
+	
+			let {value} = event.target
+			setNewPlan(value)
+		
+	
+	}
+
+	const addNewPlan=(event)=>{
+		console.log(newPlan)
+		//add newPlan to firebase
+	}
 	return (
 
 		<Navbar bg="primary" variant="dark">
@@ -24,11 +75,15 @@ const Navigation = () => {
 			<Nav.Link href="./Home">Home</Nav.Link>
 			
 			<NavDropdown type="button" title="Plans" id="basic-nav-dropdown">
-				
+			
+			<Table class="table table-hover" id="plantTable">
 				{genPlan()}
-				
+			</Table>
 				<NavDropdown.Divider />
-				<NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+				<NavDropdown.ItemText >
+					<FormControl onChange={handlenewPlan} value={newPlan} type="text" placeholder="Add Plan" className="mr-sm-2"/>
+					<Button onClick={addNewPlan}></Button>
+				</NavDropdown.ItemText>
 			</NavDropdown>
 			</Nav>
 			<Form inline>
@@ -49,6 +104,7 @@ const Navigation = () => {
 </Dropdown>
 			
 			</Form>
+			<CheckModal show={show} name={willDeletePlan} callback={deletePlan}/>
 		</Navbar>
 		
 		
