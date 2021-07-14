@@ -98,7 +98,7 @@ function Navigation(){
 
   <Dropdown.Menu align="right">
     {false? null:<Dropdown.Item href="./LogIn">Login</Dropdown.Item>}
-    {false? null:<Dropdown.Item href="./Home">Logout</Dropdown.Item>}
+    {false? null:<Dropdown.Item href="./Home" onClick={() => auth.signOut()}>Logout</Dropdown.Item>}
 	
   </Dropdown.Menu>
 </Dropdown>

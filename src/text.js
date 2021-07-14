@@ -2,8 +2,9 @@ import React, { useState, useEffect ,Component } from 'react';
 import Data from "./Data";
 //import MarkerPin from "./src/MarkerPin"
 import fetchPlace from './fetchData';
-
-import {Button,DropdownButton,Dropdown} from 'react-bootstrap';
+import {Autocomplete} from '@material-ui/lab';
+import {TextField}  from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import {BrowserRouter, Link , Route,Switch,withRouter } from 'react-router-dom';
 import OverView from './Plan/overView';
 
@@ -35,6 +36,7 @@ class MapContent extends Component {
     this.clearOldMarker = this.clearOldMarker.bind(this)
     this.genContent = this.genContent.bind(this);
     this.xxxx1 = this.xxxx1.bind(this);
+    this.searchProvince = this.searchProvince.bind(this)
   }
   xxxx1(){
     console.log("Yes")
@@ -53,7 +55,7 @@ class MapContent extends Component {
       map.setCenter(new window.google.maps.LatLng(data.state.centerMap[name]['lat'],data.state.centerMap[name]['lng']))
       map.setZoom(9.5)
       this.createMarker(e.feature.getProperty("ADM1_TH"))
-
+      console.log(e.feature)
       map.data.overrideStyle(this.state.focusProvince.feature, { fillOpacity: 0.3 });
       this.setState({
         focusProvince : {province : name ,
@@ -104,6 +106,7 @@ class MapContent extends Component {
       map.data.overrideStyle(event.feature, { fillOpacity: 0.3 });
 
     });
+    console.log("add geoJSON")
 }
 
   clearOldInfo(){
@@ -114,9 +117,10 @@ class MapContent extends Component {
     this.setState( prev => {
       prev.usedMarker && prev.usedMarker.map(p=>{
         p.setMap(null)
+        p.setVisible(false)
       })
       return {
-          usedMarker : [],
+          usedMarker : []
       } 
     })
   }
@@ -146,10 +150,13 @@ class MapContent extends Component {
     
   }
   createMarker(province){
+    
     //clear old markers
     this.clearOldInfo()
     //clear old Info
+    console.log(this.state.usedMarker)
     this.clearOldMarker()
+    console.log(this.state.usedMarker)
     //find new
     //this.state.place = fetchOverview(province)
     var content = fetchPlace(province)
@@ -268,14 +275,57 @@ class MapContent extends Component {
       this.onScriptLoad()
     }
   }
+  
+  searchProvince(event, inputValue){
+    if (inputValue=="" || inputValue==null) return
+   
+    this.clearOldInfo()
+    if (this.state.focusProvince.province ==  inputValue) return
+    map.setCenter(new window.google.maps.LatLng(data.state.centerMap[inputValue]['lat'],data.state.centerMap[inputValue]['lng']))
+  
+    map.setZoom(9.5)
+    this.createMarker(inputValue)
+   var f = null;
+      window.google.maps.event.trigger(map, 'resize');
+      map.data.forEach(function(feature){
+        if (feature.getProperty('ADM1_TH')==inputValue){
+         
+          f = feature;
+          return;
+        }
+       
+      })
+      if (f!=null){
+        map.data.overrideStyle(f, { fillOpacity: 0.1 });
+        console.log(f)
+      this.setState({
+        focusProvince : {province : inputValue ,
+                        feature : f}
+      })
+    }
+
+     /* map.data.overrideStyle(this.state.focusProvince.feature, { fillOpacity: 0.3 });
+      this.setState({
+        focusProvince : {province : name ,
+                        feature : e.feature}
+      })*/
+  }
 
   render() {
     return (
       <>
+      
+      <Autocomplete
+        id="combo-box-demo"
+        options={data.state.province}
+        onInputChange={this.searchProvince}
+        style={{ width: 300 }}
+        renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
+      />
         <div style={{ width: '100%', height: '100%' }} id={this.props.id}>
             
         </div>
-        <Button onClick={this.xxxx1}>Read More</Button>
+       
         </>
     );
   }
