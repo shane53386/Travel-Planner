@@ -1,4 +1,4 @@
-import React, { useState, useEffect ,Component } from 'react';
+import React, { useState, useEffect ,Component,useContext } from 'react';
 import Data from "./Data";
 //import MarkerPin from "./src/MarkerPin"
 import fetchPlace from './fetchData';
@@ -7,84 +7,69 @@ import {TextField}  from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import {BrowserRouter, Link , Route,Switch,withRouter } from 'react-router-dom';
 import OverView from './Plan/overView';
+import { useHome } from './homeProvider';
 
 var map;var dataLayer;var info 
 var geoJson = null
 const data = new Data()
 const weatherKey = "22f30fcf6dd5b269bf5cbe441f735a39";
 
+var focusProvince = {province : "null" , feature : "null"}
+var usedMarker = []
+function MapContent (props){
 
-class MapContent extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-        place : new Map() ,
-        inProvince : [],
-        usedMarker : [],
-        usedInfo : null,
-        focusProvince : {province : null , feature : null}
-    }
-    //this.state.place.set("กรุงเทพมหานคร" , [])
-    //this.state.place.get("กรุงเทพมหานคร").push({name : "One" , type : "Market" , position : {lng : 100.633214325 , lat : 13.724293875}})
-    //this.state.place.get("กรุงเทพมหานคร").push({name : "Two" , type : "Nature" , position : {lng : 100.634114325 , lat : 13.730293875}})
-    
-    this.onScriptLoad = this.onScriptLoad.bind(this)
-    this.createZoom = this.createZoom.bind(this)
-    this.createMarker = this.createMarker.bind(this)
-    this.clearOldInfo = this.clearOldInfo.bind(this)
-    this.clearOldMarker = this.clearOldMarker.bind(this)
-    this.genContent = this.genContent.bind(this);
-    this.xxxx1 = this.xxxx1.bind(this);
-    this.searchProvince = this.searchProvince.bind(this)
-  }
-  xxxx1(){
+  const home = useHome();
+  const [inProvince,setInprovince] = useState([])
+  //const [usedMarker,setUsedMarker] = useState([])
+  const [usedInfo,setUsedInfo] = useState(null)
+ 
+  //const [focusProvince,setFocusProvince] = useState({province : "null" , feature : "null"})
+     
+   
+  const xxxx1=()=>{
     console.log("Yes")
     let path = `overView`;
-    this.props.history.push(path);
+    props.history.push(path);
     //document.getElementById("toDetail").innerHTML = "going";
   }
   
-   createZoom(){
+   const createZoom=()=>{
     map.data.addListener("click", e => {
       
-      let name = e.feature.getProperty("ADM1_TH")
-      this.clearOldInfo()
-      if (this.state.focusProvince.province == name) return
+      var name = e.feature.getProperty("ADM1_TH")
+      clearOldInfo()
+      if (focusProvince.province == name) return
+      map.setZoom(9.5)
       window.google.maps.event.trigger(map, 'resize');
       map.setCenter(new window.google.maps.LatLng(data.state.centerMap[name]['lat'],data.state.centerMap[name]['lng']))
-      map.setZoom(9.5)
-      this.createMarker(e.feature.getProperty("ADM1_TH"))
+      
+      createMarker(e.feature.getProperty("ADM1_TH"))
+     
+      map.data.overrideStyle(focusProvince.feature, { fillOpacity: 0.3 });
+      focusProvince = {province : name , feature : e.feature}
+      map.data.overrideStyle( e.feature, { fillOpacity: 0.1 });
       console.log(e.feature)
-      map.data.overrideStyle(this.state.focusProvince.feature, { fillOpacity: 0.3 });
-      this.setState({
-        focusProvince : {province : name ,
-                        feature : e.feature}
-      })
     })
+
     map.addListener("zoom_changed", () => {
+      var tmp = map
       if (map.getZoom() < 7.5){
-        this.state.usedMarker && this.state.usedMarker.map(p=>{
-          p.setMap(null)
-        })
+        tmp = null
       }
-      else {
-        this.state.usedMarker && this.state.usedMarker.map(p=>{
-          p.setMap(map)
+      usedMarker && usedMarker.map(p=>{
+          p.setMap(tmp)
         })
-      }
-    });
+      })
   }
 
-  onScriptLoad() {
+  const onScriptLoad=()=> {
     map = new window.google.maps.Map(
-      document.getElementById(this.props.id),
-      this.props.options);
+      document.getElementById(props.id),props.options);
   }
 
-  dataHandler(){
+  const dataHandler=()=>{
     if (geoJson==null){
-      fetch(this.props.src)
+      fetch(props.src)
         .then(response => response.json())
         .then(data => geoJson = data)
         .then(data=> dataLayer = map.data.addGeoJson(data))
@@ -96,36 +81,36 @@ class MapContent extends Component {
       strokeWeight: 0.8,
       fillOpacity: 0.3
   });
-    var showProvinceName = new window.google.maps.InfoWindow()
     map.data.addListener('mouseover', (event) => {
-        //map.data.revertStyle();
         map.data.overrideStyle(event.feature, {fillOpacity: 0.1 });
     });
     map.data.addListener('mouseout', (event) => {
-      if (this.state.focusProvince.province == event.feature.getProperty("ADM1_TH")) return
+      console.log(focusProvince)
+      if (focusProvince.province == event.feature.getProperty("ADM1_TH")) return
       map.data.overrideStyle(event.feature, { fillOpacity: 0.3 });
 
     });
-    console.log("add geoJSON")
+    
 }
 
-  clearOldInfo(){
-    console.log(this.state.usedInfo)
-    this.state.usedInfo && this.state.usedInfo.close() 
+  const clearOldInfo=()=>{
+    //console.log(this.state.usedInfo)
+    usedInfo && usedInfo.close() 
   }
-  clearOldMarker(){
-    this.setState( prev => {
-      prev.usedMarker && prev.usedMarker.map(p=>{
+
+  const clearOldMarker=()=>{
+      console.log(usedMarker)
+      usedMarker && usedMarker.map(p=>{
         p.setMap(null)
         p.setVisible(false)
       })
-      return {
-          usedMarker : []
-      } 
-    })
+      
+      usedMarker = []
+      console.log(usedMarker)
+   
   }
 
-  genContent(p,data){
+  const genContent=(p,data)=>{
     var path = "xxx"
     return ('<div id = "content">' +
       '<div id = "siteNotice"/>'+
@@ -145,78 +130,72 @@ class MapContent extends Component {
   }
 
 
-  renderBtn(){
+  const renderBtn=()=>{
     return "<Button onClick={this.toDetail()}>Read More</Button>"
     
   }
-  createMarker(province){
+  const createMarker=(province)=>{
     
     //clear old markers
-    this.clearOldInfo()
+    clearOldInfo()
     //clear old Info
-    console.log(this.state.usedMarker)
-    this.clearOldMarker()
-    console.log(this.state.usedMarker)
+    clearOldMarker()
+
     //find new
-    //this.state.place = fetchOverview(province)
+    var place = new Map()
     var content = fetchPlace(province)
+    
+    var markerList = []
+    console.log(province)
     content && content
     .then(e=>{
+      home.setData(e)
       e.map(data=>{
-        this.state.place.set(data.Name,{      name : data.Name,
-                                              type : data.Type,
-                                              position : data.Position,
-                                              description : data.Description})
+        place.set(data.Name,{ name : data.Name,
+                              type : data.Type,
+                              position : data.Position,
+                              description : data.Description})
       })
   })
   .then(e=>{
-    this.state.place && this.state.place.forEach((p,keys)=>{
-       
-        console.log({lng : p.position.longitude , lat : p.position.latitude});
+    
+    place && place.forEach((p,keys)=>{
+      console.log(place)
         var tmp = new window.google.maps.Marker({
           position: {lng : p.position.longitude , lat : p.position.latitude},
           map,
           animation : window.google.maps.Animation.DROP,
           icon : data.state.markerIcon["Market"]
         })
-        
-    
-        //this.genPopup(p.name)
+
         var contentInfo
         let path = `overView`;
-        var x = this.props.history
+        var x = props.history
         var tmpInfo = new window.google.maps.InfoWindow({
-       
         })
         fetch(
           `https://api.openweathermap.org/data/2.5/onecall?lat=${p.position.latitude}&lon=${p.position.longitude}&exclude=hourly,daily,minutely&appid=${weatherKey}`
         )
           .then((res) => res.json())
-          .then((data) => {
-            console.log(data)
-           
-            contentInfo = this.genContent(p,data)
-             
+          .then((data) => {  
+            contentInfo = genContent(p,data)
               //infowindow.setContent('<input type="button" value="View" onclick="joinFunction()"><input type="button" value="Join" onclick="alert(\"infoWindow\")">');
             tmpInfo.setContent(contentInfo)
           })
 
-        
         var nameInfo = 
         `<div>${p.name}</div>`
         var tmp2Info = new window.google.maps.InfoWindow({
           content : nameInfo
         })
         tmp.addListener("click",e=>{
-            this.clearOldInfo()
+            clearOldInfo()
             tmpInfo.open({
               anchor : tmp,
               map,
               shouldFocus: true
             })
-            this.setState({
-              usedInfo : tmpInfo
-            })
+            setUsedInfo(tmpInfo)
         })
         tmp.addListener("mouseover",e=>{
           tmp2Info.open({
@@ -228,34 +207,17 @@ class MapContent extends Component {
         tmp.addListener("mouseout",e=>{
           tmp2Info.close()
         })
-        this.state.usedMarker.push(tmp)
-        
-       
+        console.log(tmp)
+        markerList.push(tmp)
     })
+    usedMarker =markerList
+    console.log(usedMarker)
   })
   }
-  async genPopup(name){
-    //fecth weather api
-    let place = this.state.place.get(name)
-    let lat = place.position.lat
-    let lon = place.position.lng
-    fetch(
-			`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly,daily,minutely&appid=${weatherKey}`
-		)
-			.then((res) => res.json())
-			.then((data) => {
-          let returnText = 
-          `<div className="pop-up">` +
-            `<h2>${name}</h2>`
-            `<p>${place.Description}</p>`
-            `<div>Type : ${place.Type}</div>`
-            `<div>Temp : ${data.current.temp}</div>`
-            `<img src=${"http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png"}/>`
-          `</div>`
-          return returnText
-      });	
-  }
-  componentDidMount() {
+
+  
+  useEffect(()=> {
+    console.log("render")
     if (!window.google) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
@@ -264,32 +226,33 @@ class MapContent extends Component {
       x.parentNode.insertBefore(s, x);
       // Below is important. 
       //We cannot access google.maps until it's finished loading
-      
       s.addEventListener('load', e => {
-        this.onScriptLoad()
-        this.dataHandler()
-        this.createZoom()
-        
+        onScriptLoad()
+        dataHandler()
+        createZoom()
       })
-    } else {
-      this.onScriptLoad()
     }
-  }
+    else {
+      onScriptLoad()
+    }
+    },["s"])
   
-  searchProvince(event, inputValue){
+  const searchProvince=(event, inputValue)=>{
     if (inputValue=="" || inputValue==null) return
    
-    this.clearOldInfo()
-    if (this.state.focusProvince.province ==  inputValue) return
+    clearOldInfo()
+    //if (this.state.focusProvince.province ==  inputValue) return
+    map.setZoom(9.5)
+    window.google.maps.event.trigger(map, 'resize');
     map.setCenter(new window.google.maps.LatLng(data.state.centerMap[inputValue]['lat'],data.state.centerMap[inputValue]['lng']))
   
-    map.setZoom(9.5)
-    this.createMarker(inputValue)
-   var f = null;
-      window.google.maps.event.trigger(map, 'resize');
+    
+    map.data.overrideStyle(focusProvince.feature, { fillOpacity: 0.3 });
+    createMarker(inputValue)
+    var f = null;
+      
       map.data.forEach(function(feature){
         if (feature.getProperty('ADM1_TH')==inputValue){
-         
           f = feature;
           return;
         }
@@ -297,39 +260,30 @@ class MapContent extends Component {
       })
       if (f!=null){
         map.data.overrideStyle(f, { fillOpacity: 0.1 });
-        console.log(f)
-      this.setState({
-        focusProvince : {province : inputValue ,
-                        feature : f}
-      })
+        
+        focusProvince={province : inputValue ,
+          feature : f}
+          console.log(focusProvince)
     }
-
-     /* map.data.overrideStyle(this.state.focusProvince.feature, { fillOpacity: 0.3 });
-      this.setState({
-        focusProvince : {province : name ,
-                        feature : e.feature}
-      })*/
   }
 
-  render() {
+
     return (
       <>
       
       <Autocomplete
         id="combo-box-demo"
         options={data.state.province}
-        onInputChange={this.searchProvince}
+        onInputChange={searchProvince}
         style={{ width: 300 }}
         renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
       />
-        <div style={{ width: '100%', height: '100%' }} id={this.props.id}>
+        <div style={{ width: '100%', height: '100%' }} id={props.id}>
             
         </div>
        
         </>
     );
-  }
-}
-
+    }
 export default withRouter(MapContent)
 
