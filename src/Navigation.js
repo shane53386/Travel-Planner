@@ -1,16 +1,26 @@
 import React, { useContext, useEffect, useState } from "react";
 import { auth } from "./firebase";
-import { Button,Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown,Table } from "react-bootstrap";
+import { Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown,Table } from "react-bootstrap";
+import {IconButton,Button} from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 import "./index.css";
 import CheckModal from "./checkModal";
+import { makeStyles } from '@material-ui/core/styles';
 
-
+const useStyles = makeStyles((theme) => ({
+	button: {
+	  margin: theme.spacing(1),
+	},
+  }));
 
 
 function Navigation(){
 	const [newPlan,setNewPlan] = useState(null)
 	const [show,setShow] = useState(false)
 	const [willDeletePlan,setDeletePlan] = useState(null)
+	const classes = useStyles();
+
+	
 	useEffect(()=>{
 		
 	},[])
@@ -21,27 +31,25 @@ function Navigation(){
 		let buffer = []
 		planList.map((l)=>{
 			buffer.push(
-								<tr style={{padding:"0px",margin:"0px",border:"none"}}>
-										<td style={{padding:"0px",margin:"0px",border:"none"}}>
-										<a class="dropdown-item" href="./planPage">{l}</a>
-										</td>
-										<td id="planDelete" style={{border:"none",textAlign:"center",minWidth:"50px",padding:"0px",margin:"0px"}}>
-										<Button name={l} onClick={showModal}></Button>
-										</td>
-									</tr>
-	
-							
+						<tr style={{padding:"0px",margin:"0px",border:"none"}}>
+							<td style={{padding:"0px",margin:"0px",border:"none"}}>
+								<a class="dropdown-item" href="./planPage">{l}</a>
+							</td>
+							<td id="planDelete" style={{border:"none",textAlign:"center",minWidth:"50px",padding:"0px",margin:"0px"}}>
+							<Button variant="contained"	color="secondary" value={l} onClick={showModal} className={classes.button}startIcon={<DeleteIcon />}>
+								Delete
+							</Button>
+							</td>
+						</tr>	
 					)
-	
 		})
 		return buffer
-		
 	}
 	
-	const showModal=(event)=>{
-		console.log(event.target.name)
+	const showModal=(e)=>{
+		console.log(e.currentTarget.value)
 
-		setDeletePlan(event.target.name)
+		setDeletePlan(e.currentTarget.value)
 		setShow(true)
 	}
 	const deletePlan=(confirm)=>{
@@ -72,23 +80,24 @@ function Navigation(){
 		<Navbar bg="primary" variant="dark">
 			<Navbar.Brand href="#home">Navbar</Navbar.Brand>
 			<Nav className="mr-auto">
-			<Nav.Link href="./Home">Home</Nav.Link>
-			
-			<NavDropdown type="button" title="Plans" id="basic-nav-dropdown">
-			
-			<Table class="table table-hover" id="plantTable">
-				{genPlan()}
-			</Table>
-				<NavDropdown.Divider />
-				<NavDropdown.ItemText >
-					<FormControl onChange={handlenewPlan} value={newPlan} type="text" placeholder="Add Plan" className="mr-sm-2"/>
-					<Button onClick={addNewPlan}></Button>
-				</NavDropdown.ItemText>
-			</NavDropdown>
+				<Nav.Link href="./Home">Home</Nav.Link>
+				
+				<NavDropdown type="button" title="Plans" id="basic-nav-dropdown">
+					<Table class="table table-hover" id="plantTable">
+						{genPlan()}
+					</Table>
+					<NavDropdown.Divider />
+						<NavDropdown.ItemText >
+							<FormControl onChange={handlenewPlan} value={newPlan} type="text" placeholder="Add Plan" className="mr-sm-2"/>
+							<Button variant="contained"	color="primary" className={classes.button} onClick={addNewPlan}>Add</Button>
+						</NavDropdown.ItemText>
+					</NavDropdown>
+
+				<Nav.Link href="./expense">Expense</Nav.Link>
 			</Nav>
 			<Form inline>
 			<FormControl type="text" placeholder="Search" className="mr-sm-2" />
-			<Button variant="outline-light">Search</Button>
+			<Button variant="outlined"	 className={classes.button} onClick={addNewPlan}>Search</Button>
 
 			
 	<Dropdown>

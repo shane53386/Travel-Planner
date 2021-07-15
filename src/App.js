@@ -26,24 +26,11 @@ function App() {
 			<AuthProvider>
 				<Router>
 					<Switch>
-						<Route exact path="/home" render={()=>
-							<div style= {{width: '80%', height: 600,}} >
-							<MapContent id="myMap"  
-							options={
-							{center: { lng : 100.633214325 , lat : 13.724293875 },
-							zoom: 6,
-							restriction: {
-								latLngBounds: THAI_BOUNDS,
-								strictBounds: false,
-							}}}
-							src='https://data.opendevelopmentmekong.net/geoserver/ODMekong/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ODMekong%3Atha_admbnda_adm1_rtsd_20190221&outputFormat=application%2Fjson'/>
-							 
-							</div>}
-							/>
+						<Route exact path="/home" component={Home}/>
 						
 						<Route path="/login" component={LogIn} />
 						<Route path="/signup" component={SignUp} />
-						
+						<Route path="/expense" component={Expense} />
 						<Route path="/planPage" component={overView} />
 						<Route
 							path="/resetpassword"
