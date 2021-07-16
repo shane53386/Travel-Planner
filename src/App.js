@@ -13,6 +13,7 @@ import Expense from './ExpensePage/expense';
 import overView from "./Plan/overView";
 import Review from "./rating/Review";
 import { AuthProvider } from "./authenticate/Auth";
+import { HomeProvider } from "./homeProvider";
 const THAI_BOUNDS = {
 	north: 21,
 	south: 4,
@@ -24,21 +25,21 @@ function App() {
 		<>
 			<Navigation />
 			<AuthProvider>
-				<Router>
-					<Switch>
-						<Route exact path="/home" component={Home}/>
-						
-						<Route path="/login" component={LogIn} />
-						<Route path="/signup" component={SignUp} />
-						<Route path="/expense" component={Expense} />
-						<Route path="/planPage" component={overView} />
-						<Route
-							path="/resetpassword"
-							component={ResetPassword}
-						/>
-					</Switch>
-				</Router>
-			</AuthProvider>
+					<Router>
+						<Switch>
+							<Route exact path="/home" component={Home}/>
+							
+							<Route path="/login" component={LogIn} />
+							<Route path="/signup" component={SignUp} />
+							<Route path="/expense" component={Expense} />
+							<Route path="/planPage" component={overView} />
+							<Route
+								path="/resetpassword"
+								component={ResetPassword}
+							/>
+						</Switch>
+					</Router>
+				</AuthProvider>
 		</>
 	);
 }

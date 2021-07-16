@@ -15,13 +15,16 @@ const data = new Data()
 const weatherKey = "22f30fcf6dd5b269bf5cbe441f735a39";
 
 var focusProvince = {province : "null" , feature : "null"}
-var usedMarker = []
+var province_usedMarker = []
+var plan_usedMarker = []
+var usedInfo = null
+var nullButton = []
+var focus = "province"
 function MapContent (props){
 
   const home = useHome();
-  const [inProvince,setInprovince] = useState([])
+
   //const [usedMarker,setUsedMarker] = useState([])
-  const [usedInfo,setUsedInfo] = useState(null)
  
   //const [focusProvince,setFocusProvince] = useState({province : "null" , feature : "null"})
      
@@ -34,7 +37,8 @@ function MapContent (props){
   }
   
    const createZoom=()=>{
-    map.data.addListener("click", e => {
+    map.data.addListener("rightclick", e => {
+      focus = "province"
       
       var name = e.feature.getProperty("ADM1_TH")
       clearOldInfo()
@@ -43,12 +47,12 @@ function MapContent (props){
       window.google.maps.event.trigger(map, 'resize');
       map.setCenter(new window.google.maps.LatLng(data.state.centerMap[name]['lat'],data.state.centerMap[name]['lng']))
       
-      createMarker(e.feature.getProperty("ADM1_TH"))
+      province_createMarker(e.feature.getProperty("ADM1_TH"))
      
       map.data.overrideStyle(focusProvince.feature, { fillOpacity: 0.3 });
       focusProvince = {province : name , feature : e.feature}
       map.data.overrideStyle( e.feature, { fillOpacity: 0.1 });
-      console.log(e.feature)
+      
     })
 
     map.addListener("zoom_changed", () => {
@@ -56,7 +60,7 @@ function MapContent (props){
       if (map.getZoom() < 7.5){
         tmp = null
       }
-      usedMarker && usedMarker.map(p=>{
+      province_usedMarker &&province_usedMarker.map(p=>{
           p.setMap(tmp)
         })
       })
@@ -98,25 +102,51 @@ function MapContent (props){
     usedInfo && usedInfo.close() 
   }
 
-  const clearOldMarker=()=>{
-      console.log(usedMarker)
-      usedMarker && usedMarker.map(p=>{
+  const province_clearOldMarker=()=>{
+    province_usedMarker && province_usedMarker.map(p=>{
         p.setMap(null)
         p.setVisible(false)
       })
-      
-      usedMarker = []
-      console.log(usedMarker)
-   
+      province_usedMarker = []
+  }
+  
+  const plan_clearOldMarker=()=>{
+    plan_usedMarker && plan_usedMarker.map(p=>{
+        p.setMap(null)
+        p.setVisible(false)
+      })
+      plan_usedMarker = []
+  }
+
+  const showOnePlan=(places)=>{
+    plan_clearOldMarker()
+    province_clearOldMarker()
+    focusProvince =  {province : "null" , feature : "null"}
+    focus = "plan"
+    var markerList = []
+    places.map(p=>{
+      markerList.push(createOneMarker(p,"plan"))
+    })
+    console.log(focus)
+    plan_usedMarker=markerList
+  }
+
+  const showOnePlace=(place,plan)=>{
+    console.log(plan,focus)
+    if (focus=="province"){
+      showOnePlan(plan)
+    }
+    clearOldInfo()
+    document.getElementById(place.Name+"Marker").click();
   }
 
   const genContent=(p,data)=>{
     var path = "xxx"
     return ('<div id = "content">' +
       '<div id = "siteNotice"/>'+
-            '<h1 id="firstHeading" class="firstHeading"><b>'+p.name+'</b></h1> <br>'+
-            `<p>${p.description}</p>`+
-            `<div>Type : ${p.type}</div>`+
+            '<h1 id="firstHeading" class="firstHeading"><b>'+p.Name+'</b></h1> <br>'+
+            `<p>${p.Description}</p>`+
+            `<div>Type : ${p.Type}</div>`+
             `<div>Temp : ${data.current==null? "Unknown":data.current.temp}</div>`+
             `<img src=${data.current==null? "":"http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png"}/>`+
             '<div id=toDetail></div>'+
@@ -134,13 +164,13 @@ function MapContent (props){
     return "<Button onClick={this.toDetail()}>Read More</Button>"
     
   }
-  const createMarker=(province)=>{
+  const province_createMarker=(province)=>{
     
     //clear old markers
     clearOldInfo()
     //clear old Info
-    clearOldMarker()
-
+    province_clearOldMarker()
+    plan_clearOldMarker()
     //find new
     var place = new Map()
     var content = fetchPlace(province)
@@ -149,75 +179,101 @@ function MapContent (props){
     console.log(province)
     content && content
     .then(e=>{
-      home.setData(e)
+      //home.setData(e)
       e.map(data=>{
-        place.set(data.Name,{ name : data.Name,
-                              type : data.Type,
-                              position : data.Position,
-                              description : data.Description})
+        place.set(data.Name,{ Name : data.Name,
+                              Type : data.Type,
+                              Position : data.Position,
+                              Description : data.Description})
       })
   })
   .then(e=>{
-    
     place && place.forEach((p,keys)=>{
-      console.log(place)
-        var tmp = new window.google.maps.Marker({
-          position: {lng : p.position.longitude , lat : p.position.latitude},
-          map,
-          animation : window.google.maps.Animation.DROP,
-          icon : data.state.markerIcon["Market"]
-        })
-
-        var contentInfo
-        let path = `overView`;
-        var x = props.history
-        var tmpInfo = new window.google.maps.InfoWindow({
-        })
-        fetch(
-          `https://api.openweathermap.org/data/2.5/onecall?lat=${p.position.latitude}&lon=${p.position.longitude}&exclude=hourly,daily,minutely&appid=${weatherKey}`
-        )
-          .then((res) => res.json())
-          .then((data) => {  
-            contentInfo = genContent(p,data)
-              //infowindow.setContent('<input type="button" value="View" onclick="joinFunction()"><input type="button" value="Join" onclick="alert(\"infoWindow\")">');
-            tmpInfo.setContent(contentInfo)
-          })
-
-        var nameInfo = 
-        `<div>${p.name}</div>`
-        var tmp2Info = new window.google.maps.InfoWindow({
-          content : nameInfo
-        })
-        tmp.addListener("click",e=>{
-            clearOldInfo()
-            tmpInfo.open({
-              anchor : tmp,
-              map,
-              shouldFocus: true
-            })
-            setUsedInfo(tmpInfo)
-        })
-        tmp.addListener("mouseover",e=>{
-          tmp2Info.open({
-            anchor : tmp,
-            map,
-            shouldFocus: true
-          })
-        })
-        tmp.addListener("mouseout",e=>{
-          tmp2Info.close()
-        })
-        console.log(tmp)
-        markerList.push(tmp)
+      markerList.push(createOneMarker(p)) 
     })
-    usedMarker =markerList
-    console.log(usedMarker)
+    province_usedMarker =markerList
+    console.log(province_usedMarker)
   })
   }
 
+  const createOneMarker=(p,type)=>{
+    
+    //console.log(p.Name+"Marker")
+    var tmp = new window.google.maps.Marker({
+      position: {lng : p.Position.longitude , lat : p.Position.latitude},
+      map,
+      animation : window.google.maps.Animation.DROP,
+      icon : data.state.markerIcon["Market"]
+    })
+   
+    usedInfo = tmpInfo
+    //tmp.set("id", p.Name+"Marker");
+    console.log(tmp.get("id"));
+    var contentInfo
+    let path = `overView`;
+    var x = props.history
+    var tmpInfo = new window.google.maps.InfoWindow({
+    })
+    if(type=="plan"){
+    nullButton.push(<div style={{display:"none"}}>
+                          <Button id={p.Name+"Marker"}
+                                  onClick={()=>{
+                                    clearOldInfo()
+                                    tmpInfo.open({
+                                      anchor : tmp,
+                                      map,
+                                      shouldFocus: true
+                                      })
+                                    usedInfo = tmpInfo
+                                  }}/>
+                        </div>)
+    }
+    fetch(
+      `https://api.openweathermap.org/data/2.5/onecall?lat=${p.Position.latitude}&lon=${p.Position.longitude}&exclude=hourly,daily,minutely&appid=${weatherKey}`
+    )
+      .then((res) => res.json())
+      .then((data) => {  
+        
+        contentInfo = genContent(p,data)
+          //infowindow.setContent('<input type="button" value="View" onclick="joinFunction()"><input type="button" value="Join" onclick="alert(\"infoWindow\")">');
+          console.log(p,data,contentInfo)
+          tmpInfo.setContent(contentInfo)
+        
+      })
+
+    var nameInfo = 
+    `<div>${p.Name}</div>`
+    var tmp2Info = new window.google.maps.InfoWindow({
+      content : nameInfo
+    })
+    tmp.addListener("click",e=>{
+        clearOldInfo()
+        tmpInfo.open({
+          anchor : tmp,
+          map,
+          shouldFocus: true
+        })
+        usedInfo = tmpInfo
+    })
+    tmp.addListener("mouseover",e=>{
+      tmp2Info.open({
+        anchor : tmp,
+        map,
+        shouldFocus: true
+      })
+    })
+    tmp.addListener("mouseout",e=>{
+      tmp2Info.close()
+    })
+
+    
+    return tmp
+   
+  }
   
   useEffect(()=> {
-    console.log("render")
+    props.showOnePlace.current = showOnePlace
+    props.showOnePlan.current = showOnePlan
     if (!window.google) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
@@ -248,7 +304,7 @@ function MapContent (props){
   
     
     map.data.overrideStyle(focusProvince.feature, { fillOpacity: 0.3 });
-    createMarker(inputValue)
+    province_createMarker(inputValue)
     var f = null;
       
       map.data.forEach(function(feature){
@@ -274,13 +330,16 @@ function MapContent (props){
       <Autocomplete
         id="combo-box-demo"
         options={data.state.province}
-        onInputChange={searchProvince}
+        onChange={searchProvince}
         style={{ width: 300 }}
         renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
       />
         <div style={{ width: '100%', height: '100%' }} id={props.id}>
             
         </div>
+      {nullButton.map(btn=>{
+        return btn
+      })}
        
         </>
     );

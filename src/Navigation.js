@@ -6,6 +6,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import "./index.css";
 import CheckModal from "./checkModal";
 import { makeStyles } from '@material-ui/core/styles';
+import { useHome } from './homeProvider';
+import { useAuth } from "./authenticate/Auth";
 
 const useStyles = makeStyles((theme) => ({
 	button: {
@@ -19,13 +21,21 @@ function Navigation(){
 	const [show,setShow] = useState(false)
 	const [willDeletePlan,setDeletePlan] = useState(null)
 	const classes = useStyles();
+	const data = useHome();
+	const auth = useAuth();
 
 	
 	useEffect(()=>{
 		
 	},[])
+
+	const selectPlan=(event)=>{
+		console.log(event.target.value)
+		data.setPlan()
+	}
 	const genPlan=()=>{
 		
+		//gen from plan of current user in auth
 		var planList = ["one","two","three"]
 		//fecth plan from context
 		let buffer = []
@@ -33,7 +43,7 @@ function Navigation(){
 			buffer.push(
 						<tr style={{padding:"0px",margin:"0px",border:"none"}}>
 							<td style={{padding:"0px",margin:"0px",border:"none"}}>
-								<a class="dropdown-item" href="./planPage">{l}</a>
+								<a class="dropdown-item" href="./planPage" value={l} onClick={selectPlan}>{l}</a>
 							</td>
 							<td id="planDelete" style={{border:"none",textAlign:"center",minWidth:"50px",padding:"0px",margin:"0px"}}>
 							<Button variant="contained"	color="secondary" value={l} onClick={showModal} className={classes.button}startIcon={<DeleteIcon />}>
