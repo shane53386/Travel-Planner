@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { auth } from "./firebase";
 import { Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown,Table } from "react-bootstrap";
 import {IconButton,Button} from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -21,7 +20,6 @@ function Navigation(){
 	const [show,setShow] = useState(false)
 	const [willDeletePlan,setDeletePlan] = useState(null)
 	const classes = useStyles();
-	const data = useHome();
 	const auth = useAuth();
 
 	
@@ -31,7 +29,7 @@ function Navigation(){
 
 	const selectPlan=(event)=>{
 		console.log(event.target.value)
-		data.setPlan()
+		//data.setPlan()
 	}
 	const genPlan=()=>{
 		
@@ -91,7 +89,8 @@ function Navigation(){
 			<Navbar.Brand href="/home">Navbar</Navbar.Brand>
 			<Nav className="mr-auto">
 				<Nav.Link href="/Home">Home</Nav.Link>
-				
+				{auth.currentUser != null? null:
+				<>
 				<NavDropdown type="button" title="Plans" id="basic-nav-dropdown">
 					<Table class="table table-hover" id="plantTable">
 						{genPlan()}
@@ -102,8 +101,9 @@ function Navigation(){
 							<Button variant="contained"	color="primary" className={classes.button} onClick={addNewPlan}>Add</Button>
 						</NavDropdown.ItemText>
 					</NavDropdown>
-
 				<Nav.Link href="/expense">Expense</Nav.Link>
+				</>
+				}
 			</Nav>
 			<Form inline>
 			<FormControl type="text" placeholder="Search" className="mr-sm-2" />

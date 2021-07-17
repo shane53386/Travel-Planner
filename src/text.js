@@ -120,6 +120,7 @@ function MapContent (props){
 
   const showOnePlan=(places)=>{
     plan_clearOldMarker()
+    //clearOldInfo()
     province_clearOldMarker()
     focusProvince =  {province : "null" , feature : "null"}
     focus = "plan"
@@ -137,7 +138,11 @@ function MapContent (props){
       showOnePlan(plan)
     }
     clearOldInfo()
+    
     document.getElementById(place.Name+"Marker").click();
+    map.setZoom(10)
+    window.google.maps.event.trigger(map, 'resize');
+    map.setCenter({lng : place.Position.longitude , lat : place.Position.latitude})
   }
 
   const genContent=(p,data)=>{
@@ -333,7 +338,7 @@ function MapContent (props){
     return (
       <>
       <div style={{display:"none"}}>
-        <Button href={"./planPage/"+ usedInfo.name} id="toDetail"/>
+        <Button href={"./planPage/"+ usedInfo!=undefined? "":usedInfo.name} id="toDetail"/>
       </div>
       <Autocomplete
         id="combo-box-demo"

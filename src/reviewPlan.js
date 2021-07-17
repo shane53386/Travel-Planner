@@ -70,6 +70,10 @@ export default function ReviewPlan(props) {
 
     }
 
+    const update=(event)=>{
+        console.log(home.plan,event)
+        props.showOnePlan.current(itemData.get(home.plan))
+    }
     const showDataPlace=(event,value)=>{
         home.setFocusPlace(event.currentTarget.id)
         itemData.get(home.plan).map(place=>{
@@ -88,6 +92,7 @@ export default function ReviewPlan(props) {
                 id="combo-box-demo"
                 options={allPlans}
                 onChange={searchPlan}
+                onClick={update}
                 style={{ width: 300 }}
                 renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
             />

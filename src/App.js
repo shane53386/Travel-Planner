@@ -23,8 +23,9 @@ const THAI_BOUNDS = {
 function App() {
 	return (
 		<>
+		<AuthProvider>
 			<Navigation />
-			<AuthProvider>
+			
 					<Router>
 						<Switch>
 							<Route exact path="/home" component={Home}/>
