@@ -88,9 +88,9 @@ function Navigation(){
 	return (
 
 		<Navbar bg="primary" variant="dark">
-			<Navbar.Brand href="#home">Navbar</Navbar.Brand>
+			<Navbar.Brand href="/home">Navbar</Navbar.Brand>
 			<Nav className="mr-auto">
-				<Nav.Link href="./Home">Home</Nav.Link>
+				<Nav.Link href="/Home">Home</Nav.Link>
 				
 				<NavDropdown type="button" title="Plans" id="basic-nav-dropdown">
 					<Table class="table table-hover" id="plantTable">
@@ -103,7 +103,7 @@ function Navigation(){
 						</NavDropdown.ItemText>
 					</NavDropdown>
 
-				<Nav.Link href="./expense">Expense</Nav.Link>
+				<Nav.Link href="/expense">Expense</Nav.Link>
 			</Nav>
 			<Form inline>
 			<FormControl type="text" placeholder="Search" className="mr-sm-2" />
@@ -116,8 +116,8 @@ function Navigation(){
   </Dropdown.Toggle>
 
   <Dropdown.Menu align="right">
-    {false? null:<Dropdown.Item href="./LogIn">Login</Dropdown.Item>}
-    {false? null:<Dropdown.Item href="./Home" onClick={() => auth.signOut()}>Logout</Dropdown.Item>}
+    {false? null:<Dropdown.Item href="/LogIn">Login</Dropdown.Item>}
+    {false? null:<Dropdown.Item href="/Home" onClick={() => auth.signOut()}>Logout</Dropdown.Item>}
 	
   </Dropdown.Menu>
 </Dropdown>

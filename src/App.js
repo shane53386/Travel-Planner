@@ -32,7 +32,7 @@ function App() {
 							<Route path="/login" component={LogIn} />
 							<Route path="/signup" component={SignUp} />
 							<Route path="/expense" component={Expense} />
-							<Route path="/planPage" component={overView} />
+							<Route path="/planPage/:place" component={overView} />
 							<Route
 								path="/resetpassword"
 								component={ResetPassword}

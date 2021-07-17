@@ -6,8 +6,12 @@ import './table.css'
 import {Provider} from './provider';
 function OverView(props){
     const [key, setKey] = useState('home');
-
+    useEffect(()=>{
+      console.log(props.match.params.place)
+    },[])
+    
   return (
+    
     <Provider>
     <Tabs
       id="controlled-tab-example"

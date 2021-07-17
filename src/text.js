@@ -17,7 +17,7 @@ const weatherKey = "22f30fcf6dd5b269bf5cbe441f735a39";
 var focusProvince = {province : "null" , feature : "null"}
 var province_usedMarker = []
 var plan_usedMarker = []
-var usedInfo = null
+var usedInfo = {info : null,name:""}
 var nullButton = []
 var focus = "province"
 function MapContent (props){
@@ -98,8 +98,8 @@ function MapContent (props){
 }
 
   const clearOldInfo=()=>{
-    //console.log(this.state.usedInfo)
-    usedInfo && usedInfo.close() 
+    console.log(usedInfo)
+    usedInfo.info && usedInfo.info.close() 
   }
 
   const province_clearOldMarker=()=>{
@@ -141,6 +141,7 @@ function MapContent (props){
   }
 
   const genContent=(p,data)=>{
+    nullButton.push()
     var path = "xxx"
     return ('<div id = "content">' +
       '<div id = "siteNotice"/>'+
@@ -150,11 +151,8 @@ function MapContent (props){
             `<div>Temp : ${data.current==null? "Unknown":data.current.temp}</div>`+
             `<img src=${data.current==null? "":"http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png"}/>`+
             '<div id=toDetail></div>'+
-            `<input type='button' id='butSubmit' value='Procurar' onclick={console.log("path",${path})}>`+
-            '<BrowserRouter>'+
-              `<Link to="/table">ReadMore</Link>`+
-              '<Route path="/table" render={() => <div style= {{width: "100%", height: 800,}} >   <OverView/>    </div>} />'+
-            '</BrowserRouter>'+
+            `<input type='button' id='butSubmit' value='Procurar' onclick={document.getElementById("toDetail").click()} )}>`+
+           
       '</div>'+
       '</div>')
   }
@@ -197,7 +195,9 @@ function MapContent (props){
   }
 
   const createOneMarker=(p,type)=>{
-    
+
+    console.log(home.focusPlace)
+    home.setFocusPlace(p.Name)
     //console.log(p.Name+"Marker")
     var tmp = new window.google.maps.Marker({
       position: {lng : p.Position.longitude , lat : p.Position.latitude},
@@ -206,7 +206,7 @@ function MapContent (props){
       icon : data.state.markerIcon["Market"]
     })
    
-    usedInfo = tmpInfo
+    
     //tmp.set("id", p.Name+"Marker");
     console.log(tmp.get("id"));
     var contentInfo
@@ -214,6 +214,7 @@ function MapContent (props){
     var x = props.history
     var tmpInfo = new window.google.maps.InfoWindow({
     })
+    usedInfo = {info:tmpInfo , name :p.Name}
     if(type=="plan"){
     nullButton.push(<div style={{display:"none"}}>
                           <Button id={p.Name+"Marker"}
@@ -224,7 +225,7 @@ function MapContent (props){
                                       map,
                                       shouldFocus: true
                                       })
-                                    usedInfo = tmpInfo
+                                    usedInfo = {info:tmpInfo,name:p.Name}
                                   }}/>
                         </div>)
     }
@@ -236,7 +237,6 @@ function MapContent (props){
         
         contentInfo = genContent(p,data)
           //infowindow.setContent('<input type="button" value="View" onclick="joinFunction()"><input type="button" value="Join" onclick="alert(\"infoWindow\")">');
-          console.log(p,data,contentInfo)
           tmpInfo.setContent(contentInfo)
         
       })
@@ -253,7 +253,7 @@ function MapContent (props){
           map,
           shouldFocus: true
         })
-        usedInfo = tmpInfo
+        usedInfo = {info : tmpInfo , name:p.Name}
     })
     tmp.addListener("mouseover",e=>{
       tmp2Info.open({
@@ -271,9 +271,15 @@ function MapContent (props){
    
   }
   
+  const toDetailPage=()=>{
+    console.log(usedInfo.name)
+    return <OverView/>
+  }
+
   useEffect(()=> {
     props.showOnePlace.current = showOnePlace
     props.showOnePlan.current = showOnePlan
+    
     if (!window.google) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
@@ -326,7 +332,9 @@ function MapContent (props){
 
     return (
       <>
-      
+      <div style={{display:"none"}}>
+        <Button href={"./planPage/"+ usedInfo.name} id="toDetail"/>
+      </div>
       <Autocomplete
         id="combo-box-demo"
         options={data.state.province}
@@ -337,6 +345,7 @@ function MapContent (props){
         <div style={{ width: '100%', height: '100%' }} id={props.id}>
             
         </div>
+        
       {nullButton.map(btn=>{
         return btn
       })}
