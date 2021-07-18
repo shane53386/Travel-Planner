@@ -1,11 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Navigation from "./Navigation";
-import Home from "./Home";
+import Home from "./Home/Home.js";
 import LogIn from "./authenticate/LogIn";
 import SignUp from "./authenticate/SignUp";
 import ResetPassword from "./authenticate/ResetPassword";
-import MapContent from "./text"
+import MapContent from "./Home/text"
 import MapDirection from './Plan/mapDirect';
 import Expense from './ExpensePage/expense';
 //import PlanPage from "./Plan/PlanPage";
@@ -34,6 +34,7 @@ function App() {
 							<Route path="/signup" component={SignUp} />
 							<Route path="/expense" component={Expense} />
 							<Route path="/planPage/:place" component={overView} />
+							<Route path="/planPage" component={overView} />
 							<Route
 								path="/resetpassword"
 								component={ResetPassword}

@@ -39,7 +39,7 @@ function Navigation(){
 		let buffer = []
 		planList.map((l)=>{
 			buffer.push(
-						<tr style={{padding:"0px",margin:"0px",border:"none"}}>
+						<tr style={{verticalAlign:"middle", padding:"0px",margin:"0px",border:"none"}}>
 							<td style={{padding:"0px",margin:"0px",border:"none"}}>
 								<a class="dropdown-item" href="./planPage" value={l} onClick={selectPlan}>{l}</a>
 							</td>

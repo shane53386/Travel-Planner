@@ -6,9 +6,9 @@ import ImageListItemBar from '@material-ui/core/ImageListItemBar';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
-import { useHome } from "./homeProvider";
+import { useHome } from "../homeProvider";
 import {Autocomplete} from '@material-ui/lab';
-import { useAuth } from "./authenticate/Auth";
+import { useAuth } from "../authenticate/Auth";
 import {TextField}  from '@material-ui/core';
 import { computeHeadingLevel } from "@testing-library/react";
 
@@ -87,7 +87,7 @@ export default function ReviewPlan(props) {
     }
     return (
         
-        <div className={classes.root}>
+        <>
             <Autocomplete
                 id="combo-box-demo"
                 options={allPlans}
@@ -118,7 +118,7 @@ export default function ReviewPlan(props) {
                 </ImageListItem>
                 ))}
             </ImageList>
-        </div>
+        </>
         );
     
 

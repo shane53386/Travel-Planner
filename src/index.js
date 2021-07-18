@@ -1,6 +1,5 @@
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter, Link , Route,Switch, } from 'react-router-dom';
-import MapContent from "./text"
 import MapDirection from './Plan/mapDirect';
 import Expense from './ExpensePage/expense';
 import ReactDOM from 'react-dom';

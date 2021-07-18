@@ -1,13 +1,13 @@
 import React, { useState, useEffect ,Component,useContext } from 'react';
-import Data from "./Data";
+import Data from "../Data";
 //import MarkerPin from "./src/MarkerPin"
-import fetchPlace from './fetchData';
+import fetchPlace from '../fetchData';
 import {Autocomplete} from '@material-ui/lab';
 import {TextField}  from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import {BrowserRouter, Link , Route,Switch,withRouter } from 'react-router-dom';
-import OverView from './Plan/overView';
-import { useHome } from './homeProvider';
+import OverView from '../Plan/overView';
+import { useHome } from '../homeProvider';
 
 var map;var dataLayer;var info 
 var geoJson = null
@@ -284,7 +284,7 @@ function MapContent (props){
   useEffect(()=> {
     props.showOnePlace.current = showOnePlace
     props.showOnePlan.current = showOnePlan
-    
+    props.searchProvince.current = searchProvince
     if (!window.google) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
@@ -304,9 +304,9 @@ function MapContent (props){
     }
     },["s"])
   
-  const searchProvince=(event, inputValue)=>{
+  const searchProvince=(inputValue)=>{
     if (inputValue=="" || inputValue==null) return
-   
+     console.log(inputValue)
     clearOldInfo()
     //if (this.state.focusProvince.province ==  inputValue) return
     map.setZoom(9.5)
@@ -338,15 +338,9 @@ function MapContent (props){
     return (
       <>
       <div style={{display:"none"}}>
-        <Button href={"./planPage/"+ usedInfo!=undefined? "":usedInfo.name} id="toDetail"/>
+        <Button href={"./planPage/"+usedInfo.name} id="toDetail"/>
       </div>
-      <Autocomplete
-        id="combo-box-demo"
-        options={data.state.province}
-        onChange={searchProvince}
-        style={{ width: 300 }}
-        renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
-      />
+      
         <div style={{ width: '100%', height: '100%' }} id={props.id}>
             
         </div>

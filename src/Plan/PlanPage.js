@@ -20,7 +20,6 @@ function PlanPage(props) {
 		console.log("new data",data)
 		//console.log("lits",list)
 		
-	
 		setData(data);
 		props.sendCallback(data)
 		

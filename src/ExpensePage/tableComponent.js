@@ -121,10 +121,10 @@ class TableComponent extends Component {
                             </Form.Control.Feedback>
                         </InputGroup>
                     </td>
-                    <td> <InputGroup className="mb-1" >
-                            <FormControl type="number" min="0" id = {idx} name= {`cost ${idx.toString()} ${key}`} value = {typeDb.row[idx].cost} 
+                    <td >
+                    <FormControl type="number" min="0" id = {idx} name= {`cost ${idx.toString()} ${key}`} value = {typeDb.row[idx].cost} 
                             onChange={this.handleChange} autocomplete="off" readOnly={typeDb.readOnly}/> 
-                        </InputGroup>
+                       
                     </td>
                     <td><InputGroup className="mb-1" >
                             <InputGroup.Prepend>
@@ -143,16 +143,19 @@ class TableComponent extends Component {
     }
 
     deleteRow(event){
-        let {name} = event.target
+        let {name,value} = event.target
         let tmp = name.split(" ")
         var key = tmp[0] ; var idx = tmp[1]
         var typeDb = this.state.allType.get(key)
+        typeDb.overAllCost -= typeDb.row[idx].totalCost
+        this.state.totalCost -= typeDb.row[idx].totalCost
         typeDb.row.splice(idx,1)
         typeDb.numRow -= 1
         for (let i = idx;i<typeDb.numRow;i++){
             typeDb.row[i].id -= 1
 
         }
+        
         this.upDate()
     }
     checkValid(name){
@@ -205,7 +208,9 @@ class TableComponent extends Component {
     }
     deleteType(event){
         let {name} = event.target
+        this.state.totalCost -= this.state.allType.get(name).overAllCost
         this.state.allType.delete(name)
+        
         var index = this.state.nameType.indexOf(name);
         if (index >= 0) {
             this.state.nameType.splice( index, 1 );
