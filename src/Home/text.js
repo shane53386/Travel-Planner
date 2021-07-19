@@ -167,7 +167,7 @@ function MapContent (props){
     return "<Button onClick={this.toDetail()}>Read More</Button>"
     
   }
-  const province_createMarker=(province)=>{
+  const province_createMarker=(content)=>{
     
     //clear old markers
     clearOldInfo()
@@ -176,27 +176,22 @@ function MapContent (props){
     plan_clearOldMarker()
     //find new
     var place = new Map()
-    var content = fetchPlace(province)
+  
     
     var markerList = []
-    console.log(province)
-    content && content
-    .then(e=>{
-      //home.setData(e)
-      e.map(data=>{
+    content.map(data=>{
         place.set(data.Name,{ Name : data.Name,
                               Type : data.Type,
                               Position : data.Position,
                               Description : data.Description})
       })
-  })
-  .then(e=>{
+  
     place && place.forEach((p,keys)=>{
       markerList.push(createOneMarker(p)) 
     })
     province_usedMarker =markerList
     console.log(province_usedMarker)
-  })
+  
   }
 
   const createOneMarker=(p,type)=>{
@@ -304,7 +299,7 @@ function MapContent (props){
     }
     },["s"])
   
-  const searchProvince=(inputValue)=>{
+  const searchProvince=(inputValue,itemData)=>{
     if (inputValue=="" || inputValue==null) return
      console.log(inputValue)
     clearOldInfo()
@@ -315,7 +310,7 @@ function MapContent (props){
   
     
     map.data.overrideStyle(focusProvince.feature, { fillOpacity: 0.3 });
-    province_createMarker(inputValue)
+    province_createMarker(itemData)
     var f = null;
       
       map.data.forEach(function(feature){
