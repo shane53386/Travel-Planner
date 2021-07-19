@@ -41,7 +41,7 @@ function ReviewProvince(props){
     const [itemData,setItemData] = useState([])
     const home = useHome()
     const [checkBoxes,setCheckBoxes] = useState([])
-    const [selectType, setSelectType] = useState([]);
+    const [selectType, setSelectType] = useState(["All"]);
     const [allType,setAllType] = useState(["All","Mall","Nature","Culture"])
     const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -63,7 +63,7 @@ const MenuProps = {
           backgroundColor: theme.palette.background.paper,
         },
         imageList: {
-          width: 500,
+          
           height: 450,
         },
         icon: {
@@ -118,9 +118,9 @@ const MenuProps = {
     const showDataPlace=async(event,value)=>{
         
         home.setFocusPlace(event.currentTarget.id)
-        itemData.get(home.plan).map(place=>{
+        itemData.map(place=>{
             if (place.Name == event.currentTarget.id){
-                props.showOnePlace.current(place,itemData.get(home.plan))
+                props.showOnePlace.current(place,null)
                 return
             }
         })

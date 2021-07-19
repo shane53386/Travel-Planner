@@ -133,9 +133,11 @@ function MapContent (props){
   }
 
   const showOnePlace=(place,plan)=>{
-    console.log(plan,focus)
-    if (focus=="province"){
-      showOnePlan(plan)
+    if (plan==null) focus="province"
+    else{
+      if (focus=="province"){
+        showOnePlan(plan)
+      }
     }
     clearOldInfo()
     
@@ -215,7 +217,7 @@ function MapContent (props){
     var tmpInfo = new window.google.maps.InfoWindow({
     })
     usedInfo = {info:tmpInfo , name :p.Name}
-    if(type=="plan"){
+
     nullButton.push(<div style={{display:"none"}}>
                           <Button id={p.Name+"Marker"}
                                   onClick={()=>{
@@ -228,7 +230,7 @@ function MapContent (props){
                                     usedInfo = {info:tmpInfo,name:p.Name}
                                   }}/>
                         </div>)
-    }
+    
     fetch(
       `https://api.openweathermap.org/data/2.5/onecall?lat=${p.Position.latitude}&lon=${p.Position.longitude}&exclude=hourly,daily,minutely&appid=${weatherKey}`
     )

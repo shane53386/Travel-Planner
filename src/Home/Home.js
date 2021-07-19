@@ -19,7 +19,8 @@ function Home(){
 		<div style={{display:"inline"}}>
 		<div style= {{width: '25%', height: 600,padding:"10px", float:"left"}} >
 			<ReviewProvince
-			searchProvince = {searchProvince}/>
+			searchProvince = {searchProvince}
+			showOnePlace ={showOnePlace }/>
 			</div>
 			<div style= {{width: '50%', height: 600,padding:"10px", float:"left"}} >
             	<MapContent id="myMap"  
