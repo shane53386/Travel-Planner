@@ -5,7 +5,7 @@ import { Table } from 'react-bootstrap';
 class Expense extends Component {
     render(){
         return (
-            <div>
+            <div style={{width:'75%',justifyContent:'center'}}>
                   <TableComponent/>
             </div>
         )

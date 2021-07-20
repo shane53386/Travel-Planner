@@ -1,297 +1,336 @@
 
-import React, { Component } from 'react';
-import { InputGroup , FormControl,Form, Table , Button,DropdownButton,Dropdown} from 'react-bootstrap';
-import InputNewType from './modal.js'
+import React, { Component, useState,useEffect } from 'react';
+import { InputGroup , FormControl,Form,DropdownButton,Dropdown} from 'react-bootstrap';
+import { DataGrid } from '@material-ui/data-grid';
+import TextField from '@material-ui/core/TextField';
 import "./expense.css";
-class TableComponent extends Component {
-
-    constructor(props){
-        super(props)
-        this.state = {
-            allType : new Map(),
-            nameType : ["อื่นๆ"],
-            totalCost : 0
-            }      
-        
-        this.state.allType.set("อื่นๆ" , {
-                                    row : [ {id : 0,
-                                            list : "",
-                                            cost : null,
-                                            amount : null,
-                                            totalCost : null} ]  ,
-                                    showRow : [] ,
-                                    numRow : 1 ,
-                                    overAllCost : 0,
-                                    readOnly : false,
-                                    inValid : []
-                                } )
-
-        this.handleChange = this.handleChange.bind(this)
-        this.upDate = this.upDate.bind(this)
-        this.toggleShow = this.toggleShow.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.addRow = this.addRow.bind(this)
-        this.addNewType = this.addNewType.bind(this)
-        this.disableForm = this.disableForm.bind(this)
-        this.deleteRow = this.deleteRow.bind(this)
-        this.deleteType = this.deleteType.bind(this)
-        this.checkValid = this.checkValid.bind(this)
-    }
-    renderHeader(){
-        return (<tr id="headerTable">
-                    <th id="mediumRow">ประเภท</th>
-                    <th id="minRow">No.</th>
-                    <th id="maxRow">รายการ</th>
-                    <th >ราคาต่อหน่วย</th>
-                    <th>จำนวน</th>
-                    <th>รวม</th>
-                    <th id="mediumRow"></th>
-                </tr>)
-    }
-    handleChange(event){
-        const {name,value} = event.target
-        var tmp = name.split(" ")
-        
-        let _name = tmp[0] ; let id = tmp[1] ; let type = tmp[2]
-        var typeDb = this.state.allType.get(type)
-        
-        typeDb.row[id][_name] = value
-        typeDb.overAllCost -= typeDb.row[id].totalCost
-       
-        typeDb.row[id].totalCost = typeDb.row[id].amount * typeDb.row[id].cost
-        typeDb.overAllCost += typeDb.row[id].totalCost
-        let total = 0
-        this.state.nameType.map((e)=>{
-            total += this.state.allType.get(e).overAllCost
-        })
-        this.setState({
-
-                totalCost : total
-
-            }
-        )
-        this.upDate()
-    }
-    upDate(){
-        this.setState((prev)=>{
-            return prev     
-        })
-    }
-
-    addRow(event){
-        const {name} = event.target
-        var typeDb = this.state.allType.get(name)
-
-        typeDb.row.push({id : typeDb.numRow,
-            list : "",
-            cost : null,
-            amount : null,
-            totalCost : null})
-       
-        typeDb.numRow += 1
-        this.upDate()
-    }
-
-    toggleShow(event){
-        const {name} = event.target
-        var typeDb = this.state.allType.get(name)
-        if (typeDb.showRow.length == 0)
-            typeDb.showRow = typeDb.row
-        else 
-            typeDb.showRow = []
-        console.log(typeDb.showRow)
-        this.upDate()
-    }
+import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+import Collapse from '@material-ui/core/Collapse';
+import IconButton from '@material-ui/core/IconButton';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import PropTypes from 'prop-types';
+import { MapOutlined } from '@material-ui/icons';
+import { Button } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
+import InputNewType from './modal.js';
     
-    renderRow (idx,key) {
-        var typeDb = this.state.allType.get(key)
-        console.log(typeDb)
-        return (
-                <tr id="rowInType">
-                    <td id="mediumRow"></td>
-                    <td id="minRow">
-                        {idx+1}
-                    </td>
-                    <td id="maxRow">
-                        <InputGroup className="mb-1" >
-                            <Form.Control class="invalid-feedback" required name= {`list ${idx.toString()} ${key}`} value = { typeDb.row[idx].list} onChange={this.handleChange}
-                                placeholder="Ex: ค่าเข้าสวนสัตว์" autocomplete="off" readOnly={typeDb.readOnly} isInvalid={typeDb.inValid[idx]}/> 
-                             <Form.Control.Feedback type='invalid'>
-                                Cannot be blank
-                            </Form.Control.Feedback>
-                        </InputGroup>
-                    </td>
-                    <td >
-                    <FormControl type="number" min="0" id = {idx} name= {`cost ${idx.toString()} ${key}`} value = {typeDb.row[idx].cost} 
-                            onChange={this.handleChange} autocomplete="off" readOnly={typeDb.readOnly}/> 
-                       
-                    </td>
-                    <td><InputGroup className="mb-1" >
-                            <InputGroup.Prepend>
-                                <InputGroup.Text id="basic-addon1">X</InputGroup.Text>
-                            </InputGroup.Prepend>
-                            <FormControl type="number" min="0" id = {idx} name= {`amount ${idx.toString()} ${key}`} value = {typeDb.row[idx].amount} 
-                            onChange={this.handleChange} autocomplete="off" readOnly={typeDb.readOnly}/> 
-                        </InputGroup>
-                    </td>
-                    <td>{typeDb.row[idx].amount * typeDb.row[idx].cost }</td>
-                    <td>
-                        <Button disabled={typeDb.readOnly} name={`${key} ${idx}`} onClick={this.deleteRow}>Delete</Button>
-                    </td>
-                </tr>
-        )
-    }
-
-    deleteRow(event){
-        let {name,value} = event.target
-        let tmp = name.split(" ")
-        var key = tmp[0] ; var idx = tmp[1]
-        var typeDb = this.state.allType.get(key)
-        typeDb.overAllCost -= typeDb.row[idx].totalCost
-        this.state.totalCost -= typeDb.row[idx].totalCost
-        typeDb.row.splice(idx,1)
-        typeDb.numRow -= 1
-        for (let i = idx;i<typeDb.numRow;i++){
-            typeDb.row[i].id -= 1
-
-        }
+    function TableComponent(props){        
+        const createData=(type,num, cost)=> {
+                return {
+                  type,
+                  num,
+                  cost,
+                  detail: [
+                    { id: 1 , name: null , cost : 0 , amount: 0},
+                  ],
+                  
+                };
+              }
         
-        this.upDate()
-    }
-    checkValid(name){
-        let tmp = false
-        
-        var typeDb = this.state.allType.get(name)
-        typeDb.inValid = []
-        for (let i=0;i<typeDb.row.length;i++){
-            if (typeDb.row[i].list == ""){
-                typeDb.inValid.push(true)
-                tmp = true
-            }
-            else
-                typeDb.inValid.push(null)
-        }
-        if (tmp)
-            return false
-        return true
-    }
-    addNewType(type){
-    
-       this.state.nameType.push(type)
-       this.state.allType.set(type,{
-        row : [ {id : 0,
-                list : "",
-                cost : null,
-                amount : null,
-                totalCost : null} ]  ,
-        showRow : [] ,
-        numRow : 1 ,
-        overAllCost : 0,
-        inValid : []
-    })
-    this.upDate()
-    }
-    disableForm(event){
-        //chech form valid
-        const {name} = event.target
-        if (this.checkValid(name)==true){
+        //const [allData,setAllData] = useState(["อื่นๆ"])
+        //const [rows,setRows] = useState(["อื่นๆ"])
+        const [rows,setRows] = useState([
+            createData('อื่นๆ', 1, 0),
             
-            var typeDb = this.state.allType.get(name)
-            typeDb.readOnly = !typeDb.readOnly
-            
-           
-        }
-        else{
-
-        }
-        this.upDate()
-    }
-    deleteType(event){
-        let {name} = event.target
-        this.state.totalCost -= this.state.allType.get(name).overAllCost
-        this.state.allType.delete(name)
+          ]);
+        const [open, setOpen] = useState({อื่นๆ:false});
+        const [totalCost,setTotalCost] = useState(0);
+        //open.set("อื่นๆ",false)
         
-        var index = this.state.nameType.indexOf(name);
-        if (index >= 0) {
-            this.state.nameType.splice( index, 1 );
-        }
-        this.upDate()
-        //var tmp = <InputNewType sendCallback={this.addNewType} province={}/>
-    }
-    renderButton(name){
-        return (
-           <div>
-               <div class="left main" >
-                    <td id="rowHeaderType">
-                        {name}
-                    </td>
-                    <td id="rowHeaderType" colSpan="3">
-                        <Button name={name} onClick={this.toggleShow}>{this.state.allType.get(name).showRow.length != 0? "Hide":"Show"}</Button>
-                        { (this.state.allType.get(name).showRow.length != 0) || (this.state.allType.get(name).row.length == 0)?
-                            <Button name={name} onClick={this.addRow}>Add Row</Button> 
-                            : null
-                        }
-                        { (this.state.allType.get(name).showRow.length != 0)?
-                        
-                            <Button name={name} onClick={this.disableForm}>{this.state.allType.get(name).readOnly? "Edit":"Save"}</Button>
-                            : null
-                        }
-                        <Button name={name} onClick={this.deleteType}>Delete</Button>
-                    </td>
-                </div>
-                
-                <div class="right main" >
-                    <td id="rowHeaderType">
-                        {`${this.state.allType.get(name).numRow} รายการ`}
-                    </td>
-                    <td id="rowHeaderType">
-                        {this.state.allType.get(name).overAllCost}
-                    </td>
-                     <td id="rowHeaderType">
+        const useRowStyles = makeStyles({
+            root: {
+              '& > *': {
+                borderBottom: 'unset',
+              },
+            },
+          });
+          const classes = useRowStyles();
+        const [save,setSave] = useState(false);
 
-                     </td>
-                </div>
-
-            </div>
-        )
+        const deleteType=(event)=>{
+            var type = event.target.value
+            for (let i=0;i<rows.length;i++){
+                if (rows[i].type==type){
+                    rows.splice(i,1)
+                    setRows([...rows])
+                    calTotalCost()
+                    return
+                }
             }
-    render(){
-        console.log(this.state)
-        return (
-            <div id="tableExpense">
-               <Table striped bordered hover class="center">
-                    <thead>
-                        {this.renderHeader()}
-                    </thead>
-                    <tbody>
-                        {this.state.nameType.map((name) =>(
-                            <tr>
-                                <td colSpan = "7" id='rowType'>
-                                    {this.renderButton(name)}
-                                    
-                                    {this.state.allType.get(name).showRow.map((data) => (
-                                        console.log(data.id),
-                                        this.renderRow(data.id,name)
-                                    ))}
-                                </td>
-                            </tr>
-                        ))} 
-                        <tr>
-                            <div class="right main" >
-                                <td id="rowHeaderType">
-                                    {this.state.totalCost}
-                                </td>
-                                
+        }
+        const deleteData=(event)=>{
+            var type = event.target.value.split(" ")[0]
+            var id = event.target.value.split(" ")[1]
+            for (let i=0;i<rows.length;i++){
+                if (rows[i].type==type){
+                    for (let j=id;j<rows[i].detail.length;j++){
+                        rows[i].detail[j].id--
+                    }
+                    rows[i].cost -= rows[i].detail[id-1].amount * rows[i].detail[id-1].cost 
+                    rows[i].detail.splice(id-1,1)
+                    rows[i].num -=1
+                    setRows([...rows])
+                    calTotalCost()
+                    return
+                    
+                }
+            }
+        }
+
+        const addData=(event)=>{
+            console.log("click")
+            var type = event.target.value
+            for (let i=0;i<rows.length;i++){
+                console.log(rows[i].type,event.target)
+                if (rows[i].type==type){
+                    rows[i].detail.push({ id:++rows[i].num  , name: null , cost : 0 , amount: 0})
+                    setRows([...rows])
+                    return
+                    
+                }
+            }
+        }
+
+        const addNewType=(type)=>{
+            rows.push(createData(type,1,0))
+            setRows([...rows])
+        }
+        const calTotalCost=()=>{
+            var tmp = 0
+            rows.map(row=>{
+                tmp+=row.cost
+            })
+            setTotalCost(tmp)
+
+        }
+        const renderRow=(row)=>{
+            return (
+        
+                <React.Fragment>
+                  <TableRow className={classes.root}>
+                    <TableCell id="center">
+                      <IconButton aria-label="expand row" size="small" onClick={() => {open[row.type]=!open[row.type] ; setOpen({...open})} }>
+                        {open[row.type] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                      </IconButton>
+                    </TableCell>
+                    <TableCell component="th" id="center" scope="row">
+                      {row.type}
+                    </TableCell>
+                    <TableCell align="right" id="center">{row.num}</TableCell>
+                    <TableCell align="right"id="center">{row.cost}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                      <Collapse in={open[row.type]} timeout="auto" unmountOnExit>
+                        <Box margin={1}>
+                            <div style={{display:"inline"}}>
+                          <Typography variant="h6" gutterBottom component="div" style={{display:"inline"}}>
+                            รายละเอียด   
+                          </Typography>
+                          &emsp;
+                          <Button value={row.type} size="small" color="primary" variant="contained" onClick={addData}>Add</Button>
+                          <Button value={row.type} size="small" color="primary" variant="contained" onClick={deleteType}>Delete</Button>
                             </div>
-                        </tr>
-                    </tbody>
-                </Table>
+                          <Table size="small" aria-label="purchases">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell id="center">ID</TableCell>
+                                <TableCell id="center">รายการ</TableCell>
+                                <TableCell align="right" id="center">จำนวน</TableCell>
+                                <TableCell align="right" id="center">ราคาต่อหน่วย</TableCell>
+                                <TableCell align="right" id="center">ราคารวม</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {row.detail.map((e) => (
+                                <TableRow key={e.id}>
+                                    <TableCell id="center" component="th" scope="row">
+                                    {e.id}
+                                  </TableCell>
+                                  <TableCell id="center"component="th" scope="row">
+                                  <TextField 
+                                          autoComplete='off'
+                                          error={(e.type==null || e.type.length==0) &&save?true:false}
+                                          id={(e.type==null || e.type.length==0) &&save?"standard-error-helper-text":"standard-basic"}
+                                          label={(e.type==null || e.type.length==0) &&save?"Cannot be blank!":null}
+                                          disabled={!save?false:true}
+                                          
+                                          name={row.type + " " + "type" + " " + e.id}
+                                          value={e.type}
+                                          onChange={handleInput}
+                                          type="text"
+                                          InputLabelProps={{
+                                              shrink: true,
+                                          }}
+                                      />
+                                  </TableCell>
+                                  <TableCell><TextField 
+                                          id="standard-number"
+                                          label="Number"
+                                          InputProps={{
+                                            inputProps: { min: 0 
+                                            }
+                                        }}
+                                          disabled={!save?false:true}
+                                          name={row.type + " " + "cost" + " " + e.id}
+                                          value={!save?e.cost:Math.max(e.cost,0)}
+                                          onChange={handleInput}
+                                          type="number"
+                                          InputLabelProps={{
+                                              shrink: true,
+                                          }}
+                                      /></TableCell>
+                                  <TableCell align="right">
+                                      <TextField 
+                                          id="standard-number"
+                                          disabled={!save?false:true}
+                                          label="Number"
+                                          name={row.type + " " + "amount" + " " + e.id}
+                                          value={!save?e.amount:Math.max(e.amount,0)}
+                                          onChange={handleInput}
+                                          type="number"
+                                          InputLabelProps={{
+                                              shrink: true,
+                                          }}
+                                      />
+                                  </TableCell>
+                                  <TableCell id="center" align="right">
+                                    {e.cost*e.amount}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Button value={row.type + " " + e.id} variant="contained"	color="secondary" onClick={deleteData} className={classes.button}startIcon={<DeleteIcon />}>
+                                        Delete
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              );
+            
+        }
+        const handleSave=(event)=>{
+            
+            if(!save){
+                for (let i=0;i<rows.length;i++){
+                    for (let j=0;j<rows[i].detail.length;j++){
+                        var t=false
+                        var tmp = rows[i].detail[j].cost*rows[i].detail[j].amount
+                        if (rows[i].detail[j].cost<0){
+                            rows[i].detail[j].cost = 0
+                            t=true
+                        }
+                        if (rows[i].detail[j].amount<0){
+                            t = true
+                            rows[i].detail[j].amount = 0
+                        }
+                        if(t) rows[i].cost -=tmp
 
-                <InputNewType sendCallback={this.addNewType}/>
-                
-            </div>
-        )
-    }
+
+                    }
+                }
+                calTotalCost()
+            }
+
+            setSave(!save)
+        }
+        const handleInput=(event)=>{
+            var type = event.target.name.split(" ")[0]
+            var name = event.target.name.split(" ")[1]
+            var id = event.target.name.split(" ")[2]
+            console.log(type,name,event.target.value)
+            for (let i=0;i<rows.length;i++){
+                console.log(rows[i])
+                if (rows[i].type==type){
+                    var tmp =  rows[i].detail[id-1]["amount"] * rows[i].detail[id-1]["cost"] 
+                    rows[i].detail[id-1][name] = event.target.value
+                    if (name == "amount" || name=="cost"){
+                        rows[i].cost = rows[i].cost - tmp +  rows[i].detail[id-1]["amount"] * rows[i].detail[id-1]["cost"] 
+                    }
+                    calTotalCost()
+                    setRows([...rows])
+                    return
+                    console.log(rows[i][name])
+                }
+            }
+          }
+        return (
+            <>
+            <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                    <TableHead>
+                        <TableRow >
+                          <TableCell>
+                               <Button variant="contained"	color="secondary" onClick={handleSave} >
+                                        {save?"Edit":"Save"}
+                                </Button>
+                                <InputNewType sendCallback={addNewType}/>
+                            </TableCell>
+                          <TableCell id="center">ประเภท</TableCell>
+                          <TableCell id="center" align="right">จำนวนรายการ</TableCell>
+                          <TableCell align="right" id="center">ค่าใช้จ่าย</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                      {rows.map((k) => (
+                            renderRow(k)
+                        ))}
+                        <TableRow className={classes.root}>
+                            <TableCell/>
+                            <TableCell/>
+                            <TableCell/>
+                            <TableCell id="center">
+                                {totalCost}
+                            </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  
+                  </>
+                );
 }
+//
 export default TableComponent
 
+
+function Row(props) {
+    
+    const { row } = props;
+    
+  
+}
+  
+ 
+  Row.propTypes = {
+    row: PropTypes.shape({
+      calories: PropTypes.number.isRequired,
+      carbs: PropTypes.number.isRequired,
+      fat: PropTypes.number.isRequired,
+      history: PropTypes.arrayOf(
+        PropTypes.shape({
+          amount: PropTypes.number.isRequired,
+          customerId: PropTypes.string.isRequired,
+          date: PropTypes.string.isRequired,
+        }),
+      ).isRequired,
+      name: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      protein: PropTypes.number.isRequired,
+    }).isRequired,
+  };
