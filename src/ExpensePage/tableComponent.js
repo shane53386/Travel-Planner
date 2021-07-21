@@ -23,6 +23,7 @@ import { MapOutlined } from '@material-ui/icons';
 import { Button } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import InputNewType from './modal.js';
+
     
     function TableComponent(props){        
         const createData=(type,num, cost)=> {
