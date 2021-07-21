@@ -1,37 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Redirect } from "react-router-dom";
+import { useAuth } from "./authenticate/Auth";
 import PlaceInput from "./PlaceInput";
 
-var idx =0
-function PlanPage(props) {
-	const [data, setData] = useState(new Map());
-	
-	const callbackFunction = (d,date) => {
-		var tmp = []
-		for (let i=0;i<d.length;i++){
-			if (d[i].time == "" || d[i].place == "")
-				continue
-			var _time = new Date(d[i].time)
-			tmp.push({place:d[i].place , departureTime:_time})
-		}
-		console.log("date",date)
-		if (date!="" && tmp.length !=0)
-		data.set(date,tmp)
+function PlanPage() {
+	const Input = (index) => (
+		<PlaceInput id={index} parentCallback={callbackFunction} />
+	);
 
-		console.log("new data",data)
-		//console.log("lits",list)
-		
-		setData(data);
-		props.sendCallback(data)
-		
-	};
-	const Input = (index) => <PlaceInput id={index} parentCallback={callbackFunction} />;
 	const [inputList, setInputList] = useState([Input]);
-	const addNewDay = () => {
-		const list = [...inputList, Input];
-		setInputList(list);
-		
+	const [data, setData] = useState(new Map());
+	const { currentUser } = useAuth();
+
+	if (!currentUser) {
+		return <Redirect to="/login" />;
+	}
+
+	const callbackFunction = (list) => {
+		if (list.date === null) return;
+		data.set(list.date, list.plan);
+		console.log(data);
+		setData(data);
 	};
-	
+
+	const addNewDay = () => {
+		setInputList([...inputList, Input]);
+	};
+
+	const removeDay = (index) => {
+		const list = [...inputList];
+		list.splice(index, 1);
+		setInputList(list);
+	};
+
 	return (
 		<div>
 			{inputList &&
@@ -39,14 +40,24 @@ function PlanPage(props) {
 					return (
 						<div>
 							<Input key={index} />
+							{inputList.length !== 1 && (
+								<button onClick={() => removeDay(index)}>
+									Remove Day
+								</button>
+							)}
+
 							<br></br>
 						</div>
 					);
 				})}
-			
 			<button onClick={addNewDay}>New Day</button>
-			<button>Save</button>
-			
+			<button
+				onClick={() => {
+					console.log(inputList);
+				}}
+			>
+				Save
+			</button>
 		</div>
 	);
 }

@@ -1,42 +1,81 @@
 import React, { useState, useEffect } from "react";
 
 function PlaceInput(props) {
-	const [inputList, setInputList] = useState([{ place: "", time: "" }]);
+	const [inputList, setInputList] = useState({
+		date: null,
+		plan: [{ place: "", time: "" }],
+	});
 
 	const sendData = () => {
-		var tmp = inputList
-		var day = tmp[0].time.split("T")[0]
-		props.parentCallback(tmp,day);
-		console.log(`send inputList`, inputList);
-		console.log("data sent");
+		props.parentCallback(inputList);
 	};
 
 	const addInputArea = () => {
-		console.log(`add inputList`, inputList);
-		setInputList([...inputList, { place: "", time: "" }]);
-		
-		// const data = await fetchPlace("Bangkok");
-		// return data;
+		const list = [...inputList.plan, { place: "", time: "" }];
+		setInputList({
+			...inputList,
+			plan: list,
+		});
 	};
+
 	const removeInputArea = (index) => {
-		const list = [...inputList];
+		const list = [...inputList.plan];
+		console.log(list);
 		list.splice(index, 1);
-		setInputList(list);
+		console.log(list);
+		setInputList({
+			...inputList,
+			plan: list,
+		});
 	};
+
 	const onInputChange = (e, index) => {
 		const { name, value } = e.target;
-		const list = [...inputList];
+		const list = [...inputList.plan];
 		list[index][name] = value;
-		console.log(list)
-		setInputList(list);
+		setInputList({
+			...inputList,
+			plan: list,
+		});
 	};
+
+	const getDate = () => {
+		var today = new Date();
+		var dd = today.getDate();
+		var mm = today.getMonth() + 1;
+		var yyyy = today.getFullYear();
+		if (dd < 10) {
+			dd = "0" + dd;
+		}
+		if (mm < 10) {
+			mm = "0" + mm;
+		}
+		today = yyyy + "-" + mm + "-" + dd;
+		return today;
+	};
+
+	// console.log(getDate());
+
 	useEffect(() => {
 		sendData();
-		console.log(`add inputList`, inputList);
 	}, [inputList]);
+
 	return (
 		<div>
-			{inputList.map((item, index) => {
+			<input
+				type="date"
+				name="date"
+				value={inputList.date}
+				onChange={(e) => {
+					console.log(e.target.value);
+					setInputList({
+						...inputList,
+						date: e.target.value,
+					});
+				}}
+				min={getDate()}
+			/>
+			{inputList.plan.map((item, index) => {
 				return (
 					<div>
 						<input
@@ -47,25 +86,34 @@ function PlaceInput(props) {
 							onChange={(e) => onInputChange(e, index)}
 						/>
 						<input
-							type="datetime-local"
+							type="time"
 							placeholder="Time"
 							name="time"
 							value={item.time}
 							onChange={(e) => onInputChange(e, index)}
+							min="07:00"
+							// index === 0
+							// 	? "00:00"
+
+							step="300"
 						/>
-						{inputList.length !== 1 && (
+						{inputList.plan.length !== 1 && (
 							<button onClick={() => removeInputArea(index)}>
 								Remove
-							</button>
-						)}
-						{inputList.length - 1 === index && (
-							<button onClick={addInputArea}>
-								Add new place
 							</button>
 						)}
 					</div>
 				);
 			})}
+			<button onClick={addInputArea}>Add new place</button>
+			<button
+				onClick={() => {
+					getDate();
+					console.log(inputList);
+				}}
+			>
+				Save
+			</button>
 		</div>
 	);
 }
