@@ -13,16 +13,21 @@ function Home(){
 	const showOnePlan = React.useRef(null);
 	const searchProvince = React.useRef(null)
 	const showOnePlace = React.useRef(null);
+
+
+	
 	return (
 		<HomeProvider>
 			<AuthProvider>
 		<div style={{display:"inline"}}>
-		<div style= {{width: '25%', height: 600,padding:"10px", float:"left"}} >
+		<div style={true?{width:'25%' , height: 600,padding:"10px", float:"left"}
+					:{width:'40%' , height: 600,padding:"10px", float:"left"}} >
 			<ReviewProvince
 			searchProvince = {searchProvince}
 			showOnePlace ={showOnePlace }/>
 			</div>
-			<div style= {{width: '50%', height: 600,padding:"10px", float:"left"}} >
+			<div style= {true?{width:'50%' , height: 600,padding:"10px", float:"left"}
+					:{width:'60%' , height: 600,padding:"10px", float:"left"}} >
             	<MapContent id="myMap"  
 					options={
 					{center: { lng : 100.633214325 , lat : 13.724293875 },

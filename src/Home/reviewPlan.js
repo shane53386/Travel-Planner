@@ -29,7 +29,6 @@ export default function ReviewPlan(props) {
           backgroundColor: theme.palette.background.paper,
         },
         imageList: {
-          
           height: 450,
         },
         icon: {

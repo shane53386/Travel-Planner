@@ -96,7 +96,7 @@ function Navigation(){
 						{genPlan()}
 					</Table>
 					<NavDropdown.Divider />
-						<NavDropdown.ItemText >
+						<NavDropdown.ItemText style={{justifyContent:'center'}}>
 							<FormControl onChange={handlenewPlan} value={newPlan} type="text" placeholder="Add Plan" className="mr-sm-2"/>
 							<Button variant="contained"	color="primary" className={classes.button} onClick={addNewPlan}>Add</Button>
 						</NavDropdown.ItemText>

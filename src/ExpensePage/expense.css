@@ -68,4 +68,42 @@ td {
 }
 #center{
     text-align: center;
+    border-left-width: 0.5px;
+    border-right-width: 0.5px;
+    border-right-color:darkgray;
+    border-left-color:darkgray;
+    border-bottom: none;
+    border-top: none;
+}
+
+#headCenter{
+    text-align: center;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    border:none;
+}
+#leftCenter{
+    text-align: center;
+    border-left-width: 0.5px;
+    border-right-width: 0.5px;
+    border-right-color:darkgray;
+    border-left-color:darkgray;
+    border-bottom: none;
+    border-top: none;
+    border-left:none;
+}
+
+#rightCenter{
+    text-align: center;
+    border-left-width: 0.5px;
+    border-right-width: 0.5px;
+    border-right-color:darkgray;
+    border-left-color:darkgray;
+    border-bottom: none;
+    border-top: none;
+    border-right:none;
+}
+
+.head{
+    font-weight: bold;
 }

@@ -50,7 +50,8 @@ import InputNewType from './modal.js';
         const useRowStyles = makeStyles({
             root: {
               '& > *': {
-                borderBottom: 'unset',
+                border: 'none',
+                
               },
             },
           });
@@ -113,11 +114,11 @@ import InputNewType from './modal.js';
             setTotalCost(tmp)
 
         }
-        const renderRow=(row)=>{
+        const renderRow=(row,id)=>{
             return (
         
                 <React.Fragment>
-                  <TableRow className={classes.root}>
+                  <TableRow style={id % 2==0? { background : "#e0e0e0" }:{ background : "white" }} >
                     <TableCell id="center">
                       <IconButton aria-label="expand row" size="small" onClick={() => {open[row.type]=!open[row.type] ; setOpen({...open})} }>
                         {open[row.type] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -144,17 +145,17 @@ import InputNewType from './modal.js';
                           <Table size="small" aria-label="purchases">
                             <TableHead>
                               <TableRow>
-                                <TableCell id="center">ID</TableCell>
-                                <TableCell id="center">รายการ</TableCell>
-                                <TableCell align="right" id="center">จำนวน</TableCell>
-                                <TableCell align="right" id="center">ราคาต่อหน่วย</TableCell>
-                                <TableCell align="right" id="center">ราคารวม</TableCell>
+                                <TableCell  class="head" id="headCenter">ID</TableCell>
+                                <TableCell class="head" id="headCenter">รายการ</TableCell>
+                                <TableCell class="head" align="right" id="headCenter">จำนวน</TableCell>
+                                <TableCell class="head" align="right" id="headCenter">ราคาต่อหน่วย</TableCell>
+                                <TableCell class="head" align="right" id="headCenter">ราคารวม</TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
                               {row.detail.map((e) => (
                                 <TableRow key={e.id}>
-                                    <TableCell id="center" component="th" scope="row">
+                                    <TableCell id="leftCenter" component="th" scope="row">
                                     {e.id}
                                   </TableCell>
                                   <TableCell id="center"component="th" scope="row">
@@ -174,7 +175,7 @@ import InputNewType from './modal.js';
                                           }}
                                       />
                                   </TableCell>
-                                  <TableCell><TextField 
+                                  <TableCell id="center"><TextField 
                                           id="standard-number"
                                           label="Number"
                                           InputProps={{
@@ -190,7 +191,7 @@ import InputNewType from './modal.js';
                                               shrink: true,
                                           }}
                                       /></TableCell>
-                                  <TableCell align="right">
+                                  <TableCell id="center"align="right">
                                       <TextField 
                                           id="standard-number"
                                           disabled={!save?false:true}
@@ -207,7 +208,7 @@ import InputNewType from './modal.js';
                                   <TableCell id="center" align="right">
                                     {e.cost*e.amount}
                                   </TableCell>
-                                  <TableCell>
+                                  <TableCell id="rightCenter">
                                     <Button value={row.type + " " + e.id} variant="contained"	color="secondary" onClick={deleteData} className={classes.button}startIcon={<DeleteIcon />}>
                                         Delete
                                     </Button>
@@ -225,11 +226,12 @@ import InputNewType from './modal.js';
             
         }
         const handleSave=(event)=>{
-            
+            var valid = true
             if(!save){
                 for (let i=0;i<rows.length;i++){
                     for (let j=0;j<rows[i].detail.length;j++){
                         var t=false
+                        if (rows[i].detail[j].name==null ||rows[i].detail[j].name.length==0) valid = false
                         var tmp = rows[i].detail[j].cost*rows[i].detail[j].amount
                         if (rows[i].detail[j].cost<0){
                             rows[i].detail[j].cost = 0
@@ -245,6 +247,10 @@ import InputNewType from './modal.js';
                     }
                 }
                 calTotalCost()
+                if (valid){
+                  //update rows to database
+                }
+                
             }
 
             setSave(!save)
@@ -273,28 +279,28 @@ import InputNewType from './modal.js';
             <>
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
-                    <TableHead>
+                    <TableHead >
                         <TableRow >
-                          <TableCell>
+                          <TableCell id='leftCenter'>
                                <Button variant="contained"	color="secondary" onClick={handleSave} >
                                         {save?"Edit":"Save"}
                                 </Button>
                                 <InputNewType sendCallback={addNewType}/>
                             </TableCell>
-                          <TableCell id="center">ประเภท</TableCell>
-                          <TableCell id="center" align="right">จำนวนรายการ</TableCell>
-                          <TableCell align="right" id="center">ค่าใช้จ่าย</TableCell>
+                          <TableCell class="head"id="center">ประเภท</TableCell>
+                          <TableCell class="head" id="center" align="right">จำนวนรายการ</TableCell>
+                          <TableCell class="head" align="right" id="center">ค่าใช้จ่าย</TableCell>
                         </TableRow>
                       </TableHead>
-                      <TableBody>
-                      {rows.map((k) => (
-                            renderRow(k)
+                      <TableBody stripedRows>
+                      {rows.map((k,id) => (
+                            renderRow(k,id)
                         ))}
                         <TableRow className={classes.root}>
                             <TableCell/>
                             <TableCell/>
                             <TableCell/>
-                            <TableCell id="center">
+                            <TableCell class="head" id="center">
                                 {totalCost}
                             </TableCell>
                         </TableRow>
