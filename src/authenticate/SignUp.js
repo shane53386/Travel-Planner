@@ -1,122 +1,112 @@
 import React, { useState } from "react";
-import { Redirect } from "react-router-dom";
 import { useAuth } from "./Auth";
+import ResetPassword from "./ResetPassword";
+import { Modal, Button, Form, Alert } from "react-bootstrap";
 
-const SignUp = () => {
-	const { currentUser, signUp } = useAuth();
+const SignUp = (props) => {
+	const { signUp } = useAuth();
+	const [reset, setReset] = useState(false);
+	const [succes, setSuccess] = useState("");
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	if (currentUser) {
-		return <Redirect to="../PlanPage" />;
-	}
-
-	const handleSubmit = async (e) => {
+	async function handleSubmit(e) {
 		e.preventDefault();
-		const { username, email, password, confirmationpassword } =
+		const { username, email, password, confirmpassword } =
 			e.target.elements;
-		if (password.value !== confirmationpassword.value) {
-			document
-				.getElementById("inputConfirmationPassword5")
-				.classList.add("is-invalid");
-			setError("Password doesn't match");
+
+		if (password.value !== confirmpassword.value) {
+			setError("Password doesn't match.");
+			setTimeout(() => {
+				setError("");
+			}, 3000);
 			return;
 		}
-		try {
-			setLoading(true);
-			await signUp(email.value, password.value, username.value);
-		} catch (error) {
-			alert(error);
+		console.log(
+			username.value,
+			email.value,
+			password.value,
+			confirmpassword.value
+		);
+		setLoading(true);
+		const msg = await signUp(username.value, email.value, password.value);
+		setLoading(false);
+		if (!msg) {
+			setSuccess("Sign Up complete. Please verify your email.");
+			setTimeout(() => {
+				setSuccess("");
+			}, 3000);
+			props.onHide();
+		} else {
+			setError(msg);
+			setTimeout(() => {
+				setError("");
+			}, 3000);
 		}
-	};
+	}
 
 	return (
 		<>
-			<div className="container mt-5">
-				<h1>Sign Up</h1>
-				<form onSubmit={handleSubmit}>
-					<div className="mb-3">
-						<label for="username" class="form-label">
-							Username
-						</label>
-						<input
-							type="text"
-							class="form-control"
-							id="username"
-							name="username"
-							title="Invalid Username"
-							required
-						/>
-					</div>
-					<div className="mb-3">
-						<label for="exampleInputEmail1" class="form-label">
-							Email address
-						</label>
-						<input
-							type="email"
-							class="form-control"
-							id="exampleInputEmail1"
-							name="email"
-							title="Invalid Email"
-							pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
-							required
-						/>
-						<div id="emailHelp" class="form-text">
-							We'll never share your email with anyone else.
-						</div>
-					</div>
-					<div className="mb-3">
-						<label for="inputPassword5" className="form-label">
-							Password
-						</label>
-						<input
-							type="password"
-							id="inputPassword5"
-							className="form-control"
-							name="password"
-							title="Must contain at least one number, one lowercase letter, and must be 8-20 characters"
-							pattern="(?=.*\d)(?=.*[a-z]).{8,20}"
-							required
-						/>
-						<div id="passwordHelpBlock" className="form-text">
-							Must contain at least one number, one lowercase
-							letter, and must be 8-20 characters
-						</div>
-					</div>
-					<div className="mb-3">
-						<label
-							for="inputConfirmationPassword5"
-							className="form-label"
-						>
-							Confirmation password
-						</label>
-						<input
-							type="password"
-							id="inputConfirmationPassword5"
-							className="form-control"
-							name="confirmationpassword"
-							title="Must contain at least one number, one lowercase letter, and must be 8-20 characters"
-							pattern="(?=.*\d)(?=.*[a-z]).{8,20}"
-							required
-						/>
-						<div
-							id="confirmationPasswordHelpBlock"
-							className="invalid-feedback"
-						>
-							{error}
-						</div>
-					</div>
-					<div className="d-grid gap-2 d-md-flex justify-content-md-end">
-						<button
-							type="submit"
-							className="btn btn-primary"
+			{succes && <Alert variant="success">{succes}</Alert>}
+			<Modal {...props} size="lg" centered>
+				<Modal.Header closeButton>
+					<Modal.Title>Sign Up</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					{error && <Alert variant="danger">{error}</Alert>}
+					<Form onSubmit={handleSubmit}>
+						<Form.Group id="username">
+							<Form.Label>Username</Form.Label>
+							<Form.Control
+								type="text"
+								name="username"
+								required
+							/>
+						</Form.Group>
+						<Form.Group id="email">
+							<Form.Label>Email</Form.Label>
+							<Form.Control type="email" name="email" required />
+						</Form.Group>
+						<Form.Group id="password">
+							<Form.Label>Password</Form.Label>
+							<Form.Control
+								type="password"
+								name="password"
+								required
+							/>
+						</Form.Group>
+						<Form.Group id="confirmpassword">
+							<Form.Label>Confirmation Password</Form.Label>
+							<Form.Control
+								type="password"
+								name="confirmpassword"
+								required
+							/>
+						</Form.Group>
+						<Button
 							disabled={loading}
+							variant="primary"
+							type="submit"
 						>
 							Sign Up
-						</button>
-					</div>
-				</form>
-			</div>
+						</Button>
+					</Form>
+				</Modal.Body>
+				<Modal.Footer>
+					<span>
+						<a
+							href="#"
+							onClick={() => {
+								props.onHide();
+								setReset(true);
+							}}
+						>
+							Forget a password?
+						</a>
+					</span>
+				</Modal.Footer>
+			</Modal>
+			<ResetPassword show={reset} onHide={() => setReset(false)} />
 		</>
 	);
 };
