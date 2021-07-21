@@ -1,24 +1,16 @@
 import { db } from "./firebase";
 
-const fetchPlace = async (province) => {
+export const fetchPlace = async (province) => {
 	let place = [];
 	const response = db.collection("Places").where("Province", "==", province);
-	
 	const data = await response.get();
-	data.docs.forEach((item) => {
+	data.forEach((item) => {
 		place = [...place, item.data()];
 	});
 	return place;
 };
 
-export const fetchData = async (place) => {
-	let data;
-	const response = db.collection("Places").where("Name", "==", place);
-	const res = await response.get();
-	res.docs.forEach((item) => {
-		data = item.data();
-	});
-	return data;
+export const fetchData = (place) => {
+	const response = db.collection("Places").doc(place);
+	return response.get().then((doc) => doc.data());
 };
-
-export default fetchPlace;

@@ -1,3 +1,7 @@
+
+import { auth } from "./firebase";
+import LogIn from "./authenticate/LogIn";
+import { useAuth } from "./authenticate/Auth";
 import React, { useContext, useEffect, useState } from "react";
 import { Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown,Table } from "react-bootstrap";
 import {IconButton,Button} from '@material-ui/core';
@@ -6,7 +10,6 @@ import "./index.css";
 import CheckModal from "./checkModal";
 import { makeStyles } from '@material-ui/core/styles';
 import { useHome } from './homeProvider';
-import { useAuth } from "./authenticate/Auth";
 
 const useStyles = makeStyles((theme) => ({
 	button: {
@@ -14,17 +17,18 @@ const useStyles = makeStyles((theme) => ({
 	},
   }));
 
-
-function Navigation(){
+const Navigation = () => {
+	const { currentUser } = useAuth();
+	const [logIn, setLogIn] = useState(false);
 	const [newPlan,setNewPlan] = useState(null)
 	const [show,setShow] = useState(false)
 	const [willDeletePlan,setDeletePlan] = useState(null)
 	const classes = useStyles();
 	const auth = useAuth();
 
-	
+
 	useEffect(()=>{
-		
+
 	},[])
 
 	const selectPlan=(event)=>{
@@ -32,7 +36,7 @@ function Navigation(){
 		//data.setPlan()
 	}
 	const genPlan=()=>{
-		
+
 		//gen from plan of current user in auth
 		var planList = ["one","two","three"]
 		//fecth plan from context
@@ -53,7 +57,7 @@ function Navigation(){
 		})
 		return buffer
 	}
-	
+
 	const showModal=(e)=>{
 		console.log(e.currentTarget.value)
 
@@ -72,24 +76,26 @@ function Navigation(){
 	}
 
 	const handlenewPlan=(event)=>{
-	
+
 			let {value} = event.target
 			setNewPlan(value)
-		
-	
+
+
 	}
 
 	const addNewPlan=(event)=>{
 		console.log(newPlan)
 		//add newPlan to firebase
 	}
+
 	return (
+		
 
 		<Navbar bg="primary" variant="dark">
 			<Navbar.Brand href="/home">Navbar</Navbar.Brand>
 			<Nav className="mr-auto">
 				<Nav.Link href="/Home">Home</Nav.Link>
-				{auth.currentUser != null? null:
+				{currentUser == null? null:
 				<>
 				<NavDropdown type="button" title="Plans" id="basic-nav-dropdown">
 					<Table class="table table-hover" id="plantTable">
@@ -105,29 +111,83 @@ function Navigation(){
 				</>
 				}
 			</Nav>
-			<Form inline>
-			<FormControl type="text" placeholder="Search" className="mr-sm-2" />
-			<Button variant="outlined"	 className={classes.button} onClick={addNewPlan}>Search</Button>
-
+			<Nav>
+		
+			{currentUser ? (
+							<Nav.Link
+								href="./Home"
+								onClick={() => auth.signOut()}
+							>
+								Sign Out
+							</Nav.Link>
+						) : (
+							<Nav.Link href="#" onClick={() => setLogIn(true)}>
+								Log In
+							</Nav.Link>
+						)}
 			
-	<Dropdown>
-  <Dropdown.Toggle variant="primary" id="dropdown-basic" >
-  <span class="navbar-toggler-icon"></span>
-  </Dropdown.Toggle>
-
-  <Dropdown.Menu align="right">
-    {false? null:<Dropdown.Item href="/LogIn">Login</Dropdown.Item>}
-    {false? null:<Dropdown.Item href="/Home" onClick={() => auth.signOut()}>Logout</Dropdown.Item>}
-	
-  </Dropdown.Menu>
-</Dropdown>
-			
-			</Form>
+			</Nav>
 			<CheckModal show={show} name={willDeletePlan} callback={deletePlan}/>
 		</Navbar>
-		
-		
-	);
+		)
+		/*
+		<>
+			<Navbar
+				collapseOnSelect
+				expand="xl"
+				bg="primary"
+				variant="dark"
+				sticky="top"
+			>
+				<Navbar.Brand href="./Home">Home</Navbar.Brand>
+				<Navbar.Toggle aria-controls="responsive-navbar-nav" />
+				<Navbar.Collapse
+					id="responsive-navbar-nav"
+					className="justify-content-between"
+				>
+					<Nav className="mr-auto">
+						<Nav.Link href="./Overview">Overview</Nav.Link>
+						{currentUser && (
+							<NavDropdown
+								title="Plan"
+								id="collasible-nav-dropdown"
+							>
+								<NavDropdown.Item href="#action/3.1">
+									Plan1
+								</NavDropdown.Item>
+								<NavDropdown.Item href="#action/3.2">
+									Plan2
+								</NavDropdown.Item>
+								<NavDropdown.Item href="#action/3.3">
+									Plan3
+								</NavDropdown.Item>
+								<NavDropdown.Divider />
+								<NavDropdown.Item href="#action/3.4">
+									Add new plan
+								</NavDropdown.Item>
+							</NavDropdown>
+						)}
+					</Nav>
+					<Nav>
+						{currentUser ? (
+							<Nav.Link
+								href="./Home"
+								onClick={() => auth.signOut()}
+							>
+								Sign Out
+							</Nav.Link>
+						) : (
+							<Nav.Link href="#" onClick={() => setLogIn(true)}>
+								Log In
+							</Nav.Link>
+						)}
+					</Nav>
+				</Navbar.Collapse>
+			</Navbar>
+			<LogIn show={logIn} onHide={() => setLogIn(false)} />
+		</>)*/
+//>>>>>>> 0012c318ee4c20735207705558135cf1402673ce
+
 };
 
 export default Navigation;

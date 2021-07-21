@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect ,Component,useContext } from 'react';
 import Data from "../Data";
-import fetchPlace from '../fetchData';
+import {fetchPlace} from '../fetchData';
 import {Autocomplete} from '@material-ui/lab';
 import {TextField}  from '@material-ui/core';
 import {BrowserRouter, Link , Route,Switch,withRouter } from 'react-router-dom';

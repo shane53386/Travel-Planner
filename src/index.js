@@ -1,84 +1,20 @@
-import reportWebVitals from './reportWebVitals';
-import {BrowserRouter, Link , Route,Switch, } from 'react-router-dom';
-import MapDirection from './Plan/mapDirect';
-import Expense from './ExpensePage/expense';
-import ReactDOM from 'react-dom';
-import TableShow  from './Plan/tableShow';
-import OverView from './Plan/overView';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import LogIn from './authenticate/LogIn';
-import SignUp from './authenticate/SignUp'
-import MainPlan from './Plan/mainPlan';
-import {AuthProvider} from './authenticate/Auth'
-import App from './App';
-const THAI_BOUNDS = {
-  north: 21,
-  south: 4,
-  west: 94,
-  east: 106,
-};
+import React from "react";
+import ReactDOM from "react-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import App from "./App";
+import { AuthProvider } from "./authenticate/Auth";
+import reportWebVitals from "./reportWebVitals";
 
 ReactDOM.render(
-  <App></App>
-  /*<BrowserRouter>
-  <AuthProvider>
-      <Link to="/">Home</Link>{' '}
-      <Link to="/map">Map</Link>{' '}
-      <Link to="/table">Table</Link>{' '}
-      <Link to="/overView">OverView</Link>{' '}
-      <Link to="/result">TableResult</Link>{' '}
-      <Link to="/planPage">PlanPage</Link>{' '}
-      <Link to="/login">Login</Link>{' '}
-      <Link to="/signup">Signup</Link>
-      <Switch>
+	<React.StrictMode>
+		<AuthProvider>
+			<App />
+		</AuthProvider>
+	</React.StrictMode>,
+	document.getElementById("root")
+);
 
-        <Route path="/table" render={() => 
-            <div style= {{width: '100%', height: 800,}} >
-              <Expense/>      
-            </div>} />
-        <Route path="/map" render={()=>
-            <div style= {{width: '80%', height: 600,}} >
-            <MapContent id="myMap"  
-            options={
-              {center: { lng : 100.633214325 , lat : 13.724293875 },
-              zoom: 6,
-              restriction: {
-                latLngBounds: THAI_BOUNDS,
-                strictBounds: false,
-              }
-            }}
-            src='https://data.opendevelopmentmekong.net/geoserver/ODMekong/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ODMekong%3Atha_admbnda_adm1_rtsd_20190221&outputFormat=application%2Fjson'/>
-            </div>
-          }/>
-        <Route path="/overView" render={()=>
-          <div style= {{width: '100%', height: 600,}} >
-            <OverView />
-          </div> 
-        }/>      
-        <Route path="/result" render={() => 
-            <div style= {{width: '100%', height: 800,}} >
-              <TableShow/>      
-            </div>} />
-        <Route path="/planPage" render={() => 
-          <div style= {{width: '100%', height: 800,float:'right'}}>
-            <MapDirection id="myMap"  
-                options={
-                {center: { lng : 100.633214325 , lat : 13.724293875 },
-                zoom: 6,
-                mapId: "6ef51b53d122d80d" }}/>
-            </div> }/>
-        <Route path="/login" render={() => 
-            <div style= {{width: '100%', height: 800,}} >
-              <LogIn show={true}/>      
-            </div>} />
-          <Route path="/signup" render={() => 
-            <div style= {{width: '100%', height: 800,}} >
-              <SignUp/>      
-            </div>} />
-      </Switch>
-      </AuthProvider>
-    </BrowserRouter>
-  /**/
-  , document.getElementById("root"))
-      
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

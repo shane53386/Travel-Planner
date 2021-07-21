@@ -1,98 +1,59 @@
 import React, { useState, useEffect } from "react";
-import { Redirect } from "react-router-dom";
-import { fetchData } from "./fetchData";
+import { fetchData, fetchPlace } from "./fetchData";
 import Review from "./rating/Review";
 import { useAuth } from "./authenticate/Auth";
+import { Spinner, Carousel } from "react-bootstrap";
 
 function Overview(props) {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const [index, setIndex] = useState(0);
+	const place = "Paragon";
+
 	useEffect(async () => {
-		setData(await fetchData("Paragon"));
+		setData(await fetchData(place));
 		setLoading(false);
 	}, []);
+
 	const { currentUser } = useAuth();
 
-	if (!currentUser) {
-		return <Redirect to="/login" />;
-	}
+	const handleSelect = (selectedIndex) => {
+		setIndex(selectedIndex);
+	};
 
 	if (loading)
 		return (
 			<div className="text-center">
-				<div className="spinner-border text-info m-5" role="status">
-					<span className="visually-hidden">Loading...</span>
-				</div>
+				<Spinner animation="border" variant="primary" />
 			</div>
 		);
 
-	const { Name, Description, Type, Province, Image } = data;
+	const { Description, Type, Province, Image, Reviews } = data;
 
 	return (
 		<div className="container mt-4">
-			<div
-				id="carousel"
-				className="carousel slide"
-				data-bs-ride="carousel"
-			>
-				<ol className="carousel-indicators">
-					{Image.map((img, idx) => {
-						const c = idx == 0 ? "active" : "";
-						return (
-							<button
-								className={c}
-								data-bs-target="#carousel"
-								data-bs-slide-to={idx}
+			<Carousel activeIndex={index} onSelect={handleSelect}>
+				{Image.map((img, idx) => {
+					return (
+						<Carousel.Item key={idx}>
+							<img
+								className="d-block w-100"
+								src={img}
+								alt={place}
 							/>
-						);
-					})}
-				</ol>
-				<div className="carousel-inner">
-					{Image.map((img, idx) => {
-						const c =
-							idx == 0 ? "carousel-item active" : "carousel-item";
-						console.log(img);
-						return (
-							<div className={c} data-bs-interval="5000">
-								<img
-									src={img}
-									className="d-block w-100"
-									alt={Name}
-								/>
-							</div>
-						);
-					})}
-				</div>
-				<button
-					className="carousel-control-prev"
-					type="button"
-					data-bs-target="#carousel"
-					data-bs-slide="prev"
-				>
-					<span
-						className="carousel-control-prev-icon"
-						aria-hidden="true"
-					></span>
-					<span className="visually-hidden">Previous</span>
-				</button>
-				<button
-					className="carousel-control-next"
-					type="button"
-					data-bs-target="#carousel"
-					data-bs-slide="next"
-				>
-					<span
-						className="carousel-control-next-icon"
-						aria-hidden="true"
-					></span>
-					<span className="visually-hidden">Next</span>
-				</button>
-			</div>
-			<h2>{Name}</h2>
-			<div>
-				<p>{Description}</p>
-			</div>
-			<Review username={currentUser.displayName} />
+						</Carousel.Item>
+					);
+				})}
+			</Carousel>
+			<h2>{place}</h2>
+			<p>{Description}</p>
+			{currentUser && (
+				<Review
+					username={currentUser.displayName}
+					place={place}
+					reviews={Reviews}
+				/>
+			)}
 		</div>
 	);
 }
