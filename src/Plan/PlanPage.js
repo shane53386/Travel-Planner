@@ -50,7 +50,9 @@ function PlanPage() {
 						</div>
 					);
 				})}
-			<button onClick={addNewDay}>New Day</button>
+			</div>
+);
+			/*<button onClick={addNewDay}>New Day</button>
 			<button
 				onClick={() => {
 					console.log(inputList);
@@ -59,7 +61,7 @@ function PlanPage() {
 				Save
 			</button>
 		</div>
-	);
+	);*/
 }
 
 export default PlanPage;

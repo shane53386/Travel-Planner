@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
+import {Autocomplete} from '@material-ui/lab';
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
@@ -91,16 +92,18 @@ function PlaceInput(props) {
 	const [allDays,setAllDays] = useState([])
 
 
-  const [startDate, setStartDate] = useState(new Date(new Date('2021-08-18T21:11:54')));
-  const [endDate, setEndDate] = useState(new Date(new Date('2021-08-18T21:11:54')));
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [inputList, setInputList] = useState({});
-  const [addingTime,setAddingTime] = useState(new Date('2021-08-18T21:11:54'));
+  const [addingTime,setAddingTime] = useState(new Date());
   const [addingPlace,setAddingPlace] = useState("")
   const [addingNote,setAddingNote] = useState("")
+  const [allPlaces,setAllPlaces] = useState(["a","b","c","d"])
+  const [errorMsg,setErrorMsg] = useState({start:null,end:null,time:null})
   const handleSelect = (event, newValue) => {
     setValue(newValue);
 	setAddingPlace("")
-	setAddingTime(Date.now)
+	setAddingTime(new Date())
 	setAddingNote("")
   };
 
@@ -186,35 +189,54 @@ function PlaceInput(props) {
    },[startDate,endDate])
 
    const addNewTime=(date)=>{
+	let dd = null
+	if (inputList[allDays[value]].length==0)
+		dd = new Date()
+	else
+		dd = inputList[allDays[value]][inputList[allDays[value]].length-1].departureTime
 
+	   if (date.getTime() < dd.getTime())
+		   errorMsg.time = "Cannot be previous"
+	   else
+		errorMsg.time = null
+		setErrorMsg({...errorMsg})
+	   
+	var x = allDays[value].split("/")
+	console.log(date)
+	//var d = new Date(date)
+	date.setDate(parseInt(x[1]))
+	date.setMonth(parseInt(x[0])-1)
+	date.setYear(parseInt(x[2]))
 	setAddingTime(date)
    }
-   const addNewPlace=(event)=>{
-	   const {name,value} = event.target
-	   if (name=="note"){
-		   setAddingNote(value)
-	   }
-	   else{
+
+   const addNewNote=(event)=>{
+		const {value} = event.target
+		setAddingNote(value)
+   }
+   const addNewPlace=(event,value)=>{
+
 		   setAddingPlace(value)
-	   }
+	   
    }
    const submitNew=(event)=>{
 	   console.log("add")
-
+		if (errorMsg.start != null || errorMsg.end != null || errorMsg.time != null) return
 	   if (event.target.name == undefined || event.target.name.split(" ")[1] != "btn") return
 		var day = event.target.name.split(" ")[0]
 		
 		if (inputList[day]==null){
-			inputList[day]={place:addingPlace,time:addingTime,note:addingNote}
+			inputList[day]=[{place:addingPlace,departureTime:addingTime,note:addingNote}]
 		}
 		else{
-			inputList[day].push({place:addingPlace,time:addingTime,note:addingNote})
+			inputList[day].push({place:addingPlace,departureTime:addingTime,note:addingNote})
 		}
 		setInputList({...inputList})
 		setAllDays([...allDays])
 		console.log(inputList,allDays)
    }
    const showTime=(date)=>{
+	   console.log(date)
 		var x = date.toLocaleTimeString()
 		if (x.split(" ")[1]=="AM"){
 			return x.split(":")[0] + ":" + x.split(":")[1]
@@ -223,6 +245,29 @@ function PlaceInput(props) {
 			return String(parseInt(x.split(":")[0])+12) + ":" + x.split(":")[1]
 		}
    }
+
+   const handleSetEndDate=(value)=>{
+	   if (value.getTime() < startDate.getTime()){
+			setEndDate(startDate)
+			errorMsg.end = "Cannot be previou start date"
+			setErrorMsg({...errorMsg})
+	   }
+		else{
+			errorMsg.end = null
+			setErrorMsg({...errorMsg})
+			setEndDate(value)
+		}
+   }
+
+   useEffect(() => {
+	sendData();
+}, [inputList]);
+
+const sendData = () => {
+	console.log("send")
+	props.parentCallback(inputList);
+};
+
   return (
 	  <>
 	<MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -233,8 +278,10 @@ function PlaceInput(props) {
 		format="MM/dd/yyyy"
 		margin="normal"
 		id="date-picker-inline"
-		label="Date picker inline"
+		helperText={errorMsg.start}
+		label="Start"
 		value={startDate}
+		error={errorMsg.start!=null}
 		onChange={setStartDate}
 		KeyboardButtonProps={{
 		  'aria-label': 'change date',
@@ -247,9 +294,11 @@ function PlaceInput(props) {
 		format="MM/dd/yyyy"
 		margin="normal"
 		id="date-picker-inline"
-		label="Date picker inline"
+		label="End"
+		helperText={errorMsg.end}
+		error={errorMsg.end!=null}
 		value={endDate}
-		onChange={setEndDate}
+		onChange={handleSetEndDate}
 		KeyboardButtonProps={{
 		  'aria-label': 'change date',
 		}}
@@ -283,7 +332,7 @@ function PlaceInput(props) {
 					<TimelineItem>
 						<TimelineOppositeContent>
 							<Typography variant="body2" color="textSecondary">
-								{showTime(plan.time)}
+								{showTime(plan.departureTime)}
 								
 									
 							</Typography>
@@ -312,7 +361,10 @@ function PlaceInput(props) {
 								margin="normal"
 								id="time-picker"
 								label="Time picker"
+								helperText={errorMsg.time}
+								error={errorMsg.time!=null}
 								value={addingTime}
+								minTime={Date.now()}
 								onChange={addNewTime}
 								KeyboardButtonProps={{
 									'aria-label': 'change time',
@@ -330,29 +382,21 @@ function PlaceInput(props) {
 							<Paper elevation={3} className={classes.paper}>
 								<Typography variant="h6" component="h1" style={{padding:'10px'}}>
 									<FormControl className={classes.formControl}>
-										<InputLabel htmlFor="age-native-simple">Age</InputLabel>
-										<Select
-										native
-										value={addingPlace}
+										
+									<Autocomplete
+										id="combo-box-demo"
+										options={allPlaces}
 										onChange={addNewPlace}
-										name="place"
-										inputProps={{
-											name: 'age',
-											id: 'place',
-										}}
-										>
-										<option aria-label="None" value="" />
-										<option value={10}>Ten</option>
-										<option value={20}>Twenty</option>
-										<option value={30}>Thirty</option>
-										</Select>
-										<br></br>
+										style={{ width: 300 }}
+										renderInput={(params) => <TextField {...params} label="Place" variant="outlined" />}
+									/>
+									<br/>
 										<TextField
 											id="outlined-multiline-static"
-											label="Multiline"
+											label="Note"
 											name="note"
 											multiline
-											onChange={addNewPlace}
+											onChange={addNewNote}
 											value={addingNote}
 											rows={4}
 											

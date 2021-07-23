@@ -5,6 +5,7 @@ import { InputGroup , FormControl,Form, Table , Button,DropdownButton,Dropdown, 
 import PlanPage from './PlanPage';
 import {MContext} from './provider';
 import Provider from './provider';
+import PlaceInput from './PlaceInput';
 
 
 var map;var dataLayer;var info 
@@ -110,21 +111,6 @@ const initAllMarkers=()=>{
     }
   }
 
-  /*const handleInput = (inputPlan) =>{
-    var tmp = new Map()
-    if (inputPlan!= plan){
-      daysList.forEach(day => {
-        tmp.set(day,false)
-      });
-      handleFilterDay(tmp)
-      setPlan(inputPlan)
-      console.log(plan,inputPlan)
-      daysList.forEach(day => {
-        calRoute(day)
-      });
-    }
-  }*/
-
   const ruturnTime = ()=>{
     var re = []
     for (let day in daysList){
@@ -139,7 +125,7 @@ const initAllMarkers=()=>{
     console.log(plan)
     if (daysList==null) return
     //if (Object.keys(plan).length==0) return
-    let route = plan.get(day)
+    let route = plan[day]
     const directionsService = new window.google.maps.DirectionsService();
     const directionsRenderer = new window.google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map);
@@ -335,18 +321,23 @@ const initAllMarkers=()=>{
   const sendCallback=(input)=>{
     console.log(input)
     var d = []
+    var m = new Map()
     var tmpTime = new Map()
     if (input == null || input.length==0 )
         return
-    input.forEach((values,keys)=>{
-      d.push(keys)
+    Object.keys(input).forEach(key => {
+      if (input[key].length != 0){
+        m.set(key,input[key])
+        d.push(key)
+      }
     })
+   
     plan = input
 
     daysList = d
     if (d.length==0) return
-    if (province != allPlaces.get(input.get(d[0])[0].place).province){
-      province = allPlaces.get(input.get(d[0])[0].place).province
+    if (province != allPlaces.get(input[d[0]][0].place).province){
+      province = allPlaces.get(input[d[0]][0].place).province
       createZoom(province)
     }
     d && d.forEach(day => {  
@@ -365,7 +356,7 @@ const initAllMarkers=()=>{
    
     console.log(tmpTime)
     update.setTime(tmpTime)
-    update.setData(input)
+    update.setData(m)
   }
 
 
@@ -389,12 +380,12 @@ const initAllMarkers=()=>{
 
 
       <div style={{ width: '100%', height: '100%' }}>
-        <div style={{ width: '50%', height: '80%' ,float:"left"}} id={props.id}>
+        <div style={{ width: '45%', height: '80%' ,float:"left"}} id={props.id}>
           
           </div>
         <Filter checkCallback={handleFilterDay} switchCallback={handleSwitch} days={daysList}/>
-        <div style= {{width: '50%', height: 800,float:'right'}} >
-              <PlanPage sendCallback={sendCallback}/>      
+        <div style= {{width: '55%', height: 800,float:'right'}} >
+              <PlaceInput parentCallback={sendCallback}/>      
             </div>
         </div>
 

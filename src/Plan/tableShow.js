@@ -126,12 +126,7 @@ function TableShow(props) {
             if (x!=convertTime(d))
                 setRender([...reRender,d])
    
-        });// rest of script
-        
-
-        /*update.time.get(day).forEach(element => {
-            console.log(element)
-        });*/
+        });// 
        
     }
     useEffect(()=>{

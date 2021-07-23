@@ -97,13 +97,14 @@ const MenuProps = {
         .then(e=>{
             //home.setData(e)
             e.map(data=>{
-                
+                console.log(data)
                 if (selectType.includes("All") || selectType.includes(data.Type)){
-
+                
                 itemData.push({ Name : data.Name,
                                     Type : data.Type,
                                     Position : data.Position,
-                                    Description : data.Description})
+                                    Description : data.Description,
+                                  Img : data.Image[0]})
                 }
             })
         })
@@ -190,7 +191,7 @@ const MenuProps = {
                 {itemData && itemData.map((item) => (
                     console.log(item),
                 <ImageListItem  key={item.Name} >
-                    <img onClick={showDataPlace} id={item.Name} src="https://image.shutterstock.com/image-vector/empty-set-symbol-on-white-260nw-1720537468.jpg" alt={item.title} />
+                    <img onClick={showDataPlace} id={item.Name} src={item.Img} alt={item.title} />
                     <ImageListItemBar
                         title={item.Name}
                         subtitle={<span>by: {item.Province}</span>}

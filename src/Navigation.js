@@ -1,6 +1,3 @@
-
-import { auth } from "./firebase";
-import LogIn from "./authenticate/LogIn";
 import { useAuth } from "./authenticate/Auth";
 import React, { useContext, useEffect, useState } from "react";
 import { Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown,Table } from "react-bootstrap";
@@ -10,7 +7,8 @@ import "./index.css";
 import CheckModal from "./checkModal";
 import { makeStyles } from '@material-ui/core/styles';
 import { useHome } from './homeProvider';
-
+import { auth } from "./firebase";
+import LogIn from "./authenticate/LogIn";
 const useStyles = makeStyles((theme) => ({
 	button: {
 	  margin: theme.spacing(1),
@@ -24,10 +22,12 @@ const Navigation = () => {
 	const [show,setShow] = useState(false)
 	const [willDeletePlan,setDeletePlan] = useState(null)
 	const classes = useStyles();
-	const auth = useAuth();
+	//const auth = useAuth();
 
 
 	useEffect(()=>{
+		//auth.signOut()
+		console.log(currentUser)
 
 	},[])
 
@@ -89,7 +89,7 @@ const Navigation = () => {
 	}
 
 	return (
-		
+		<>
 
 		<Navbar bg="primary" variant="dark">
 			<Navbar.Brand href="/home">Navbar</Navbar.Brand>
@@ -115,7 +115,7 @@ const Navigation = () => {
 		
 			{currentUser ? (
 							<Nav.Link
-								href="./Home"
+							href="./Home"
 								onClick={() => auth.signOut()}
 							>
 								Sign Out
@@ -129,6 +129,8 @@ const Navigation = () => {
 			</Nav>
 			<CheckModal show={show} name={willDeletePlan} callback={deletePlan}/>
 		</Navbar>
+		<LogIn show={logIn} onHide={() => setLogIn(false)} />
+		</>
 		)
 		/*
 		<>

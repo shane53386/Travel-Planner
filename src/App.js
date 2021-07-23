@@ -12,6 +12,7 @@ import Expense from './ExpensePage/expense';
 //import Overview from "./Overview";
 import overView from "./Plan/overView";
 import Review from "./rating/Review";
+import OverView from "./Overview";
 import { AuthProvider } from "./authenticate/Auth";
 import { HomeProvider } from "./homeProvider";
 const THAI_BOUNDS = {
@@ -29,11 +30,10 @@ function App() {
 					<Router>
 						<Switch>
 							<Route exact path="/home" component={Home}/>
-							
+							<Route path="/OverView/:place" component={OverView}/>
 							<Route path="/login" component={LogIn} />
 							<Route path="/signup" component={SignUp} />
 							<Route path="/expense" component={Expense} />
-							<Route path="/planPage/:place" component={overView} />
 							<Route path="/planPage" component={overView} />
 							<Route
 								path="/resetpassword"

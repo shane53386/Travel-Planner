@@ -18,12 +18,12 @@ var focusProvince = {province : "null" , feature : "null"}
 var province_usedMarker = []
 var plan_usedMarker = []
 var usedInfo = {info : null,name:""}
-var nullButton = []
+//var nullButton = []
 var focus = "province"
 function MapContent (props){
 
   const home = useHome();
-
+  const [nullButton,setNullButton] = useState([])
   //const [usedMarker,setUsedMarker] = useState([])
  
   //const [focusProvince,setFocusProvince] = useState({province : "null" , feature : "null"})
@@ -140,7 +140,7 @@ function MapContent (props){
       }
     }
     clearOldInfo()
-    
+    console.log(place.Name+"Marker")
     document.getElementById(place.Name+"Marker").click();
     map.setZoom(10)
     window.google.maps.event.trigger(map, 'resize');
@@ -210,14 +210,14 @@ function MapContent (props){
    
     
     //tmp.set("id", p.Name+"Marker");
-    console.log(tmp.get("id"));
+    //console.log(tmp.get("id"));
     var contentInfo
     let path = `overView`;
     var x = props.history
     var tmpInfo = new window.google.maps.InfoWindow({
     })
     usedInfo = {info:tmpInfo , name :p.Name}
-
+    console.log(p.Name+"Marker")
     nullButton.push(<div style={{display:"none"}}>
                           <Button id={p.Name+"Marker"}
                                   onClick={()=>{
@@ -230,7 +230,7 @@ function MapContent (props){
                                     usedInfo = {info:tmpInfo,name:p.Name}
                                   }}/>
                         </div>)
-    
+    setNullButton([...nullButton])
     fetch(
       `https://api.openweathermap.org/data/2.5/onecall?lat=${p.Position.latitude}&lon=${p.Position.longitude}&exclude=hourly,daily,minutely&appid=${weatherKey}`
     )
@@ -268,7 +268,7 @@ function MapContent (props){
       tmp2Info.close()
     })
 
-    
+    console.log(nullButton)
     return tmp
    
   }
@@ -335,7 +335,7 @@ function MapContent (props){
     return (
       <>
       <div style={{display:"none"}}>
-        <Button href={"./planPage/"+usedInfo.name} id="toDetail"/>
+        <Button href={"./OverView/"+usedInfo.name} id="toDetail"/>
       </div>
       
         <div style={{ width: '100%', height: '100%' }} id={props.id}>
