@@ -3,16 +3,20 @@ import {Tab,Tabs} from 'react-bootstrap';
 import MapDirection from './mapDirect';
 import TableShow from './tableShow';
 import './table.css'
+
 import {Provider} from './provider';
 function OverView(props){
+
+  
     const [key, setKey] = useState('home');
     useEffect(()=>{
-      console.log(props.match.params.place)
+      //console.log(selectedPlan,allPlans)
     },[])
     
   return (
     
     <Provider>
+     
     <Tabs
       id="controlled-tab-example"
       activeKey={key}

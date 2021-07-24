@@ -98,8 +98,12 @@ function PlaceInput(props) {
   const [addingTime,setAddingTime] = useState(new Date());
   const [addingPlace,setAddingPlace] = useState("")
   const [addingNote,setAddingNote] = useState("")
-  const [allPlaces,setAllPlaces] = useState(["a","b","c","d"])
+  const [allPlaces,setAllPlaces] = useState(props.places)
+  const [editTime,setEditTime] = useState(new Date())
+  const [editNote,setEditNote] = useState("")
+  const [editPlace,setEditPlace] = useState("")
   const [errorMsg,setErrorMsg] = useState({start:null,end:null,time:null})
+  const [edit,setEdit] = useState("")
   const handleSelect = (event, newValue) => {
     setValue(newValue);
 	setAddingPlace("")
@@ -210,30 +214,68 @@ function PlaceInput(props) {
 	setAddingTime(date)
    }
 
+   const editNewTime=(date)=>{
+	let dd = null
+	if (inputList[allDays[value]].length==0)
+		dd = new Date()
+	else
+		dd = inputList[allDays[value]][inputList[allDays[value]].length-1].departureTime
+
+	   if (date.getTime() < dd.getTime())
+		   errorMsg.time = "Cannot be previous"
+	   else
+		errorMsg.time = null
+		setErrorMsg({...errorMsg})
+	   
+	var x = allDays[value].split("/")
+	console.log(date)
+	//var d = new Date(date)
+	date.setDate(parseInt(x[1]))
+	date.setMonth(parseInt(x[0])-1)
+	date.setYear(parseInt(x[2]))
+	setEditTime(date)
+   }
    const addNewNote=(event)=>{
 		const {value} = event.target
 		setAddingNote(value)
    }
    const addNewPlace=(event,value)=>{
-
 		   setAddingPlace(value)
 	   
    }
+   const editNewNote=(event)=>{
+	const {value} = event.target
+	setEditNote(value)
+	}
+	const editNewPlace=(event,value)=>{
+
+	   setEditPlace(value)
+   
+}
    const submitNew=(event)=>{
-	   console.log("add")
-		if (errorMsg.start != null || errorMsg.end != null || errorMsg.time != null) return
-	   if (event.target.name == undefined || event.target.name.split(" ")[1] != "btn") return
+	   //console.log(event.target.name.split(" "))
+	   if (errorMsg.start != null || errorMsg.end != null || errorMsg.time != null) return
+		if (event.target.name == undefined || event.target.name.split(" ")[1] != "btn") return
 		var day = event.target.name.split(" ")[0]
-		
-		if (inputList[day]==null){
-			inputList[day]=[{place:addingPlace,departureTime:addingTime,note:addingNote}]
+		let type= event.target.name.split(" ")[2]
+	   if (type=="ADD"){		
+			if (inputList[day]==null){
+				inputList[day]=[{place:addingPlace,departureTime:addingTime,note:addingNote}]
+			}
+			else{
+				inputList[day].push({place:addingPlace,departureTime:addingTime,note:addingNote})
+			}
 		}
 		else{
-			inputList[day].push({place:addingPlace,departureTime:addingTime,note:addingNote})
+			var idx = event.target.name.split(" ")[3]
+			inputList[day][idx]={place:editPlace,departureTime:editTime,note:editNote}
+			console.log(inputList)
+			
 		}
 		setInputList({...inputList})
-		setAllDays([...allDays])
-		console.log(inputList,allDays)
+			setAllDays([...allDays])
+			setEdit("")
+			console.log(inputList,allDays)
    }
    const showTime=(date)=>{
 	   console.log(date)
@@ -268,6 +310,95 @@ const sendData = () => {
 	props.parentCallback(inputList);
 };
 
+const openEdit=(value)=>{
+	var day = value.split(" ")[0]
+	var index = value.split(" ")[1]
+	setEditTime(inputList[day][index].departureTime)
+	setEditPlace(inputList[day][index].place)
+	setEditNote(inputList[day][index].note)
+	setEdit(value)
+}
+const renderAddData=(type,idx)=>{
+	var day
+	var index
+	if (idx!=null){
+		day = idx.split(" ")[0]
+		index = idx.split(" ")[1]
+		//console.log()
+		setEditTime(inputList[day][index].departureTime)
+		setEditPlace(inputList[day][index].place)
+		setEditNote(inputList[day][index].note)
+		console.log(inputList[day][index])
+	}
+	return (<TimelineItem>
+		<TimelineOppositeContent>
+			<Typography variant="body2" color="textSecondary">
+			<MuiPickersUtilsProvider utils={DateFnsUtils}>
+			<KeyboardTimePicker
+				margin="normal"
+				id="time-picker"
+				label="Time picker"
+				helperText={errorMsg.time}
+				error={errorMsg.time!=null}
+				value={type=="ADD"?addingTime:editTime}
+				minTime={Date.now()}
+				onChange={type=="ADD"?addNewTime:editNewTime}
+				KeyboardButtonProps={{
+					'aria-label': 'change time',
+				}}
+				/>
+				</MuiPickersUtilsProvider>
+			</Typography>
+		</TimelineOppositeContent>
+		<TimelineSeparator>
+			<TimelineDot>
+			</TimelineDot>
+			<TimelineConnector />
+		</TimelineSeparator>
+		<TimelineContent>
+			<Paper elevation={3} className={classes.paper}>
+				<Typography variant="h6" component="h1" style={{padding:'10px'}}>
+					<FormControl className={classes.formControl}>
+						<div>
+						<Autocomplete
+							id="combo-box-demo"
+							options={allPlaces}
+							onChange={type=="ADD"?addNewPlace:editNewPlace}
+							style={{ width: 300 }}
+							renderInput={(params) => <TextField {...params} label="Place" variant="outlined" />}
+						/>
+						{type=="EDIT"?
+						<>
+						<Button onClick={()=>setEdit("")}>
+							Cancel
+						</Button>
+						<Button name={day+" btn EDIT"} onClick={submitNew}>
+							OK
+						</Button>
+						</>
+						:null}
+						</div>
+					
+					<br/>
+						<TextField
+							id="outlined-multiline-static"
+							label="Note"
+							name="note"
+							multiline
+							onChange={type=="ADD"?addNewNote:editNewNote}
+							value={type=="ADD"?addingNote:editNote}
+							rows={4}
+							
+							variant="outlined"
+							/>
+				</FormControl>
+				</Typography>
+			
+			</Paper>
+		</TimelineContent>
+	</TimelineItem>)
+
+}
   return (
 	  <>
 	<MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -326,15 +457,13 @@ const sendData = () => {
 		  return (<>
 		  		<TabPanel value={value} index={idx}>
 					<Timeline >
-						{inputList[day].map(plan=>{
-						console.log(plan)
-						return (
-					<TimelineItem>
+						{inputList[day].map((plan,index)=>(
+
+						`${day} ${index}`!=edit?
+						<TimelineItem>
 						<TimelineOppositeContent>
 							<Typography variant="body2" color="textSecondary">
 								{showTime(plan.departureTime)}
-								
-									
 							</Typography>
 						</TimelineOppositeContent>
 						<TimelineSeparator>
@@ -345,15 +474,23 @@ const sendData = () => {
 						<TimelineContent>
 							<Paper elevation={3} className={classes.paper}>
 								<Typography variant="h6" component="h1">
-								{plan.place}
+									<>
+									<div style={{float:"left"}}>
+										{plan.place}
+									</div>
+									<div style={{float:"right"}}>
+										<Button onClick={()=>openEdit(`${day} ${index}`)}>Edit</Button>
+									</div>
+									</>								
 								</Typography>
+								<br/>
 								<Typography>{plan.note}</Typography>
 							</Paper>
 						</TimelineContent>
 					</TimelineItem>
-						)})}
-					
-					<TimelineItem>
+						:
+						
+						<TimelineItem>
 						<TimelineOppositeContent>
 							<Typography variant="body2" color="textSecondary">
 							<MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -363,9 +500,9 @@ const sendData = () => {
 								label="Time picker"
 								helperText={errorMsg.time}
 								error={errorMsg.time!=null}
-								value={addingTime}
+								value={editTime}
 								minTime={Date.now()}
-								onChange={addNewTime}
+								onChange={editNewTime}
 								KeyboardButtonProps={{
 									'aria-label': 'change time',
 								}}
@@ -382,22 +519,32 @@ const sendData = () => {
 							<Paper elevation={3} className={classes.paper}>
 								<Typography variant="h6" component="h1" style={{padding:'10px'}}>
 									<FormControl className={classes.formControl}>
-										
-									<Autocomplete
-										id="combo-box-demo"
-										options={allPlaces}
-										onChange={addNewPlace}
-										style={{ width: 300 }}
-										renderInput={(params) => <TextField {...params} label="Place" variant="outlined" />}
-									/>
+										<div>
+										<Autocomplete
+											id="combo-box-demo"
+											options={allPlaces}
+											onChange={editNewPlace}
+											style={{ width: 300 }}
+											renderInput={(params) => <TextField {...params} label="Place" variant="outlined" />}
+										/>
+										<>
+										<Button onClick={()=>setEdit("")}>
+											Cancel
+										</Button>
+										<Button name={day+" btn EDIT "+index} onClick={submitNew}>
+											OK
+										</Button>
+										</>
+										</div>
+									
 									<br/>
 										<TextField
 											id="outlined-multiline-static"
 											label="Note"
 											name="note"
 											multiline
-											onChange={addNewNote}
-											value={addingNote}
+											onChange={editNewNote}
+											value={editNote}
 											rows={4}
 											
 											variant="outlined"
@@ -408,10 +555,12 @@ const sendData = () => {
 							</Paper>
 						</TimelineContent>
 					</TimelineItem>
-
+						)
+						)}
+						{renderAddData("ADD")}
 					</Timeline>
 				<div style={{textAlign:'center'}}>
-				<Button name={day+" btn"} onClick={submitNew} variant="contained" color="secondary">
+				<Button name={day+" btn ADD"} onClick={submitNew} variant="contained" color="secondary">
 					Add
 				</Button>
 				</div>

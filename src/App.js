@@ -23,7 +23,7 @@ const THAI_BOUNDS = {
   };
 function App() {
 	return (
-		<>
+		<Router>
 		<AuthProvider>
 			<Navigation />
 			
@@ -42,7 +42,7 @@ function App() {
 						</Switch>
 					</Router>
 				</AuthProvider>
-		</>
+		</Router>
 	);
 }
 

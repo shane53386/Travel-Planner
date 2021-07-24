@@ -1,5 +1,6 @@
 import { useAuth } from "./authenticate/Auth";
 import React, { useContext, useEffect, useState } from "react";
+import { withRouter } from 'react-router-dom';
 import { Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown,Table } from "react-bootstrap";
 import {IconButton,Button} from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -15,13 +16,18 @@ const useStyles = makeStyles((theme) => ({
 	},
   }));
 
-const Navigation = () => {
-	const { currentUser } = useAuth();
+const Navigation = (props) => {
+	const { currentUser,selectedPlan,allPlans,setSelectedPlan } = useAuth();
 	const [logIn, setLogIn] = useState(false);
 	const [newPlan,setNewPlan] = useState(null)
 	const [show,setShow] = useState(false)
 	const [willDeletePlan,setDeletePlan] = useState(null)
 	const classes = useStyles();
+	//const history = useHistory();
+
+    const handleClick = () => {
+        ;
+    }
 	//const auth = useAuth();
 
 
@@ -32,20 +38,24 @@ const Navigation = () => {
 	},[])
 
 	const selectPlan=(event)=>{
-		console.log(event.target.value)
-		//data.setPlan()
+		console.log(event)
+		//props.history.push("/planPage")
+
+		setSelectedPlan(event)
+		//return <Redirect to='/planPage'  />
 	}
 	const genPlan=()=>{
 
 		//gen from plan of current user in auth
-		var planList = ["one","two","three"]
+		var planList = Object.keys(allPlans)
+		//var planList = ["one","two","three"]
 		//fecth plan from context
 		let buffer = []
 		planList.map((l)=>{
 			buffer.push(
 						<tr style={{verticalAlign:"middle", padding:"0px",margin:"0px",border:"none"}}>
 							<td style={{padding:"0px",margin:"0px",border:"none"}}>
-								<a class="dropdown-item" href="./planPage" value={l} onClick={selectPlan}>{l}</a>
+								<a class="dropdown-item" href="/planPage" value={l} onClick={setSelectedPlan(l)}>{l}</a>
 							</td>
 							<td id="planDelete" style={{border:"none",textAlign:"center",minWidth:"50px",padding:"0px",margin:"0px"}}>
 							<Button variant="contained"	color="secondary" value={l} onClick={showModal} className={classes.button}startIcon={<DeleteIcon />}>
@@ -99,7 +109,7 @@ const Navigation = () => {
 				<>
 				<NavDropdown type="button" title="Plans" id="basic-nav-dropdown">
 					<Table class="table table-hover" id="plantTable">
-						{genPlan()}
+						{allPlans && genPlan()}
 					</Table>
 					<NavDropdown.Divider />
 						<NavDropdown.ItemText style={{justifyContent:'center'}}>
@@ -192,4 +202,4 @@ const Navigation = () => {
 
 };
 
-export default Navigation;
+export default withRouter(Navigation);

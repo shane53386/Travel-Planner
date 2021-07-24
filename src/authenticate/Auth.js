@@ -10,6 +10,8 @@ export function useAuth() {
 export function AuthProvider({ children }) {
 	const [currentUser, setCurrentUser] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const [selectedPlan,setSelectedPlan] = useState(null);
+	const [allPlans,setAllPlans] =useState(null);
 
 	async function signUp(username, email, password) {
 		const userRef = db.collection("Users").doc(username);
@@ -73,16 +75,38 @@ export function AuthProvider({ children }) {
 		});
 	}
 
+	async function selectPlan(plan) {
+		
+	}
+	async function getPlan(user){
+		console.log(user.email)
+		const userRef = db.collection("Users").doc(user.displayName);
+		userRef.get().then((doc) => setAllPlans(doc.data().Plan));
+		
+		//console.log(doc.data());
+	}
+	useEffect(()=>{
+		console.log(allPlans)
+		console.log(selectedPlan)
+	},[allPlans])
+
+	useEffect(()=>{
+		console.log(selectedPlan)
+	},[selectedPlan])
+
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
 			setCurrentUser(user);
+
+			if (user != null)
+			getPlan(user);
 			setLoading(false);
 		});
 		return unsubscribe;
 	}, []);
 
 	const value = {
-		currentUser,
+		currentUser,allPlans,selectedPlan,setSelectedPlan,
 		signUp,
 		logIn,
 		logOut,

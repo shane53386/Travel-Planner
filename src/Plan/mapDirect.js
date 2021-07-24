@@ -6,7 +6,7 @@ import PlanPage from './PlanPage';
 import {MContext} from './provider';
 import Provider from './provider';
 import PlaceInput from './PlaceInput';
-
+import { useAuth } from '../authenticate/Auth';
 
 var map;var dataLayer;var info 
 var geoJson = null
@@ -24,17 +24,34 @@ function MapDirection(props) {
   const [days,setDays] = useState(new Map())
   const [reRender,setReRender] = useState([])
   const [allMarkerPlaces,setAllMarkerPlaces] = useState([])
+  const [allPlacesName,setAllPlacesName] = useState([])
   const travelMode = 'DRIVING'
   //const [daysList,setDaysList] = useState([])
   const update = useContext(MContext)
-  useEffect(()=>{
-    
+  const { selectedPlan,allPlans } = useAuth();
 
-    console.log(props.plan,plan)
-    allPlaces.set("a",{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
+
+  useEffect(()=>{
+    if (selectedPlan==null)return
+    console.log(allPlans,selectedPlan)
+    allPlans[selectedPlan].places.map(e=>{
+      allPlaces.set(e,{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
+      allPlacesName.push(e)
+      console.log(e)
+    })
+    setAllPlacesName([...allPlacesName])
+  },[selectedPlan])
+  useEffect(()=>{
+    /*console.log(allPlans)
+    allPlans[selectedPlan].places.map(e=>{
+      allPlaces.set(e,{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
+    })    */
+    
+    //console.log(allPlaces)
+    /*allPlaces.set("a",{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
     allPlaces.set( "b",{ pos : {lng : 100.538009 , lat : 13.764603 } , province : "กรุงเทพมหานคร"})
     allPlaces.set("c",{ pos : {lng : 100.537761 , lat :13.697441 } , province : "กรุงเทพมหานคร"})
-    allPlaces.set("d",{ pos : {lng :  100.583172 , lat :13.748389 } , province : "กรุงเทพมหานคร"})
+    allPlaces.set("d",{ pos : {lng :  100.583172 , lat :13.748389 } , province : "กรุงเทพมหานคร"})*/
 
     if (!window.google) {
       var s = document.createElement('script');
@@ -385,7 +402,7 @@ const initAllMarkers=()=>{
           </div>
         <Filter checkCallback={handleFilterDay} switchCallback={handleSwitch} days={daysList}/>
         <div style= {{width: '55%', height: 800,float:'right'}} >
-              <PlaceInput parentCallback={sendCallback}/>      
+              <PlaceInput places={allPlacesName} parentCallback={sendCallback}/>      
             </div>
         </div>
 
