@@ -1,6 +1,6 @@
 import { useAuth } from "./authenticate/Auth";
 import React, { useContext, useEffect, useState } from "react";
-import { withRouter } from 'react-router-dom';
+import { withRouter,Redirect,Route } from 'react-router-dom';
 import { Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown,Table } from "react-bootstrap";
 import {IconButton,Button} from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -9,6 +9,7 @@ import CheckModal from "./checkModal";
 import { makeStyles } from '@material-ui/core/styles';
 import { useHome } from './homeProvider';
 import { auth } from "./firebase";
+import overView from "./Plan/overView";
 import LogIn from "./authenticate/LogIn";
 const useStyles = makeStyles((theme) => ({
 	button: {
@@ -22,6 +23,7 @@ const Navigation = (props) => {
 	const [newPlan,setNewPlan] = useState(null)
 	const [show,setShow] = useState(false)
 	const [willDeletePlan,setDeletePlan] = useState(null)
+	const [redirect,setRedirect] = useState(false)
 	const classes = useStyles();
 	//const history = useHistory();
 
@@ -37,11 +39,14 @@ const Navigation = (props) => {
 
 	},[])
 
-	const selectPlan=(event)=>{
-		console.log(event)
+	const handleSelectedPlan=(event)=>{
+		console.log(event.target.name)
+		setSelectedPlan(event.target.name)
+		setRedirect(true)
+		//console.log(event)
 		//props.history.push("/planPage")
 
-		setSelectedPlan(event)
+		//setSelectedPlan(event)
 		//return <Redirect to='/planPage'  />
 	}
 	const genPlan=()=>{
@@ -55,7 +60,8 @@ const Navigation = (props) => {
 			buffer.push(
 						<tr style={{verticalAlign:"middle", padding:"0px",margin:"0px",border:"none"}}>
 							<td style={{padding:"0px",margin:"0px",border:"none"}}>
-								<a class="dropdown-item" href="/planPage" value={l} onClick={setSelectedPlan(l)}>{l}</a>
+								<a class="dropdown-item" name={l} value={l} onClick={handleSelectedPlan}>{l}</a>
+								
 							</td>
 							<td id="planDelete" style={{border:"none",textAlign:"center",minWidth:"50px",padding:"0px",margin:"0px"}}>
 							<Button variant="contained"	color="secondary" value={l} onClick={showModal} className={classes.button}startIcon={<DeleteIcon />}>
@@ -140,6 +146,7 @@ const Navigation = (props) => {
 			<CheckModal show={show} name={willDeletePlan} callback={deletePlan}/>
 		</Navbar>
 		<LogIn show={logIn} onHide={() => setLogIn(false)} />
+		{redirect?<><Redirect to="/planPage"/><Route path="/planPage" component={overView} /></>:null}
 		</>
 		)
 		/*

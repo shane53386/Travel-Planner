@@ -4,6 +4,7 @@ import { useAuth } from "../authenticate/Auth";
 import PlaceInput from "./PlaceInput";
 
 function PlanPage() {
+	
 	const Input = (index) => (
 		<PlaceInput id={index} parentCallback={callbackFunction} />
 	);

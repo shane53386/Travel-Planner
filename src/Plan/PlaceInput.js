@@ -30,7 +30,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { Button } from '@material-ui/core';
-import { ShowChartTwoTone } from "@material-ui/icons";
+import { useAuth } from '../authenticate/Auth';
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
   
@@ -102,7 +102,7 @@ function PlaceInput(props) {
   const [editTime,setEditTime] = useState(new Date())
   const [editNote,setEditNote] = useState("")
   const [editPlace,setEditPlace] = useState("")
-  const [errorMsg,setErrorMsg] = useState({start:null,end:null,time:null})
+  const [errorMsg,setErrorMsg] = useState({start:null,end:null,time:null,plae:null})
   const [edit,setEdit] = useState("")
   const handleSelect = (event, newValue) => {
     setValue(newValue);
@@ -110,7 +110,21 @@ function PlaceInput(props) {
 	setAddingTime(new Date())
 	setAddingNote("")
   };
+  const { selectedPlan,allPlans } = useAuth();
+  useEffect(()=>{
+	  console.log(allPlans,selectedPlan)
+	  Object.entries(allPlans[selectedPlan].planning).forEach(entry => {
+		const [key, value] = entry;
+		  console.log(value)
+		value.map(data=>{
+			if (inputList[key]==null)
+				inputList[key] = [{place:data.split(";")[0] , departureTime:data.split(";")[1] , note : data.split(";")[2]}]
+			else
+				inputList[key].push({place:data.split(";")[0] , departureTime:data.split(";")[1] , note : data.split(";")[2]})
+		})
+	});
 
+  },[])
   const diffDay=()=>{
 	var i = startDate.getMonth()
 	var j = endDate.getMonth()
@@ -240,6 +254,12 @@ function PlaceInput(props) {
 		setAddingNote(value)
    }
    const addNewPlace=(event,value)=>{
+	   console.log(value)
+	   if (value==null || value.length == 0) {
+		   errorMsg.place = "Cannot be blank"
+		   setErrorMsg({...errorMsg})
+		   return
+	   }
 		   setAddingPlace(value)
 	   
    }
@@ -254,10 +274,19 @@ function PlaceInput(props) {
 }
    const submitNew=(event)=>{
 	   //console.log(event.target.name.split(" "))
-	   if (errorMsg.start != null || errorMsg.end != null || errorMsg.time != null) return
+	   
+	   if (errorMsg.start != null || errorMsg.end != null || errorMsg.time != null || errorMsg.place != null) return
 		if (event.target.name == undefined || event.target.name.split(" ")[1] != "btn") return
 		var day = event.target.name.split(" ")[0]
 		let type= event.target.name.split(" ")[2]
+	   if (type=="ADD" && addingPlace == null) {
+			errorMsg.place = "Cannot be blank"
+			setErrorMsg({...errorMsg})
+			return
+	   }
+	   if(type=="EDIT" && editPlace==null){
+		   return
+	   }
 	   if (type=="ADD"){		
 			if (inputList[day]==null){
 				inputList[day]=[{place:addingPlace,departureTime:addingTime,note:addingNote}]
@@ -273,9 +302,12 @@ function PlaceInput(props) {
 			
 		}
 		setInputList({...inputList})
-			setAllDays([...allDays])
-			setEdit("")
-			console.log(inputList,allDays)
+		setAllDays([...allDays])
+		setEdit("")
+		setAddingTime(new Date())
+		setAddingPlace(null)
+		setAddingNote("")
+		console.log(inputList,allDays)
    }
    const showTime=(date)=>{
 	   console.log(date)
@@ -317,6 +349,14 @@ const openEdit=(value)=>{
 	setEditPlace(inputList[day][index].place)
 	setEditNote(inputList[day][index].note)
 	setEdit(value)
+}
+
+const deleteList=(value)=>{
+	var day = value.split(" ")[0]
+	var index = value.split(" ")[1]
+	inputList[day].splice(index,1)
+	setInputList({...inputList})
+	
 }
 const renderAddData=(type,idx)=>{
 	var day
@@ -362,7 +402,10 @@ const renderAddData=(type,idx)=>{
 						<div>
 						<Autocomplete
 							id="combo-box-demo"
+							value={addingPlace}
 							options={allPlaces}
+							error={errorMsg.place==null}
+							helperText={errorMsg.place}
 							onChange={type=="ADD"?addNewPlace:editNewPlace}
 							style={{ width: 300 }}
 							renderInput={(params) => <TextField {...params} label="Place" variant="outlined" />}
@@ -480,6 +523,7 @@ const renderAddData=(type,idx)=>{
 									</div>
 									<div style={{float:"right"}}>
 										<Button onClick={()=>openEdit(`${day} ${index}`)}>Edit</Button>
+										<Button onClick={()=>deleteList(`${day} ${index}`)}>Delete</Button>
 									</div>
 									</>								
 								</Typography>
@@ -522,6 +566,7 @@ const renderAddData=(type,idx)=>{
 										<div>
 										<Autocomplete
 											id="combo-box-demo"
+											value={editPlace}
 											options={allPlaces}
 											onChange={editNewPlace}
 											style={{ width: 300 }}

@@ -7,7 +7,7 @@ import {MContext} from './provider';
 import Provider from './provider';
 import PlaceInput from './PlaceInput';
 import { useAuth } from '../authenticate/Auth';
-
+import { fetchData } from '../fetchData';
 var map;var dataLayer;var info 
 var geoJson = null
 var polyline
@@ -34,10 +34,13 @@ function MapDirection(props) {
   useEffect(()=>{
     if (selectedPlan==null)return
     console.log(allPlans,selectedPlan)
-    allPlans[selectedPlan].places.map(e=>{
-      allPlaces.set(e,{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
-      allPlacesName.push(e)
-      console.log(e)
+    allPlans[selectedPlan].places && allPlans[selectedPlan].places.map(e=>{
+      fetchData(e)
+      .then(p=>{
+        allPlaces.set(e,{pos: {lng : p.Position.longitude , lat : p.Position.latitude} , province : "กรุงเทพมหานคร"})
+        allPlacesName.push(e)
+        console.log(e,p)
+      })
     })
     setAllPlacesName([...allPlacesName])
   },[selectedPlan])
@@ -353,6 +356,7 @@ const initAllMarkers=()=>{
 
     daysList = d
     if (d.length==0) return
+    console.log(input[d[0]][0].place,allPlaces)
     if (province != allPlaces.get(input[d[0]][0].place).province){
       province = allPlaces.get(input[d[0]][0].place).province
       createZoom(province)
@@ -402,7 +406,7 @@ const initAllMarkers=()=>{
           </div>
         <Filter checkCallback={handleFilterDay} switchCallback={handleSwitch} days={daysList}/>
         <div style= {{width: '55%', height: 800,float:'right'}} >
-              <PlaceInput places={allPlacesName} parentCallback={sendCallback}/>      
+              <PlaceInput places={allPlacesName} allPlans={allPlans} selectedPlan={selectedPlan}parentCallback={sendCallback}/>      
             </div>
         </div>
 

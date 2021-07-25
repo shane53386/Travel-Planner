@@ -10,9 +10,13 @@ export function useAuth() {
 export function AuthProvider({ children }) {
 	const [currentUser, setCurrentUser] = useState(null);
 	const [loading, setLoading] = useState(true);
-	const [selectedPlan,setSelectedPlan] = useState(null);
+	const [selectedPlan,_setSelectedPlan] = useState(null);
 	const [allPlans,setAllPlans] =useState(null);
 
+	function setSelectedPlan(event){
+		//console.log(event.targent.name)
+		_setSelectedPlan(event)
+	}
 	async function signUp(username, email, password) {
 		const userRef = db.collection("Users").doc(username);
 		const userDoc = await userRef.get();
