@@ -123,9 +123,10 @@ const Navigation = (props) => {
 							<Button variant="contained"	color="primary" className={classes.button} onClick={addNewPlan}>Add</Button>
 						</NavDropdown.ItemText>
 					</NavDropdown>
-				<Nav.Link href="/expense">Expense</Nav.Link>
+					<Nav.Link href="/expense">Expense</Nav.Link>
 				</>
 				}
+				<Nav.Link href="/manage">Manage</Nav.Link>
 			</Nav>
 			<Nav>
 		
@@ -140,6 +141,7 @@ const Navigation = (props) => {
 							<Nav.Link href="#" onClick={() => setLogIn(true)}>
 								Log In
 							</Nav.Link>
+							
 						)}
 			
 			</Nav>

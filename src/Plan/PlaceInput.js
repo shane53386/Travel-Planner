@@ -110,20 +110,43 @@ function PlaceInput(props) {
 	setAddingTime(new Date())
 	setAddingNote("")
   };
-  const { selectedPlan,allPlans } = useAuth();
+  //const { selectedPlan,allPlans } = useAuth();
   useEffect(()=>{
-	  console.log(allPlans,selectedPlan)
-	  Object.entries(allPlans[selectedPlan].planning).forEach(entry => {
-		const [key, value] = entry;
-		  console.log(value)
+	if (props.allPlans==null)return
+	console.log(props.allPlans,props.selectedPlan)
+	var s = []
+	  Object.entries(props.allPlans[props.selectedPlan].planning).forEach(entry => {
+		const [k, value] = entry;
+		var tmp ;
 		value.map(data=>{
+			var _key = new Date(data.split(";")[1])
+			var key = _key.toLocaleDateString()
+			tmp = _key
 			if (inputList[key]==null)
-				inputList[key] = [{place:data.split(";")[0] , departureTime:data.split(";")[1] , note : data.split(";")[2]}]
+				inputList[key] = [{place:data.split(";")[0] , departureTime:new Date(data.split(";")[1]) , note : data.split(";")[2]}]
 			else
-				inputList[key].push({place:data.split(";")[0] , departureTime:data.split(";")[1] , note : data.split(";")[2]})
+				inputList[key].push({place:data.split(";")[0] , departureTime:new Date(data.split(";")[1]) , note : data.split(";")[2]})
+			
 		})
+		s.push(tmp)
+	
+	
 	});
-
+	s.sort()
+	setInputList({...inputList})
+	console.log(s,inputList)
+	var start = s[0]
+	var end = s[s.length-1]
+	
+	for (let i=0;i<s.length;i++){
+		console.log(s[i])
+		s[i] = s[i].toLocaleDateString()
+	}
+	setAllDays(s)
+	console.log(s)
+	setStartDate(start)
+	setEndDate(end)
+	console.log(inputList)
   },[])
   const diffDay=()=>{
 	var i = startDate.getMonth()
@@ -184,26 +207,31 @@ function PlaceInput(props) {
 	return re
   }
    useEffect(()=>{
+	/*console.log("before update",inputList,allDays)
 		if (endDate.getTime() < startDate.getTime())
 			//error
 			return 
-		var tmp = []
+		
 		var nowDate = startDate
 		console.log(startDate.getDate(),endDate.getDate())
 		var difDay = diffDay()
 		for (let i=0;i<difDay+1;i++){
 			
-			tmp.push(nowDate.toLocaleDateString())
-			inputList[nowDate.toLocaleDateString()]=[]
+			
+			if (!allDays.includes(nowDate.toLocaleDateString())){
+				console.log(allDays,nowDate.toLocaleDateString())
+				allDays.push(nowDate.toLocaleDateString())
+				inputList[nowDate.toLocaleDateString()]=[]
+		}
 			nowDate =nextDay(nowDate) 
 			
 			//{ place: "", time: "" }
 		}
+		allDays.sort()
+		setAllDays([...allDays])
 
-		setAllDays(tmp)
 
-
-	console.log("update")
+	console.log("update",inputList,allDays)*/
    },[startDate,endDate])
 
    const addNewTime=(date)=>{

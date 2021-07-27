@@ -2,6 +2,7 @@ import React, { useEffect, useState} from 'react';
 import {Tab,Tabs} from 'react-bootstrap';
 import MapDirection from './mapDirect';
 import TableShow from './tableShow';
+import Expense from '../ExpensePage/expense';
 import './table.css'
 
 import {Provider} from './provider';
@@ -37,6 +38,11 @@ function OverView(props){
       <Tab eventKey="profile" title="Table Result">
         <div style= {{width: '100%', height: 800,}} >
               <TableShow/>      
+            </div>
+      </Tab>
+      <Tab eventKey="expense" title="Expense">
+        <div style= {{width: '100%', height: 800,}} >
+              <Expense/>      
             </div>
       </Tab>
       

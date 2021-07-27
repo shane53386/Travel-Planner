@@ -43,7 +43,7 @@ function Home(){
 					src='https://data.opendevelopmentmekong.net/geoserver/ODMekong/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ODMekong%3Atha_admbnda_adm1_rtsd_20190221&outputFormat=application%2Fjson'/>
             </div>
 			
-			{auth.currentUser != null? null:<div style= {{width: '25%', height: 600,padding:"10px", float:"right"}} >
+			{auth.currentUser == null? null:<div style= {{width: '25%', height: 600,padding:"10px", float:"right"}} >
 				<ReviewPlan 
 					showOnePlan ={showOnePlan}
 					showOnePlace ={showOnePlace }/>

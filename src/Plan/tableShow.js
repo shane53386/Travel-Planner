@@ -86,6 +86,7 @@ function TableShow(props) {
         )
     }
     const convertTime=(e)=>{
+        console.log(e)
         var min = ""
         if (e.getMinutes() ==0){
             min = '00'

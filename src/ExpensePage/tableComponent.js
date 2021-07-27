@@ -23,7 +23,7 @@ import { MapOutlined } from '@material-ui/icons';
 import { Button } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import InputNewType from './modal.js';
-
+import { useAuth } from '../authenticate/Auth';
     
     function TableComponent(props){        
         const createData=(type,num, cost)=> {
@@ -32,7 +32,7 @@ import InputNewType from './modal.js';
                   num,
                   cost,
                   detail: [
-                    { id: 1 , name: null , cost : 0 , amount: 0},
+                    { id: 1 , list: null , price : 0 , amount: 0},
                   ],
                   
                 };
@@ -44,8 +44,10 @@ import InputNewType from './modal.js';
             createData('อื่นๆ', 1, 0),
             
           ]);
+        
         const [open, setOpen] = useState({อื่นๆ:false});
         const [totalCost,setTotalCost] = useState(0);
+        const {selectedPlan,allPlans} = useAuth();
         //open.set("อื่นๆ",false)
         
         const useRowStyles = makeStyles({
@@ -59,6 +61,20 @@ import InputNewType from './modal.js';
           const classes = useRowStyles();
         const [save,setSave] = useState(false);
 
+        useEffect(()=>{
+
+            if(selectedPlan == null)return
+            Object.entries(allPlans[selectedPlan].expense).forEach(entry => {
+              const [key, value] = entry
+              console.log(value)
+              var countCost = 0
+              value.map(r=>{
+                countCost += r.price
+              })
+                rows.push({type:key , num: value.length, cost : countCost,
+                    detail:value})
+            })
+        },[selectedPlan])
         const deleteType=(event)=>{
             var type = event.target.value
             for (let i=0;i<rows.length;i++){
@@ -78,7 +94,7 @@ import InputNewType from './modal.js';
                     for (let j=id;j<rows[i].detail.length;j++){
                         rows[i].detail[j].id--
                     }
-                    rows[i].cost -= rows[i].detail[id-1].amount * rows[i].detail[id-1].cost 
+                    rows[i].cost -= rows[i].detail[id-1].amount * rows[i].detail[id-1].price 
                     rows[i].detail.splice(id-1,1)
                     rows[i].num -=1
                     setRows([...rows])
@@ -95,7 +111,7 @@ import InputNewType from './modal.js';
             for (let i=0;i<rows.length;i++){
                 console.log(rows[i].type,event.target)
                 if (rows[i].type==type){
-                    rows[i].detail.push({ id:++rows[i].num  , name: null , cost : 0 , amount: 0})
+                    rows[i].detail.push({ id:++rows[i].num  , list: null , price : 0 , amount: 0})
                     setRows([...rows])
                     return
                     
@@ -148,8 +164,8 @@ import InputNewType from './modal.js';
                               <TableRow>
                                 <TableCell  class="head" id="headCenter">ID</TableCell>
                                 <TableCell class="head" id="headCenter">รายการ</TableCell>
-                                <TableCell class="head" align="right" id="headCenter">จำนวน</TableCell>
                                 <TableCell class="head" align="right" id="headCenter">ราคาต่อหน่วย</TableCell>
+                                <TableCell class="head" align="right" id="headCenter">จำนวน</TableCell>
                                 <TableCell class="head" align="right" id="headCenter">ราคารวม</TableCell>
                               </TableRow>
                             </TableHead>
@@ -162,13 +178,13 @@ import InputNewType from './modal.js';
                                   <TableCell id="center"component="th" scope="row">
                                   <TextField 
                                           autoComplete='off'
-                                          error={(e.type==null || e.type.length==0) &&save?true:false}
-                                          id={(e.type==null || e.type.length==0) &&save?"standard-error-helper-text":"standard-basic"}
-                                          label={(e.type==null || e.type.length==0) &&save?"Cannot be blank!":null}
+                                          error={(e.list==null || e.list.length==0) &&save?true:false}
+                                          id={(e.list==null || e.list.length==0) &&save?"standard-error-helper-text":"standard-number"}
+                                          label={(e.list==null || e.list.length==0) &&save?"Cannot be blank!":null}
                                           disabled={!save?false:true}
                                           
-                                          name={row.type + " " + "type" + " " + e.id}
-                                          value={e.type}
+                                          name={row.type + " " + "list" + " " + e.id}
+                                          value={e.list}
                                           onChange={handleInput}
                                           type="text"
                                           InputLabelProps={{
@@ -184,8 +200,8 @@ import InputNewType from './modal.js';
                                             }
                                         }}
                                           disabled={!save?false:true}
-                                          name={row.type + " " + "cost" + " " + e.id}
-                                          value={!save?e.cost:Math.max(e.cost,0)}
+                                          name={row.type + " " + "price" + " " + e.id}
+                                          value={!save?e.price:Math.max(e.price,0)}
                                           onChange={handleInput}
                                           type="number"
                                           InputLabelProps={{
@@ -207,7 +223,7 @@ import InputNewType from './modal.js';
                                       />
                                   </TableCell>
                                   <TableCell id="center" align="right">
-                                    {e.cost*e.amount}
+                                    {e.price*e.amount}
                                   </TableCell>
                                   <TableCell id="rightCenter">
                                     <Button value={row.type + " " + e.id} variant="contained"	color="secondary" onClick={deleteData} className={classes.button}startIcon={<DeleteIcon />}>
@@ -232,11 +248,10 @@ import InputNewType from './modal.js';
                 for (let i=0;i<rows.length;i++){
                     for (let j=0;j<rows[i].detail.length;j++){
                         var t=false
-                        if (rows[i].detail[j].name==null ||rows[i].detail[j].name.length==0) valid = false
-                        var tmp = rows[i].detail[j].cost*rows[i].detail[j].amount
-                        if (rows[i].detail[j].cost<0){
-                            rows[i].detail[j].cost = 0
-                            t=true
+                        if (rows[i].detail[j].list==null ||rows[i].detail[j].list.length==0) valid = false
+                        var tmp = rows[i].detail[j].price*rows[i].detail[j].amount
+                        if (rows[i].detail[j].price<0){
+                            rows[i].detail[j].price = 0
                         }
                         if (rows[i].detail[j].amount<0){
                             t = true
@@ -256,6 +271,10 @@ import InputNewType from './modal.js';
 
             setSave(!save)
         }
+
+        useEffect(()=>{
+          console.log(selectedPlan)
+        },[])
         const handleInput=(event)=>{
             var type = event.target.name.split(" ")[0]
             var name = event.target.name.split(" ")[1]
@@ -264,10 +283,10 @@ import InputNewType from './modal.js';
             for (let i=0;i<rows.length;i++){
                 console.log(rows[i])
                 if (rows[i].type==type){
-                    var tmp =  rows[i].detail[id-1]["amount"] * rows[i].detail[id-1]["cost"] 
+                    var tmp =  rows[i].detail[id-1]["amount"] * rows[i].detail[id-1]["price"] 
                     rows[i].detail[id-1][name] = event.target.value
-                    if (name == "amount" || name=="cost"){
-                        rows[i].cost = rows[i].cost - tmp +  rows[i].detail[id-1]["amount"] * rows[i].detail[id-1]["cost"] 
+                    if (name == "amount" || name=="price"){
+                        rows[i].cost = rows[i].cost - tmp +  rows[i].detail[id-1]["amount"] * rows[i].detail[id-1]["price"] 
                     }
                     calTotalCost()
                     setRows([...rows])

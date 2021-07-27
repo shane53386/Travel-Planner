@@ -339,8 +339,7 @@ const initAllMarkers=()=>{
   }
 
   const sendCallback=(input)=>{
-    console.log(input)
-    var d = []
+        var d = []
     var m = new Map()
     var tmpTime = new Map()
     if (input == null || input.length==0 )
@@ -356,7 +355,8 @@ const initAllMarkers=()=>{
 
     daysList = d
     if (d.length==0) return
-    console.log(input[d[0]][0].place,allPlaces)
+    if (allPlaces.get(input[d[0]][0].place)==undefined)return
+    //console.log(input[d[0]][0].place,allPlaces)
     if (province != allPlaces.get(input[d[0]][0].place).province){
       province = allPlaces.get(input[d[0]][0].place).province
       createZoom(province)
@@ -374,8 +374,6 @@ const initAllMarkers=()=>{
         tmpTime.set(day,calRoute(day))
     });
    
-   
-    console.log(tmpTime)
     update.setTime(tmpTime)
     update.setData(m)
   }

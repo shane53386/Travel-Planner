@@ -8,10 +8,11 @@ function Overview(props) {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [index, setIndex] = useState(0);
-	var place = "Central World";
+	var place;
 
 	useEffect(async () => {
 		console.log(props.match.params.place)
+		place = props.match.params.place
 		setData(await fetchData(place));
 		//place = props.match.params.place
 		setLoading(false);
