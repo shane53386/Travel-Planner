@@ -10,7 +10,14 @@ export const fetchPlace = async (province) => {
 	return place;
 };
 
-export const fetchData = (place) => {
-	const response = db.collection("Places").doc(place);
-	return response.get().then((doc) => doc.data());
+export const fetchData = async (place) => {
+	let data;
+	const response = db.collection("Places").where("Name", "==", place);
+	const res = await response.get();
+	res.docs.forEach((item) => {
+		data = item.data();
+	});
+	return data;
 };
+
+export default fetchPlace;

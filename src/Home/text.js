@@ -1,7 +1,7 @@
 import React, { useState, useEffect ,Component,useContext } from 'react';
 import Data from "../Data";
 //import MarkerPin from "./src/MarkerPin"
-import fetchPlace from '../fetchData';
+import {fetchPlace} from '../fetchData';
 import {Autocomplete} from '@material-ui/lab';
 import {TextField}  from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -169,8 +169,8 @@ function MapContent (props){
     return "<Button onClick={this.toDetail()}>Read More</Button>"
     
   }
-  const province_createMarker=(content)=>{
-    
+  const province_createMarker=(province)=>{
+  
     //clear old markers
     clearOldInfo()
     //clear old Info
@@ -178,27 +178,28 @@ function MapContent (props){
     plan_clearOldMarker()
     //find new
     var place = new Map()
-  
-    
     var markerList = []
-    content.map(data=>{
-        place.set(data.Name,{ Name : data.Name,
-                              Type : data.Type,
-                              Position : data.Position,
-                              Description : data.Description})
-      })
-  
+    var content = fetchPlace(province).then(allData=>{
+        allData.forEach(data => {
+          place.set(data.Name,{ Name : data.Name,
+            Type : data.Type,
+            Position : data.Position,
+            Description : data.Description})
+        });       
+      }).then(()=>{
+    console.log(place)
     place && place.forEach((p,keys)=>{
       markerList.push(createOneMarker(p)) 
     })
     province_usedMarker =markerList
     console.log(province_usedMarker)
+  })
   
   }
 
-  const createOneMarker=(p,type)=>{
+  const createOneMarker=(p)=>{
 
-    console.log(home.focusPlace)
+    console.log(p)
     home.setFocusPlace(p.Name)
     //console.log(p.Name+"Marker")
     var tmp = new window.google.maps.Marker({
@@ -303,7 +304,7 @@ function MapContent (props){
   
   const searchProvince=(inputValue,itemData)=>{
     if (inputValue=="" || inputValue==null) return
-     console.log(inputValue)
+     console.log(inputValue,itemData)
     clearOldInfo()
     //if (this.state.focusProvince.province ==  inputValue) return
     map.setZoom(9.5)
@@ -312,7 +313,7 @@ function MapContent (props){
   
     
     map.data.overrideStyle(focusProvince.feature, { fillOpacity: 0.3 });
-    province_createMarker(itemData)
+    province_createMarker(inputValue)
     var f = null;
       
       map.data.forEach(function(feature){

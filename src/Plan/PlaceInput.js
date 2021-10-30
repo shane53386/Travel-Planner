@@ -91,7 +91,7 @@ function PlaceInput(props) {
    const [value, setValue] = React.useState(0);
 	const [allDays,setAllDays] = useState([])
 
-
+	var start , end ;
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [inputList, setInputList] = useState({});
@@ -133,24 +133,27 @@ function PlaceInput(props) {
 	
 	});
 	s.sort()
+
+	//props.parentCallback(inputList);
 	setInputList({...inputList})
 	console.log(s,inputList)
-	var start = s[0]
-	var end = s[s.length-1]
+	start = s[0]
+	end = s[s.length-1]
 	
 	for (let i=0;i<s.length;i++){
 		console.log(s[i])
 		s[i] = s[i].toLocaleDateString()
 	}
-	setAllDays(s)
+	genDays(s)
 	console.log(s)
 	setStartDate(start)
 	setEndDate(end)
 	console.log(inputList)
+	//sendData()
   },[])
-  const diffDay=()=>{
-	var i = startDate.getMonth()
-	var j = endDate.getMonth()
+  const diffDay=(s,e)=>{
+	var i = s.getMonth()
+	var j = e.getMonth()
 	var count = 0
 	//assume not diff > 1 year
 	while (i!=j){
@@ -165,11 +168,11 @@ function PlaceInput(props) {
 		}
 		i = (i+1)%12
 	}
-	if (startDate.getDate() <= endDate.getDate()){
-		count += endDate.getDate() - startDate.getDate()
+	if (s.getDate() <= e.getDate()){
+		count += e.getDate() - s.getDate()
 	}
 	else{
-		count -= startDate.getDate() -endDate.getDate()
+		count -= s.getDate() -e.getDate()
 	}
 	console.log(count)
 	return count
@@ -206,34 +209,32 @@ function PlaceInput(props) {
 	}
 	return re
   }
-   useEffect(()=>{
-	/*console.log("before update",inputList,allDays)
-		if (endDate.getTime() < startDate.getTime())
+   const genDays=(s)=>{
+
+	console.log("before update",inputList,s,start,end)
+		if (end==undefined || start==undefined || end.getTime() < start.getTime())
 			//error
 			return 
 		
-		var nowDate = startDate
-		console.log(startDate.getDate(),endDate.getDate())
-		var difDay = diffDay()
+		var nowDate = start
+		//console.log(startDate.getDate(),endDate.getDate())
+		var difDay = diffDay(start,end)
 		for (let i=0;i<difDay+1;i++){
+			console.log(nowDate.toLocaleDateString())	
 			
-			
-			if (!allDays.includes(nowDate.toLocaleDateString())){
-				console.log(allDays,nowDate.toLocaleDateString())
-				allDays.push(nowDate.toLocaleDateString())
+			if (inputList[nowDate.toLocaleDateString()]==undefined){
+				//console.log(allDays,nowDate.toLocaleDateString())
+				s.push(nowDate.toLocaleDateString())
 				inputList[nowDate.toLocaleDateString()]=[]
-		}
+			}
 			nowDate =nextDay(nowDate) 
-			
-			//{ place: "", time: "" }
-		}
-		allDays.sort()
-		setAllDays([...allDays])
+		}		
+		s.sort()
+		setAllDays([...s])
+	console.log("update",inputList,allDays)
+   }
 
-
-	console.log("update",inputList,allDays)*/
-   },[startDate,endDate])
-
+  
    const addNewTime=(date)=>{
 	let dd = null
 	if (inputList[allDays[value]].length==0)
@@ -348,9 +349,26 @@ function PlaceInput(props) {
 		}
    }
 
+   const handleSetStartDate=()=>{
+	if (value.getTime() < new Date().getTime()){
+		setStartDate(new Date())
+		start = startDate
+		errorMsg.start = "Cannot be previou than NOW"
+		setErrorMsg({...errorMsg})
+   }
+	else{
+		errorMsg.start = null
+		setErrorMsg({...errorMsg})
+		setStartDate(value)
+		start = value
+	}
+	end=endDate
+	genDays(allDays)
+   }
    const handleSetEndDate=(value)=>{
 	   if (value.getTime() < startDate.getTime()){
 			setEndDate(startDate)
+			end = startDate
 			errorMsg.end = "Cannot be previou start date"
 			setErrorMsg({...errorMsg})
 	   }
@@ -358,7 +376,10 @@ function PlaceInput(props) {
 			errorMsg.end = null
 			setErrorMsg({...errorMsg})
 			setEndDate(value)
+			end = value
 		}
+		start = startDate
+		genDays(allDays)
    }
 
    useEffect(() => {
@@ -484,7 +505,7 @@ const renderAddData=(type,idx)=>{
 		label="Start"
 		value={startDate}
 		error={errorMsg.start!=null}
-		onChange={setStartDate}
+		onChange={handleSetStartDate}
 		KeyboardButtonProps={{
 		  'aria-label': 'change date',
 		}}
@@ -528,7 +549,7 @@ const renderAddData=(type,idx)=>{
 		  return (<>
 		  		<TabPanel value={value} index={idx}>
 					<Timeline >
-						{inputList[day].map((plan,index)=>(
+						{inputList[day] && inputList[day].map((plan,index)=>(
 
 						`${day} ${index}`!=edit?
 						<TimelineItem>

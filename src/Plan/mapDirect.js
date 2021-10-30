@@ -37,24 +37,17 @@ function MapDirection(props) {
     allPlans[selectedPlan].places && allPlans[selectedPlan].places.map(e=>{
       fetchData(e)
       .then(p=>{
+        console.log(e,p)
+        console.log(p.Position,p.Position.latitude)
         allPlaces.set(e,{pos: {lng : p.Position.longitude , lat : p.Position.latitude} , province : "กรุงเทพมหานคร"})
         allPlacesName.push(e)
-        console.log(e,p)
+        
       })
     })
     setAllPlacesName([...allPlacesName])
   },[selectedPlan])
   useEffect(()=>{
-    /*console.log(allPlans)
-    allPlans[selectedPlan].places.map(e=>{
-      allPlaces.set(e,{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
-    })    */
-    
-    //console.log(allPlaces)
-    /*allPlaces.set("a",{pos: {lng : 100.498626 , lat : 13.742706} , province : "กรุงเทพมหานคร"})
-    allPlaces.set( "b",{ pos : {lng : 100.538009 , lat : 13.764603 } , province : "กรุงเทพมหานคร"})
-    allPlaces.set("c",{ pos : {lng : 100.537761 , lat :13.697441 } , province : "กรุงเทพมหานคร"})
-    allPlaces.set("d",{ pos : {lng :  100.583172 , lat :13.748389 } , province : "กรุงเทพมหานคร"})*/
+  
 
     if (!window.google) {
       var s = document.createElement('script');
@@ -67,6 +60,7 @@ function MapDirection(props) {
       // Below is important. 
       //We cannot access google.maps until it's finished loading
       console.log(daysList)
+    
       s.addEventListener('load', e => {     
           onScriptLoad()   
           initAllMarkers() 
@@ -339,6 +333,7 @@ const initAllMarkers=()=>{
   }
 
   const sendCallback=(input)=>{
+    console.log("receive ", input)
         var d = []
     var m = new Map()
     var tmpTime = new Map()
@@ -350,7 +345,7 @@ const initAllMarkers=()=>{
         d.push(key)
       }
     })
-   
+    
     plan = input
 
     daysList = d
@@ -376,6 +371,7 @@ const initAllMarkers=()=>{
    
     update.setTime(tmpTime)
     update.setData(m)
+    console.log("send to table",m)
   }
 
 
