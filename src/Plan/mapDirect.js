@@ -7,7 +7,7 @@ import {MContext} from './provider';
 import Provider from './provider';
 import PlaceInput from './PlaceInput';
 import { useAuth } from '../authenticate/Auth';
-import { fetchData } from '../fetchData';
+import { fetchData,fetchPlace } from '../fetchData';
 var map;var dataLayer;var info 
 var geoJson = null
 var polyline
@@ -69,9 +69,15 @@ function MapDirection(props) {
             onScriptLoad() 
             initAllMarkers() 
         }
-       
-  
-      } ,[])
+      var e = "กรุงเทพมหานคร"
+      fetchPlace(e)
+      .then(p=>p.forEach(p => {
+        console.log(e,p)
+        allPlaces.set(p.Name,{pos: {lng : p.Position.longitude , lat : p.Position.latitude} , province : "กรุงเทพมหานคร"})
+        allPlacesName.push(p.Name)
+      }))
+    
+    },[])
   
 const initAllMarkers=()=>{
   var tmp = []
@@ -350,6 +356,8 @@ const initAllMarkers=()=>{
 
     daysList = d
     if (d.length==0) return
+    console.log(allPlaces.get(input[d[0]][0].place))
+    if (false){
     if (allPlaces.get(input[d[0]][0].place)==undefined)return
     //console.log(input[d[0]][0].place,allPlaces)
     if (province != allPlaces.get(input[d[0]][0].place).province){
@@ -366,9 +374,29 @@ const initAllMarkers=()=>{
         show : true,
         polyline : []
         })
+        
         tmpTime.set(day,calRoute(day))
     });
-   
+    }
+    else{
+     
+        
+        createZoom("กรุงเทพมหานคร")
+      
+      d && d.forEach(day => {  
+        clearOldData(day)
+        days.set(day,{place : [],
+          path : [],
+          markers : [],
+          markersTime : [],
+          route : [],
+          show : true,
+          polyline : []
+          })
+          
+          tmpTime.set(day,calRoute(day))
+      });
+    }
     update.setTime(tmpTime)
     update.setData(m)
     console.log("send to table",m)
@@ -398,7 +426,7 @@ const initAllMarkers=()=>{
         <div style={{ width: '45%', height: '80%' ,float:"left"}} id={props.id}>
           
           </div>
-        <Filter checkCallback={handleFilterDay} switchCallback={handleSwitch} days={daysList}/>
+        
         <div style= {{width: '55%', height: 800,float:'right'}} >
               <PlaceInput places={allPlacesName} allPlans={allPlans} selectedPlan={selectedPlan}parentCallback={sendCallback}/>      
             </div>
@@ -406,7 +434,7 @@ const initAllMarkers=()=>{
 
 
     );
-  
+    //<Filter checkCallback={handleFilterDay} switchCallback={handleSwitch} days={daysList}/>
 
 }
 

@@ -23,14 +23,10 @@ import TimelineDot from '@material-ui/lab/TimelineDot';
 import RepeatIcon from '@material-ui/icons/Repeat';
 import Paper from '@material-ui/core/Paper'; 
 import 'date-fns';
-import PlanPage from "./PlanPage";
+import {fetchPlace} from '../fetchData';
 import { TextField } from "@material-ui/core";
-import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import { Button } from '@material-ui/core';
-import { useAuth } from '../authenticate/Auth';
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
   
@@ -115,7 +111,7 @@ function PlaceInput(props) {
 	if (props.allPlans==null)return
 	console.log(props.allPlans,props.selectedPlan)
 	var s = []
-	  Object.entries(props.allPlans[props.selectedPlan].planning).forEach(entry => {
+	props.allPlans[props.selectedPlan].planning && Object.entries(props.allPlans[props.selectedPlan].planning).forEach(entry => {
 		const [k, value] = entry;
 		var tmp ;
 		value.map(data=>{
@@ -150,7 +146,12 @@ function PlaceInput(props) {
 	setEndDate(end)
 	console.log(inputList)
 	//sendData()
+	
+	
+	
+	
   },[])
+ 
   const diffDay=(s,e)=>{
 	var i = s.getMonth()
 	var j = e.getMonth()
@@ -349,7 +350,7 @@ function PlaceInput(props) {
 		}
    }
 
-   const handleSetStartDate=()=>{
+   const handleSetStartDate=(value)=>{
 	if (value.getTime() < new Date().getTime()){
 		setStartDate(new Date())
 		start = startDate
@@ -380,6 +381,7 @@ function PlaceInput(props) {
 		}
 		start = startDate
 		genDays(allDays)
+		
    }
 
    useEffect(() => {

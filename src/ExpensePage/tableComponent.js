@@ -64,7 +64,7 @@ import { useAuth } from '../authenticate/Auth';
         useEffect(()=>{
 
             if(selectedPlan == null)return
-            Object.entries(allPlans[selectedPlan].expense).forEach(entry => {
+            allPlans[selectedPlan].expense && Object.entries(allPlans[selectedPlan].expense).forEach(entry => {
               const [key, value] = entry
               console.log(value)
               var countCost = 0

@@ -153,12 +153,12 @@ const MenuProps = {
         options={data.state.province}
         onChange={searchProvince}
         style={{ width: 300 }}
-        renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
+        renderInput={(params) => <TextField {...params} label="Province" variant="outlined" />}
       />
       
 
       <FormControl className={checkClasses.formControl}>
-        <InputLabel id="demo-mutiple-chip-label">Chip</InputLabel>
+        <InputLabel id="demo-mutiple-chip-label">Type</InputLabel>
         <Select
           labelId="demo-mutiple-chip-label"
           id="demo-mutiple-chip"
