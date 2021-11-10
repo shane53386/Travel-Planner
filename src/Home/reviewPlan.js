@@ -10,16 +10,15 @@ import { useHome } from "../homeProvider";
 import {Autocomplete} from '@material-ui/lab';
 import { useAuth } from "../authenticate/Auth";
 import {TextField}  from '@material-ui/core';
-import { computeHeadingLevel } from "@testing-library/react";
-
-
+import { fetchData } from "../fetchData";
 export default function ReviewPlan(props) {
 
     const [itemData,setItemData] = useState(new Map())
-    const [allPlans,setAllPlans] = useState([])
+    const [allPlan,setallPlan] = useState([])
     const [selectedPlan,setSelectedPlan] = useState([])
     const home = useHome()
     const auth = useAuth()
+    const {allPlans } = useAuth();
     const useStyles = makeStyles((theme) => ({
         root: {
           display: 'flex',
@@ -39,25 +38,40 @@ export default function ReviewPlan(props) {
     const classes = useStyles();
 
 
-    useEffect(()=>{
+    useEffect(async ()=>{
         //fetch plan from auth.currentUser
-        itemData.set("planA", [{Name : "mek" , img : "https://shopee.co.th/blog/wp-content/uploads/2020/11/%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%B5%E0%B9%88.jpg" , Province : "kem"
+        if (allPlans == null) return
+        console.log(allPlans)
+        /*itemData.set("planA", [{Name : "mek" , Image : "https://shopee.co.th/blog/wp-content/uploads/2020/11/%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%B5%E0%B9%88.jpg" , Province : "kem"
                                 , Type : "Mall"  ,  Position:{longitude : 100.498626 , latitude: 13.742706}}
-                        ,{Name : "mek1" , img : "https://www.prachachat.net/wp-content/uploads/2019/04/%E0%B8%9B%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%87_1-728x485.jpg" , Province : "kem"
-                            , Type : "Mall"  ,  Position: {longitude : 100.538009 , latitude : 13.764603 }}
-                        ,{Name : "mek2" , img : "https://img.kapook.com/u/2020/Tanapol/travel/kabi/kabi9.jpg" , Province : "kem"
+                             ,{Name : "mek2" , Image : "https://img.kapook.com/u/2020/Tanapol/travel/kabi/kabi9.jpg" , Province : "kem"
                             , Type : "Mall"  ,  Position:{longitude : 100.537761 , latitude :13.697441 }}])
                         
         
-        itemData.set("planB", [{Name : "mekky1" , img : "https://cms.dmpcdn.com/travel/2020/09/30/48daeb70-02cd-11eb-97e4-65e826b4aa8c_original.jpg" ,Province : "kem"
-                                , Type: "Mall" , Position:{longitude :  100.583172 , latitude :13.748389 }}])
+        itemData.set("planB", [{Name : "mekky1" , Image : "https://cms.dmpcdn.com/travel/2020/09/30/48daeb70-02cd-11eb-97e4-65e826b4aa8c_original.jpg" ,Province : "kem"
+                                , Type: "Mall" , Position:{longitude :  100.583172 , latitude :13.748389 }}
+                                ,{Name : "mek1" , Image : "https://www.prachachat.net/wp-content/uploads/2019/04/%E0%B8%9B%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%87_1-728x485.jpg" , Province : "kem"
+                                , Type : "Mall"  ,  Position: {longitude : 100.538009 , latitude : 13.764603 }}
+                            ,{Name : "mek2" , Image : "https://img.kapook.com/u/2020/Tanapol/travel/kabi/kabi9.jpg" , Province : "kem"
+                                , Type : "Mall"  ,  Position:{longitude : 100.537761 , latitude :13.697441 }}])
                         //,{Name : "mekky2" , img : "https://thesunsight.com/wp-content/uploads/2020/01/DOICHA-01-copy.jpg" , Province : "kem"])        
-    
+        */
         itemData.forEach((value,key)=>{
-            allPlans.push(key)
+            allPlan.push(key)
         })
-    
-    },[])
+        for (const [key, value] of Object.entries(allPlans)) {
+            console.log(key, value);
+            allPlan.push(key)
+            var places = []
+            value.places.forEach(async (p)=>{
+                console.log(p)
+                places.push(await fetchData(p))
+            })
+            itemData.set(key,places)
+            
+        }
+        console.log(itemData)
+    },[allPlans])
 
     const searchPlan=(event, inputValue)=>{
         
@@ -89,7 +103,7 @@ export default function ReviewPlan(props) {
         <>
             <Autocomplete
                 id="combo-box-demo"
-                options={allPlans}
+                options={allPlan}
                 onChange={searchPlan}
                 onClick={update}
                 style={{ width: 300 }}
@@ -103,8 +117,8 @@ export default function ReviewPlan(props) {
                 </ImageListItem>
                 {console.log(selectedPlan)}
                 {selectedPlan && selectedPlan.map((item) => (
-                <ImageListItem  key={item.img} >
-                    <img onClick={showDataPlace} id={item.Name} src={item.img} alt={item.title} />
+                <ImageListItem  key={item.Image[0]} >
+                    <img onClick={showDataPlace} id={item.Name} src={item.Image[0]} alt={item.Name} />
                     <ImageListItemBar
                         title={item.Name}
                         subtitle={<span>by: {item.Province}</span>}
