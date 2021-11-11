@@ -119,6 +119,7 @@ function MapContent (props){
   }
 
   const showOnePlan=(places)=>{
+    console.log(places)
     plan_clearOldMarker()
     //clearOldInfo()
     province_clearOldMarker()
@@ -155,14 +156,16 @@ function MapContent (props){
             '<h1 id="firstHeading" class="firstHeading"><b>'+p.Name+'</b></h1> <br>'+
             `<p>${p.Description}</p>`+
             `<div>Type : ${p.Type}</div>`+
-            `<div>Temp : ${data.current==null? "Unknown":data.current.temp}</div>`+
-            `<img src=${data.current==null? "":"http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png"}/>`+
             '<div id=toDetail></div>'+
-            `<input type='button' id='butSubmit' value='Procurar' onclick={document.getElementById("toDetail").click()} )}>`+
+            `<input type='button' id='butSubmit' value='Information' onclick={document.getElementById("toDetail").click()} )}>`+
            
       '</div>'+
       '</div>')
   }
+  /*
+  `<div>Temp : ${data.current==null? "Unknown":data.current.temp}</div>`+
+  `<img src=${data.current==null? "":"http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png"}/>`+
+  */
 
 
   const renderBtn=()=>{

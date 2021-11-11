@@ -194,7 +194,7 @@ const MenuProps = {
                     <img onClick={showDataPlace} id={item.Name} src={item.Img} alt={item.title} />
                     <ImageListItemBar
                         title={item.Name}
-                        subtitle={<span>by: {item.Province}</span>}
+                        subtitle={<span>{item.Province}</span>}
                         actionIcon={
                             <IconButton value={item.Name} onClick={showDataPlace} aria-label={`info about ${item.Name}`} className={imgClasses.icon}>
                             <InfoIcon />

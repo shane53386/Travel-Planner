@@ -8,12 +8,12 @@ function Overview(props) {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [index, setIndex] = useState(0);
-	var place;
+	const [place,setPlace] = useState(null);
 
 	useEffect(async () => {
 		console.log(props.match.params.place)
-		place = props.match.params.place
-		setData(await fetchData(place));
+		setPlace(props.match.params.place)
+		setData(await fetchData(props.match.params.place));
 		//place = props.match.params.place
 		setLoading(false);
 	}, []);
@@ -34,7 +34,13 @@ function Overview(props) {
 	const { Description, Type, Province, Image, Reviews } = data;
 
 	return (
-		<div className="container mt-4">
+		<div className="mt-4"  style={{
+			justifyContent: "center",
+			alignItems: "center",
+			paddingLeft:50,
+			paddingRight:50
+		  }}>
+			<h2>{place}</h2>
 			<Carousel activeIndex={index} onSelect={handleSelect}>
 				{Image.map((img, idx) => {
 					return (
@@ -48,7 +54,7 @@ function Overview(props) {
 					);
 				})}
 			</Carousel>
-			<h2>{place}</h2>
+			
 			<p>{Description}</p>
 			{currentUser && (
 				<Review

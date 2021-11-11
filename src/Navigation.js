@@ -108,10 +108,12 @@ const Navigation = (props) => {
 		<>
 
 		<Navbar bg="primary" variant="dark">
-			<Navbar.Brand href="/home">TravelPlanner</Navbar.Brand>
+			<Navbar.Brand>TravelPlanner</Navbar.Brand>
 			<Nav className="mr-auto">
 				<Nav.Link href="/Home">Home</Nav.Link>
-				<Nav.Link href="/PlanPage">Plan</Nav.Link>
+				{currentUser != null? null:
+					<Nav.Link href="/PlanPage">Plan</Nav.Link>
+				}
 				{currentUser == null? null:
 				<>
 				<NavDropdown type="button" title="Plans" id="basic-nav-dropdown">
@@ -124,7 +126,7 @@ const Navigation = (props) => {
 							<Button variant="contained"	color="primary" className={classes.button} onClick={addNewPlan}>Add</Button>
 						</NavDropdown.ItemText>
 					</NavDropdown>
-					<Nav.Link href="/expense">Expense</Nav.Link>
+					
 				</>
 				}
 				

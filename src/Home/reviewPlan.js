@@ -107,7 +107,7 @@ export default function ReviewPlan(props) {
                 onChange={searchPlan}
                 onClick={update}
                 style={{ width: 300 }}
-                renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
+                renderInput={(params) => <TextField {...params} label="Plan" variant="outlined" />}
             />
 
             <ImageList rowHeight={180} className={classes.imageList}>
@@ -121,7 +121,7 @@ export default function ReviewPlan(props) {
                     <img onClick={showDataPlace} id={item.Name} src={item.Image[0]} alt={item.Name} />
                     <ImageListItemBar
                         title={item.Name}
-                        subtitle={<span>by: {item.Province}</span>}
+                        subtitle={<span>Province: {item.Province}</span>}
                         actionIcon={
                             <IconButton value={item.Name} onClick={showDataPlace} aria-label={`info about ${item.Name}`} className={classes.icon}>
                             <InfoIcon />
