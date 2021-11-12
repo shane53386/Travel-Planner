@@ -1,16 +1,12 @@
-import { useAuth } from "./authenticate/Auth";
+
 import React, { useContext, useEffect, useState } from "react";
-import { withRouter,Redirect,Route } from 'react-router-dom';
-//import { Form,FormControl,NavDropdown,Nav, Navbar,MenuItem,Dropdown,Table } from "react-bootstrap";
 import {IconButton,Button, Select} from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
 import "./index.css";
 import CheckModal from "./checkModal";
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
@@ -144,7 +140,7 @@ function ManagePlaces(props){
       if (!window.google) {
         var s = document.createElement('script');
         s.type = 'text/javascript';
-        s.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAAxJFxw0jQWyJIyB7K48-PKniPK8JUhuk&libraries=places`;
+        s.src = ''/*key*/;
        
         var x = document.getElementsByTagName('script')[0];
         x.parentNode.insertBefore(s, x);

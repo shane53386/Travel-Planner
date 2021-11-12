@@ -1,10 +1,6 @@
 import React, { useState, useEffect ,Component,useContext } from 'react';
 import Data from "../Data";
-import Filter from "./filterDay"
-import { InputGroup , FormControl,Form, Table , Button,DropdownButton,Dropdown, ThemeProvider} from 'react-bootstrap';
-import PlanPage from './PlanPage';
 import {MContext} from './provider';
-import Provider from './provider';
 import PlaceInput from './PlaceInput';
 import { useAuth } from '../authenticate/Auth';
 import { fetchData,fetchPlace } from '../fetchData';
@@ -52,7 +48,7 @@ function MapDirection(props) {
     if (!window.google) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
-      s.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAAxJFxw0jQWyJIyB7K48-PKniPK8JUhuk`;
+      s.src = ''/*key*/ ;
      
       var x = document.getElementsByTagName('script')[0];
       x.parentNode.insertBefore(s, x);

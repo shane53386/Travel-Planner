@@ -7,7 +7,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import "./index.css";
 import CheckModal from "./checkModal";
 import { makeStyles } from '@material-ui/core/styles';
-import { useHome } from './homeProvider';
 import { auth } from "./firebase";
 import overView from "./Plan/overView";
 import LogIn from "./authenticate/LogIn";

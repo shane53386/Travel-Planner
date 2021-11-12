@@ -1,7 +1,7 @@
 
 import React, { Component,useContext, useEffect, useState } from 'react';
 import html2canvas from "html2canvas";
-import { InputGroup , FormControl,Form, Table , Button,DropdownButton,Dropdown} from 'react-bootstrap';
+import { Table , Button,DropdownButton,Dropdown} from 'react-bootstrap';
 import "./table.css"
 import {MContext} from './provider';
 
@@ -217,7 +217,6 @@ function TableShow(props) {
 
                 </Table>
                 <Button onClick={exportPng}>Export</Button>
-                <Button onClick={tmp}>xxx</Button>
                 <a id="link"></a>
             </div>
         )

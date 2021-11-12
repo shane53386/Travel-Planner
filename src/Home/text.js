@@ -1,11 +1,8 @@
-import React, { useState, useEffect ,Component,useContext } from 'react';
+import React, { useState, useEffect} from 'react';
 import Data from "../Data";
-//import MarkerPin from "./src/MarkerPin"
 import {fetchPlace} from '../fetchData';
-import {Autocomplete} from '@material-ui/lab';
-import {TextField}  from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import {BrowserRouter, Link , Route,Switch,withRouter } from 'react-router-dom';
+import {withRouter } from 'react-router-dom';
 import OverView from '../Plan/overView';
 import { useHome } from '../homeProvider';
 
@@ -289,7 +286,7 @@ function MapContent (props){
     if (!window.google) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
-      s.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAAxJFxw0jQWyJIyB7K48-PKniPK8JUhuk`;
+      s.src = ''/*key*/ ;
       var x = document.getElementsByTagName('script')[0];
       x.parentNode.insertBefore(s, x);
       // Below is important. 

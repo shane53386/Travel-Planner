@@ -4,8 +4,6 @@ import Data from "../Data";
 import {fetchPlace} from '../fetchData';
 import {Autocomplete} from '@material-ui/lab';
 import {TextField}  from '@material-ui/core';
-import {BrowserRouter, Link , Route,Switch,withRouter } from 'react-router-dom';
-import OverView from '../Plan/overView';
 import { useHome } from '../homeProvider';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ImageList from '@material-ui/core/ImageList';
@@ -14,14 +12,11 @@ import ImageListItemBar from '@material-ui/core/ImageListItemBar';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
-import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 
 function getStyles(name, personName, theme) {
