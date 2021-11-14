@@ -9,7 +9,7 @@ import { useHome } from '../homeProvider';
 var map;var dataLayer;var info 
 var geoJson = null
 const data = new Data()
-const weatherKey = "22f30fcf6dd5b269bf5cbe441f735a39";
+const weatherKey = '';
 
 var focusProvince = {province : "null" , feature : "null"}
 var province_usedMarker = []
@@ -233,7 +233,7 @@ function MapContent (props){
                         </div>)
     setNullButton([...nullButton])
     fetch(
-      `https://api.openweathermap.org/data/2.5/onecall?lat=${p.Position.latitude}&lon=${p.Position.longitude}&exclude=hourly,daily,minutely&appid=${weatherKey}`
+      ''/*key*/
     )
       .then((res) => res.json())
       .then((data) => {  
