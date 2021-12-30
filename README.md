@@ -1,7 +1,7 @@
 # TravelPlanner
   Website for helping user to plan the travel trip!
   
- ## Seacrh Place
+ ## Search Place
   Website provides place database which can search by type (ex: mall, nature, culture) and province.
   
   You can see the overview place in the map, read the breif detail by select the marker pin and further detail by click the see imformation button.
